@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lb.sys.dao.UserRebateMapper">
+	<!-- <select id="qryBetSum" parameterType="map" resultType="map">
+	
+		SELECT 
+			g.uid,g.user_name,CAST(COUNT(g.amount)  AS CHAR) AS 'num',CAST(SUM(g.amount) AS CHAR) AS 'sum',
+			v.vipName,v.`percent`,v.`group`,
+			u.VIP_ID,u.USER_NAME,u.COIN,u.FCION,u.USERTYPE
+		FROM 
+			game_bets g,
+			user_vip_info v,
+			user_info u  
+		WHERE 
+			g.is_cal = 1 AND g.is_user_rebate = 0
+			AND g.cal_time &gt;= #{start_time}
+			AND g.cal_time &lt;= #{end_time}
+			AND FIND_IN_SET(g.type,#{support_type})
+			AND v.vipId = u.VIP_ID AND g.uid=u.UID AND u.`STATUS`=1
+		GROUP BY g.uid ORDER BY g.user_name ASC;
+	
+	</select> -->
+	
+	<update id="updateUserCoin" parameterType="map">
+		UPDATE 
+			ls.user_info
+	    SET 
+	    	COIN= COIN + #{addCoin}
+	    WHERE 
+	    	UID = #{UID}
+	</update>
+	
+	<update id="updateGameBetStatus" parameterType="map">
+		UPDATE 
+			ls.game_bets  SET is_user_rebate=#{rebateStatus}			
+		WHERE 
+		   	uid = #{UID} 
+		   	AND user_rebate_id=#{user_rebate_id}
+		   	AND is_cal = 1 AND is_user_rebate = 9
+	</update>
+	
+	<insert id="insertCoinLog" parameterType="map">
+		INSERT INTO `ls`.`coin_log` 
+		(
+	  		`uid`,`user_name`, `user_type`,`trial_sign`,
+	  		`coin`, `userCoin`,`coin_before`, `fcoin`, 
+	  		`coin_operate_type`,`info`,`order_id` 
+		) 
+		VALUES
+        (
+        	#{UID},#{user_name},#{user_type},1,
+        	#{addCoin},
+        	(SELECT COIN FROM user_info WHERE UID=#{UID}),
+        	(SELECT COIN-#{addCoin} FROM user_info WHERE UID=#{UID}),
+        	(SELECT FCION FROM user_info WHERE UID=#{UID}),
+        	27,'投注返利',#{user_rebate_id}
+        )    	
+	</insert>
+	
+	<update id="updateStatusBatch" parameterType="map">
+		UPDATE 
+			ls.game_bets  SET is_user_rebate=3,user_rebate_id=#{user_rebate_id}		
+		WHERE 
+		    is_cal = 1 AND is_user_rebate = 0
+		   	AND cal_time &gt;= #{start_time}
+			AND cal_time &lt;= #{end_time}
+			AND !FIND_IN_SET(`type`,#{support_type})
+	</update>
+	
+	
+	<insert id="insertRebateLog" parameterType="map">
+		INSERT INTO ls.rebate_log
+		(
+			batch_no,rebate_type,support_type,
+			effect_bet,total_rebate,total_order,total_user,
+			success_num,ignore_num,error_num,noSupport_num,
+			start_time,end_time,info
+		)
+		VALUES
+		(
+			#{batch_no},#{rebate_type},#{support_type},
+			#{effect_bet},#{total_rebate},#{total_order},#{total_user},
+			#{success_num},#{ignore_num},#{error_num},#{noSupport_num},
+			#{start_time},#{end_time},#{info}
+		)
+	</insert>
+</mapper> 

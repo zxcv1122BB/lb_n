@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" href="../plugins/layui/css/layui.css" />
+		<link rel="stylesheet" type="text/css" href="css/depPreStrategy.css" />
+	</head>
+
+	<body>
+		<section id="container">
+			<section class="content">
+				<div class="top clearfix">
+					<span id="add" class="btn btn_add layui-btn" @click="signBombbox(2)">新增</span>
+					<div class="right">
+						<span id="refrech" class="refrech"><img class="img-responsive" src="img/refrech.png" alt="" /></span><span class="date"><i class='hide' id="selectDate" ></i><img class="img-responsive" src="img/date.png" alt="" /></span>
+					</div>
+				</div>
+				<div class="container">
+					<table class="layui-table">
+						<colgroup>
+							<col width='8%' />
+							<col width='8%' />
+							<col width='8%' />
+							<col width='8%' />
+							<col width='13%' />
+							<col width='13%' />
+							<col width='8%' />
+							<col width='13%' />
+							<col width='21%' />
+						</colgroup>
+						<thead>
+							<tr>
+								<th><strong>名称</strong></th>
+								<th><strong>周期</strong></th>
+								<th><strong>基数奖励</strong></th>
+								<th><strong>奖励模式</strong></th>
+								<th><strong>开始时间</strong></th>
+								<th><strong>结束时间</strong></th>
+								<th><strong>状态</strong></th>
+								<th><strong>备注</strong></th>
+								<th><strong>操作</strong></th>
+							</tr>
+						</thead>
+
+						<tbody id="dataList">
+							<template v-if="datas.length==0">
+								<tr>
+									<td colspan="13"><span>暂无数据</span></td>
+								</tr>
+							</template>
+							<template v-else>
+								<tr v-for="(obj,index) in datas">
+									<td>
+										<a class="openBtn" @click="openMessage(index)">{{obj.signName}}</a>
+									</td>
+									<td>{{obj.signCycle}}</td>
+									<td>{{obj.firstAmount}}</td>
+									<td>
+										<a class="openBtn" @click="openReward(index)">查看详情</a>
+									</td>
+									<td>{{obj.startTime}}</td>
+									<td>{{obj.endTime}}</td>
+									<td>
+										<div class="layui-form">
+											<div class="layui-form-item">
+												<div class="layui-input-block status" :data-index="obj.id" style="margin-left: 0;">
+													<div data-index="1" :class="obj.status == 1 ? 'layui-unselect layui-form-switch layui-form-onswitch able' : 'layui-unselect layui-form-switch layui-form-onswitch able hide'">
+														<em>启动</em>
+														<i></i>
+													</div>
+													<div data-index="0" :class="obj.status == 0 ? 'layui-unselect layui-form-switch disabled' : 'layui-unselect layui-form-switch disabled hide'">
+														<em>禁用</em>
+														<i></i>
+													</div>
+												</div>
+											</div>
+										</div>
+									</td>
+									<td>{{obj.signInfo}}</td>
+
+									<td>
+										<!--<a href="javascript:;" class="amend layui-btn layui-btn-mini" @click="signBombbox(1,obj)">修改</a>-->
+										<a href="javarscript:;" class="delete layui-btn layui-btn-mini layui-btn-danger" @click="deleteSign(obj)">删除</a>
+										<a href="javarscript:;" class="delete layui-btn layui-btn-mini layui-btn-normal" @click="getUserSignList(obj.id)">签到用户详情</a>
+										<a v-if="obj.isDelete==0" href="javarscript:;" class="delete layui-btn layui-btn-mini layui-btn-warm" @click="recoverySign(obj)">恢复</a>
+									</td>
+								</tr>
+							</template>
+						</tbody>
+					</table>
+				</div>
+			</section>
+			<!--签到用户-->
+			<div class="hide" id="userSign">
+				<div class="dealApplication">
+					<div>
+						<span style="margin-right: 10px;">签到次数:{{userSign.signCount}}次</span>
+						<span>签到人数:{{userSign.userCount}}人</span>
+					</div>
+					<table class="layui-table">
+						<colgroup>
+							<col width="20%" />
+							<col width="35%" />
+							<col width="15%" />
+							<col width="15%" />
+							<col width="15%" />
+						</colgroup>
+						<thead>
+							<th>用户帐号</th>
+							<th>最后签到时间</th>
+							<th>签到次数</th>
+							<th>最大连签</th>
+							<th>签到期次</th>
+						</thead>
+						<tbody v-if="userSignList.length>0&&userSignList">
+							<tr v-for="obj in userSignList">
+								<td><span @click="userSignDate(obj.signTime)" style="color: blue;text-decoration: underline;cursor: pointer;">{{obj.username}}</span></td>
+								<td>{{obj.lastSignTime}}</td>
+								<td>{{obj.signCount}}</td>
+								<td>{{obj.maxSignCount}}</td>
+								<td>{{obj.signNo}}</td>
+							</tr>
+						</tbody>
+						<tbody v-else>
+							<tr>
+								<td colspan="5">暂无数据</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<!--签到用户详情-->
+			<div class="hide" id="userSignDate">
+				<div class="dealApplication">
+					<table class="layui-table">
+						<colgroup>
+							<col width="50%" />
+							<col width="50%" />
+						</colgroup>
+						<tbody>
+							<tr v-for="obj in signTime">
+								<td class="tr">用户签到时间：</td>
+								<td>{{obj}}</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<!--增加修改弹框-->
+			<div class="hide" id="addMessage">
+				<div class="dealApplication">
+					<table class="layui-table">
+						<colgroup>
+							<col width="20%" />
+							<col width="30%" />
+							<col width="20%" />
+							<col width="30%" />
+						</colgroup>
+						<tbody>
+							<tr>
+								<td class="tr">名称：</td>
+								<td colspan="3"><input type="text" placeholder="请输入名称" v-model="sign.signName"></td>
+							</tr>
+							<tr>
+								<td class="tr">周期：</td>
+								<td colspan="3">
+									<input type="radio" name="signCycle" id="signCycle7" @click="signCycle(7)" checked="checked">7天
+									<input type="radio" id="signCycle30" @click="signCycle(30)" name="signCycle">30天
+									<input type="radio" id="signCycle0" @click="signCycle(0)" name="signCycle">自定义
+									<span id="signCycle" class="hide">
+										<input id="signCycleText" type="number" v-model="cycle" style="width:30%;"/>天
+									</span>
+								</td>
+							</tr>
+							<tr>
+								<td class="tr">基数奖励：</td>
+								<td colspan="3"><input type="text" placeholder="请输入基数奖励" v-model="sign.firstAmount"></td>
+							</tr>
+							<tr>
+								<td class="tr">奖励模式：</td>
+								<td colspan="3">
+									<input type="radio" name="signType" @click="signType(1)" id="signType1" checked="checked">固定递增<input type="radio" id="signType2" @click="signType(2)" name="signType">固定倍增 <input type="radio" @click="signType(0)" id="signType0" value="-1" name="signType">自定义
+									<div id="signType" class="hide">
+										<table>
+											<tr v-for='(obj,index) in days'>
+												<td width="40%">第{{index+1}}天</td>
+												<td width="60%">奖励<input type="number" v-model="type[index]" class="signType" /></td>
+											</tr>
+										</table>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td class="tr">额外奖励：</td>
+								<td colspan="3">
+									<input type="radio" name="extraReward" value="0" id="extraReward0" @click="extraReward(0)" checked="checked">否<input type="radio" id="extraReward1" value="1" @click="extraReward(1)" name="extraReward">是
+									<div id="extraReward" class="hide">
+										<table>
+											<tr v-for="(obj,index) in days">
+												<td width="40%">第{{index+1}}天</td>
+												<td width="60%">奖励<input type="number" v-model="rewardM[index]" class="extraReward" /></td>
+											</tr>
+										</table>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td class="tr">开始时间：</td>
+								<td>
+									<div class="date">
+										<input type="text" id="startDate" placeholder="开始日期" />
+										<i class="layui-icon icon">&#xe637;</i>
+									</div>
+								</td>
+								<td class="tr">结束时间：</td>
+								<td>
+									<div class="date">
+										<input type="text" id="endDate" placeholder="结束日期" />
+										<i class="layui-icon icon">&#xe637;</i>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td class="tr">备注</td>
+								<td colspan="3">
+									<textarea style="width: 90%;resize:none;margin-top: 5px;" v-model="sign.signInfo" maxlength="200"></textarea>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<!--查看详情弹框-->
+			<div class="hide" id="openMessage">
+				<div class="dealApplication">
+					<table class="layui-table">
+						<colgroup>
+							<col width="20%" />
+							<col width="30%" />
+							<col width="20%" />
+							<col width="30%" />
+						</colgroup>
+						<tbody>
+							<tr>
+								<td class="tr">名称：</td>
+								<td>{{signMessage.signName}}</td>
+								<td class="tr">类型：</td>
+								<td>{{signMessage.signType==1?"固定递增":signMessage.signType==2?"固定倍增":"自定义"}}</td>
+							</tr>
+							<tr>
+								<td class="tr">创建时间</td>
+								<td class="">{{signMessage.createTime}}</td>
+								<td class="tr">创建人：</td>
+								<td class="">{{signMessage.createBy}}</td>
+							</tr>
+							<tr>
+								<td class="tr">修改时间：</td>
+								<td>{{signMessage.updateTime}}</td>
+								<td class="tr">修改人：</td>
+								<td>{{signMessage.updateBy}}</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<!--查看奖励详情弹框-->
+			<div class="hide" id="reward">
+				<div class="dealApplication">
+					<table class="layui-table">
+						<colgroup>
+							<col width="50%" />
+							<col width="50%" />
+						</colgroup>
+						<tbody>
+							<tr>
+								<td colspan="2">额外奖励</td>
+							</tr>
+							<tbody v-if="reward.extraReward.length>0">
+								<tr v-for="(reward,index) in reward.extraReward">
+									<td class="tr">签到满 {{reward[0]}} 天</td>
+									<td>赠送 {{reward[1]}} </td>
+								</tr>
+							</tbody>
+							<tbody v-else>
+								<tr>
+									<td colspan="2" style="font-size: 12px;color: gray;">暂无奖励</td>
+								</tr>
+							</tbody>
+							<tr>
+								<td colspan="2">签到奖励</td>
+							</tr>
+							<tbody v-if="reward.rewardModel.length>0">
+								<tr v-for="(model,index) in reward.rewardModel">
+									<td class="tr">第{{index+1}} 天</td>
+									<td>赠送 {{model}} </td>
+								</tr>
+							</tbody>
+							<tbody v-else>
+								<tr>
+									<td colspan="2" style="font-size: 12px;color: gray;">暂无奖励</td>
+								</tr>
+							</tbody>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div id="paging_record" class="clearfix">
+				<div class="left">
+					总共<span class="sumRecord">{{total}}</span>数据 每页显示
+					<select v-model="dataStore.pageNum">
+						<option value="50">50</option>
+						<option value="100">100</option>
+						<option value="200">200</option><option value="500">500</option>
+					</select>条数据
+				</div>
+
+			</div>
+		</section>
+		<div id="page">
+
+		</div>
+		<script src="../public/js/security.js"></script>
+		<script src="../public/js/send_request.js"></script>
+		<script src="../public/js/jquery.js"></script>
+		<script src="../public/js/vue.min.js"></script>
+		<script type="text/javascript" src="../public/js/jqPaginator.js"></script>
+		<script src="../public/js/laydate/laydate.js"></script>
+		<script src="../plugins/layui/layui.js"></script>
+		<script src="js/signManagement.js"></script>
+	</body>
+
+</html>

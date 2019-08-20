@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>后台管理-团队报表</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="../plugins/layui/css/layui.css" media="all" />
+    <link rel="stylesheet" href="../public/css/fenye.css" />
+    <link rel="stylesheet" href="css/teamReportManagement.css" />
+
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="app">
+        <fieldset class="layui-elem-field">
+            <legend>团队报表</legend>
+            <!--搜索条件-->
+            <div class="search">
+                <div class="col_1 ">
+                    <div>
+                        <div class="date">
+                            <input id="startDate" placeholder="开始时间" />
+                            <i class="layui-icon icon">&#xe637;</i>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="date">
+                            <input id="endDate" placeholder="结束时间" />
+                            <i class="layui-icon icon">&#xe637;</i>
+                        </div>
+                    </div>
+                    <div>
+                        <input placeholder="请输入用户账号查询" v-model="agent_store" type="text" />
+                    </div>
+                </div>
+                <div class="col_1">
+                    <div class="btns">
+                        <a id="now" @click="now">今日</a>
+                        <a id="yes" @click="yes">昨日</a>
+                        <a id="week" @click="week">本周</a>
+                        <a id="lastWeek" @click="lastWeek">上周</a>
+                        <a id="month" @click="month" class='active'>本月</a>
+                        <a id="lastMonth" @click="lastMonth">上月</a>
+                    </div>
+                    <div>
+                        <a class="layui-btn" @click="search">查询</a>
+                        <a class="layui-btn" @click="resetting">重置</a>
+                    </div>
+                </div>
+            </div>
+            <!--列表内容-->
+
+            <div class="infoArea" v-cloak>
+                <!-- <div>当前 <span style="color:#000;">{{agent_store}}</span> 账号报表：</div> -->
+                <div class="clearfix">
+                    <dl>
+                        <dd>存款总计</dd>
+                        <dd :class="infoDatas.level?infoDatas.cashinAmount&&infoDatas.cashinAmount>0?'red':'blue':''">
+                            {{infoDatas.level?infoDatas.cashinAmount?infoDatas.cashinAmount:'0.00':'-'}}</dd>
+                    </dl>
+                    <dl>
+                        <dd>提款总计</dd>
+                        <dd :class="infoDatas.level?infoDatas.cashoutAmount&&infoDatas.cashoutAmount>0?'red':'blue':''">
+                            {{infoDatas.level?infoDatas.cashoutAmount?infoDatas.cashoutAmount:'0.00':'-'}}</dd>
+                    </dl>
+                    <dl>
+                        <dd>返点总计</dd>
+                        <dd :class="infoDatas.level?infoDatas.rebateAmount&&infoDatas.rebateAmount>0?'red':'blue':''">
+                            {{infoDatas.level?infoDatas.rebateAmount?infoDatas.rebateAmount:'0.00':'-'}}</dd>
+                    </dl>
+                    <dl>
+                        <dd>充值赠送总计</dd>
+                        <dd :class="infoDatas.level?infoDatas.cashinGive&&infoDatas.cashinGive>0?'red':'blue':''">
+                            {{infoDatas.level?infoDatas.cashinGive?infoDatas.cashinGive:'0.00':'-'}}</dd>
+                    </dl>
+                    <dl>
+                        <dd>注册赠送总计</dd>
+                        <dd :class="infoDatas.level?infoDatas.registerGive&&infoDatas.registerGive>0?'red':'blue':''">
+                            {{infoDatas.level?infoDatas.registerGive?infoDatas.registerGive:'0.00':'-'}}</dd>
+                    </dl>
+                    <dl>
+                        <dd>人工加款</dd>
+                        <dd
+                            :class="infoDatas.level?infoDatas.artificialPlus&&infoDatas.artificialPlus>0?'red':'blue':''">
+                            {{infoDatas.level?infoDatas.artificialPlus?infoDatas.artificialPlus:'0.00':'-'}}</dd>
+                    </dl>
+                    <dl>
+                        <dd>人工扣款</dd>
+                        <dd :class="infoDatas.level?infoDatas.artificialSub&&infoDatas.artificialSub>0?'red':'blue':''">
+                            {{infoDatas.level?infoDatas.artificialSub?infoDatas.artificialSub:'0.00':'-'}}</dd>
+                    </dl>
+                    <dl>
+                        <dd>团队盈亏</dd>
+                        <dd :class="infoDatas.level?infoDatas.profit&&infoDatas.profit>0?'red':'blue':''">
+                            {{infoDatas.level?infoDatas.profit?infoDatas.profit:'0.00':'-'}}</dd>
+                    </dl>
+                    <dl>
+                        <dd>总投注人数</dd>
+                        <!-- :class="infoDatas.level?infoDatas.betCount&&infoDatas.betCount>0?'red':'blue':''" -->
+                        <dd>
+                            {{infoDatas.level?infoDatas.betCount?infoDatas.betCount:0:'-'}}</dd>
+                    </dl>
+                </div>
+                <div class="clearfix">
+                    <dl>
+                        <dd>类型</dd>
+                        <dd>{{infoDatas.level?(infoDatas.userType==2?infoDatas.level+'级用户':infoDatas.level+'级代理'):'-'}}
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dd>所属上级</dd>
+                        <dd>{{infoDatas.level?infoDatas.agentname?infoDatas.agentname=="99999"?'-':infoDatas.agentname:'':'-'}}</dd>
+                    </dl>
+                    <dl>
+                        <dd>投注总计</dd>
+                        <dd :class="infoDatas.level?infoDatas.betAmount&&infoDatas.betAmount>0?'red':'blue':''">
+                            {{infoDatas.level?infoDatas.betAmount?infoDatas.betAmount:'0.00':'-'}}</dd>
+                    </dl>
+
+                    <dl>
+                        <dd>投注返利总计</dd>
+                        <dd :class="infoDatas.level?infoDatas.betRebate&&infoDatas.betRebate>0?'red':'blue':''">
+                            {{infoDatas.level?infoDatas.betRebate?infoDatas.betRebate:'0.00':'-'}}</dd>
+                    </dl>
+                    <dl>
+                        <dd>中奖总计</dd>
+                        <dd :class="infoDatas.level?infoDatas.bonusAmount&&infoDatas.bonusAmount>0?'red':'blue':''">
+                            {{infoDatas.level?infoDatas.bonusAmount?infoDatas.bonusAmount:'0.00':'-'}}</dd>
+                    </dl>
+
+
+                    <dl>
+                        <dd>首充人数</dd>
+                        
+                        <!-- :class="infoDatas.level?infoDatas.firstCashinMoneyCount&&infoDatas.firstCashinMoneyCount>0?'red':'blue':''" -->
+                        <dd>
+                            {{infoDatas.level?infoDatas.firstCashinMoneyCount?infoDatas.firstCashinMoneyCount:0:'-'}}
+                        </dd>
+                    </dl>
+
+                    <dl>
+                        <dd>注册人数</dd>
+                        
+                        <!-- :class="infoDatas.level?infoDatas.registerUserCount&&infoDatas.registerUserCount>0?'red':'blue':''" -->
+                        <dd>
+                            {{infoDatas.level?infoDatas.registerUserCount?infoDatas.registerUserCount:0:'-'}}</dd>
+                    </dl>
+
+
+
+                    <dl>
+                        <dd>人工赠送</dd>
+                        <dd
+                            :class="infoDatas.level?infoDatas.artificialGive&&infoDatas.artificialGive>0?'red':'blue':''">
+                            {{infoDatas.level?infoDatas.artificialGive?infoDatas.artificialGive:'0.00':'-'}}</dd>
+                    </dl>
+
+
+                    <dl @click="sxj(infoDatas,2)">
+                        <dd>下级人数</dd>
+                        <!--  -->
+                        <dd :style="infoDatas.level?'cursor: pointer;text-decoration: underline;color: blue;':''">
+                            {{infoDatas.level?infoDatas.downAgentCount?infoDatas.downAgentCount:0:'-'}}</dd>
+                    </dl>
+                </div>
+                <div class="clearfix">
+                    <dl>
+                        <dd>系统彩投注总计</dd>
+                        <dd :class="infoDatas.level?infoDatas.betSystemAmount&&infoDatas.betSystemAmount>0?'red':'blue':''">{{infoDatas.level?infoDatas.betSystemAmount?infoDatas.betSystemAmount:'0':'-'}}</dd>
+                    </dl>
+                    <dl>
+                        <dd>数字彩投注总计</dd>
+                        <dd :class="infoDatas.level?infoDatas.betDigitalAmount&&infoDatas.betDigitalAmount>0?'red':'blue':''">{{infoDatas.level?infoDatas.betDigitalAmount?infoDatas.betDigitalAmount:'0':'-'}}</dd>
+                    </dl>
+                    
+                    <dl>
+                        <dd>系统彩派奖总计</dd>
+                        <dd :class="infoDatas.level?infoDatas.bonusSystemAmount&&infoDatas.bonusSystemAmount>0?'red':'blue':''">{{infoDatas.level?infoDatas.bonusSystemAmount?infoDatas.bonusSystemAmount:'0':'-'}}</dd>
+                    </dl>
+                    <dl>
+                        <dd>数字彩派奖总计</dd>
+                        <dd :class="infoDatas.level?infoDatas.bonusDigitalAmount&&infoDatas.bonusDigitalAmount>0?'red':'blue':''">{{infoDatas.level?infoDatas.bonusDigitalAmount?infoDatas.bonusDigitalAmount:'0':'-'}}</dd>
+                    </dl>
+                    
+
+                    <dl>
+                        <dd>系统彩输赢</dd>
+                        <dd :class="infoDatas.level?infoDatas.systemAmount&&infoDatas.systemAmount>0?'red':'blue':''">{{infoDatas.level?infoDatas.systemAmount?infoDatas.systemAmount:'0':'-'}}</dd>
+                    </dl>
+                    <dl>
+                        <dd>数字彩输赢</dd>
+                        <dd :class="infoDatas.level?infoDatas.digitalAmount&&infoDatas.digitalAmount>0?'red':'blue':''">{{infoDatas.level?infoDatas.digitalAmount?infoDatas.digitalAmount:'0':'-'}}</dd>
+                    </dl>
+                    <dl>
+                        <dd>全部输赢</dd>
+                        <dd :class="infoDatas.level?infoDatas.winAmount&&infoDatas.winAmount>0?'red':'blue':''">{{infoDatas.level?infoDatas.winAmount?infoDatas.winAmount:'0':'-'}}</dd>
+                    </dl>
+
+                </div>
+            </div>
+            <div id="popArea" style="display:none">
+                <div class="layui-field-box">
+                    <table class="layui-table">
+                        <thead>
+                            <tr>
+                                <th width="8%">用户帐号</th>
+                                <th width="8%">类型</th>
+                                <th width="8%">所属上级</th>
+                                <th width="15%">投注金额</th>
+                                <th width="11%">投注人数</th>
+                                <!-- <th width="15%">投注返利金额</th> -->
+                                <th width="15%">中奖金额</th>
+                                <th width="15%">充值金额</th>
+                                <th width="12%">首充人数</th>
+                                <!-- <th width="15%">充值赠送金额</th>
+                                <th width="15%">注册赠送金额</th> -->
+                                <th width="10%">注册人数</th>
+                                <th width="15%">提款总计</th>
+                                <th width="15%">团队返点</th>
+                                <!-- <th width="15%">人工加款</th>
+                                <th width="15%">人工赠送</th>
+                                <th width="15%">人工扣款</th> -->
+                                <th width="15%">团队盈亏</th>
+                                <th width="8%">下级人数</th>
+                                <th>系统彩投注总计</th>
+                                <th>数字彩投注总计</th>
+                                <th>系统彩派奖总计</th>
+                                <th>数字彩派奖总计</th>
+                                <th>系统彩输赢</th>
+                                <th>数字彩输赢</th>
+                                <th>全部输赢</th>
+                                <!-- <th width="15%">操作</th> -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-if="datas.length==0">
+                                <td colspan="20">暂无数据</td>
+                            </tr>
+                            <tr v-else v-for="(item,index) in datas">
+                                <td v-cloak :title="item.user_name">{{item.username}}</td>
+                                <td v-cloak>{{item.userType==2?item.level+'级用户':item.level+'级代理'}}</td>
+                                <td v-cloak>{{item.agentname}}</td>
+                                <td v-cloak>{{item.betAmount}}</td>
+                                <td v-cloak>{{item.betCount}}</td>
+                                <!-- <td v-cloak>{{item.betRebate}}</td> -->
+                                <td v-cloak>{{item.bonusAmount}}</td>
+                                <td v-cloak>{{item.cashinAmount}}</td>
+                                <td v-cloak>{{item.firstCashinMoneyCount}}</td>
+                                <!-- <td v-cloak>{{item.cashinGive}}</td>
+                                <td v-cloak>{{item.registerGive}}</td> -->
+                                <td v-cloak>{{item.registerUserCount}}</td>
+                                <td v-cloak>{{item.cashoutAmount}}</td>
+                                <td v-cloak>{{item.rebateAmount}}</td>
+                                <!-- <td v-cloak>{{item.artificialPlus}}</td>
+                                <td v-cloak>{{item.artificialGive}}</td>
+                                <td v-cloak>{{item.artificialSub}}</td> -->
+                                <td v-cloak>{{item.profit}}</td>
+                                <td v-cloak>{{item.downAgentCount}}</td>
+                                <!-- <td v-cloak>
+                                    <button class="layui-btn layui-btn-mini" @click="sxj(item,1)">上级</button>
+                                    <button class="layui-btn layui-btn-mini" @click="sxj(item,2)">下级</button>
+                                </td> -->
+
+                                <td v-cloak>{{item.betSystemAmount}}</td>
+                                <td v-cloak>{{item.betDigitalAmount}}</td>
+
+                                <td v-cloak>{{item.bonusSystemAmount}}</td>
+                                <td v-cloak>{{item.bonusDigitalAmount}}</td>
+
+                                <td v-cloak>{{item.systemAmount}}</td>
+                                <td v-cloak>{{item.digitalAmount}}</td>
+                                <td v-cloak>{{item.winAmount}}</td>
+                            </tr>
+                            <tr>
+                                <td>小计</td>
+                                <td>--</td>
+                                <td>--</td>
+                                <td v-if="total_betAmount>0" style="color:#a94442;" v-cloak :title="total_betAmount">
+                                    {{total_betAmount}}</td>
+                                <td v-else-if="total_betAmount<=0" style="color:blue;" v-cloak :title="total_betAmount">
+                                    {{total_betAmount}}</td>
+                                <td v-else v-cloak :title="total_betAmount">{{total_betAmount}}</td>
+
+                                <td v-if="total_betCount>0" style="color:#a94442;" v-cloak :title="total_betCount">
+                                    {{total_betCount}}</td>
+                                <td v-else-if="total_betCount<=0" style="color:blue;" v-cloak :title="total_betCount">
+                                    {{total_betCount}}</td>
+                                <td v-else v-cloak :title="total_betCount">{{total_betCount}}</td>
+
+                                <!-- <td v-if="total_betRebate>0" style="color:#a94442;" v-cloak :title="total_betRebate">
+                                    {{total_betRebate}}</td>
+                                <td v-else-if="total_betRebate<=0" style="color:blue;" v-cloak :title="total_betRebate">
+                                    {{total_betRebate}}</td>
+                                <td v-else v-cloak :title="total_betRebate">{{total_betRebate}}</td> -->
+
+                                <td v-if="total_bonusAmount>0" style="color:#a94442;" v-cloak
+                                    :title="total_bonusAmount">{{total_bonusAmount}}</td>
+                                <td v-else-if="total_bonusAmount<=0" style="color:blue;" v-cloak
+                                    :title="total_bonusAmount">{{total_bonusAmount}}</td>
+                                <td v-else v-cloak :title="total_bonusAmount">{{total_bonusAmount}}</td>
+
+                                <td v-if="total_cashinAmount>0" style="color:#a94442;" v-cloak
+                                    :title="total_cashinAmount">{{total_cashinAmount}}</td>
+                                <td v-else-if="total_cashinAmount<=0" style="color:blue;" v-cloak
+                                    :title="total_cashinAmount">{{total_cashinAmount}}</td>
+                                <td v-else v-cloak :title="total_cashinAmount">{{total_cashinAmount}}</td>
+
+                                <td v-if="total_firstCashinMoneyCount>0" style="color:#a94442;" v-cloak
+                                    :title="total_firstCashinMoneyCount">{{total_firstCashinMoneyCount}}</td>
+                                <td v-else-if="total_firstCashinMoneyCount<=0" style="color:blue;" v-cloak
+                                    :title="total_firstCashinMoneyCount">{{total_firstCashinMoneyCount}}</td>
+                                <td v-else v-cloak :title="total_firstCashinMoneyCount">{{total_firstCashinMoneyCount}}
+                                </td>
+
+                                <!-- <td v-if="total_cashinGive>0" style="color:#a94442;" v-cloak :title="total_cashinGive">
+                                    {{total_cashinGive}}</td>
+                                <td v-else-if="total_cashinGive<=0" style="color:blue;" v-cloak
+                                    :title="total_cashinGive">{{total_cashinGive}}</td>
+                                <td v-else v-cloak :title="total_cashinGive">{{total_cashinGive}}</td>
+
+                                <td v-if="total_registerGive>0" style="color:#a94442;" v-cloak
+                                    :title="total_registerGive">{{total_registerGive}}</td>
+                                <td v-else-if="total_registerGive<=0" style="color:blue;" v-cloak
+                                    :title="total_registerGive">{{total_registerGive}}</td>
+                                <td v-else v-cloak :title="total_registerGive">{{total_registerGive}}</td> -->
+
+                                <td v-if="total_registerUserCount>0" style="color:#a94442;" v-cloak
+                                    :title="total_registerUserCount">{{total_registerUserCount}}</td>
+                                <td v-else-if="total_registerUserCount<=0" style="color:blue;" v-cloak
+                                    :title="total_registerUserCount">{{total_registerUserCount}}</td>
+                                <td v-else v-cloak :title="total_registerUserCount">{{total_registerUserCount}}</td>
+
+                                <td v-if="total_cashoutAmount>0" style="color:#a94442;" v-cloak
+                                    :title="total_cashoutAmount">{{total_cashoutAmount}}</td>
+                                <td v-else-if="total_cashoutAmount<=0" style="color:blue;" v-cloak
+                                    :title="total_cashoutAmount">{{total_cashoutAmount}}</td>
+                                <td v-else v-cloak :title="total_cashoutAmount">{{total_cashoutAmount}}</td>
+
+                                <td v-if="total_rebateAmount>0" style="color:#a94442;" v-cloak
+                                    :title="total_rebateAmount">{{total_rebateAmount}}</td>
+                                <td v-else-if="total_rebateAmount<=0" style="color:blue;" v-cloak
+                                    :title="total_rebateAmount">{{total_rebateAmount}}</td>
+                                <td v-else v-cloak :title="total_rebateAmount">{{total_rebateAmount}}</td>
+
+                                <!-- <td v-if="total_artificialPlus>0" style="color:#a94442;" v-cloak
+                                    :title="total_artificialPlus">{{total_artificialPlus}}</td>
+                                <td v-else-if="total_artificialPlus<=0" style="color:blue;" v-cloak
+                                    :title="total_artificialPlus">{{total_artificialPlus}}</td>
+                                <td v-else v-cloak :title="total_artificialPlus">{{total_artificialPlus}}</td>
+
+                                <td v-if="total_artificialGive>0" style="color:#a94442;" v-cloak
+                                    :title="total_artificialGive">{{total_artificialGive}}</td>
+                                <td v-else-if="total_artificialGive<=0" style="color:blue;" v-cloak
+                                    :title="total_artificialGive">{{total_artificialGive}}</td>
+                                <td v-else v-cloak :title="total_artificialGive">{{total_artificialGive}}</td>
+
+                                <td v-if="total_artificialSub>0" style="color:#a94442;" v-cloak
+                                    :title="total_artificialSub">{{total_artificialSub}}</td>
+                                <td v-else-if="total_artificialSub<=0" style="color:blue;" v-cloak
+                                    :title="total_artificialSub">{{total_artificialSub}}</td>
+                                <td v-else v-cloak :title="total_artificialSub">{{total_artificialSub}}</td> -->
+
+                                <td v-if="total_profit>0" style="color:#a94442;" v-cloak :title="total_profit">
+                                    {{total_profit}}</td>
+                                <td v-else-if="total_profit<=0" style="color:blue;" v-cloak :title="total_profit">
+                                    {{total_profit}}</td>
+                                <td v-else v-cloak :title="total_profit">{{total_profit}}</td>
+
+                                <td v-if="total_downAgentCount>0" style="color:#a94442;" v-cloak
+                                    :title="total_downAgentCount">{{total_downAgentCount}}</td>
+                                <td v-else-if="total_downAgentCount<=0" style="color:blue;" v-cloak
+                                    :title="total_downAgentCount">{{total_downAgentCount}}</td>
+                                <td v-else v-cloak :title="total_downAgentCount">{{total_downAgentCount}}</td>
+                                <!-- <td >--</td> -->
+
+
+                                <td :style="total_betSystemAmount<=0?'color:blue;':'color:#a94442;'" :title="total_betSystemAmount" v-cloak>{{total_betSystemAmount}}</td>
+                                <td :style="total_betDigitalAmount<=0?'color:blue;':'color:#a94442;'" :title="total_betDigitalAmount" v-cloak>{{total_betDigitalAmount}}</td>
+
+                                <td :style="total_bonusSystemAmount<=0?'color:blue;':'color:#a94442;'" :title="total_bonusSystemAmount" v-cloak>{{total_bonusSystemAmount}}</td>
+                                <td :style="total_bonusDigitalAmount<=0?'color:blue;':'color:#a94442;'" :title="total_bonusDigitalAmount" v-cloak>{{total_bonusDigitalAmount}}</td>
+
+                                <td :style="total_systemAmount<=0?'color:blue;':'color:#a94442;'" :title="total_systemAmount" v-cloak>{{total_systemAmount}}</td>
+                                <td :style="total_digitalAmount<=0?'color:blue;':'color:#a94442;'" :title="total_digitalAmount" v-cloak>{{total_digitalAmount}}</td>
+                                <td :style="total_winAmount<=0?'color:blue;':'color:#a94442;'" :title="total_winAmount" v-cloak>{{total_winAmount}}</td>
+                            </tr>
+                            <!-- <tr>
+                                <td>总计</td>
+                                <td>--</td>
+            
+                                <td v-if="totalled.betSum==undefined">--</td>
+                                <td v-else-if="totalled.betSum>0" style="color: #a94442;" v-cloak :title="parseFloat(totalled.betSum).toFixed(2)">{{parseFloat(totalled.betSum).toFixed(2)}}</td>
+                                <td v-else style="color: blue;" v-cloak :title="parseFloat(totalled.betSum).toFixed(2)">{{parseFloat(totalled.betSum).toFixed(2)}}</td>
+            
+                                <td v-if="totalled.betRebate==undefined">--</td>
+                                <td v-else-if="totalled.betRebate>0" style="color: #a94442;" v-cloak :title="parseFloat(totalled.betRebate).toFixed(2)">{{parseFloat(totalled.betRebate).toFixed(2)}}</td>
+                                <td v-else style="color: blue;" v-cloak :title="parseFloat(totalled.betRebate).toFixed(2)">{{parseFloat(totalled.betRebate).toFixed(2)}}</td>
+            
+                                <td v-if="totalled.bonusSum==undefined">--</td>
+                                <td v-else-if="totalled.bonusSum>0" style="color: #a94442;" v-cloak :title="parseFloat(totalled.bonusSum).toFixed(2)">{{parseFloat(totalled.bonusSum).toFixed(2)}}</td>
+                                <td v-else style="color: blue;" v-cloak :title="parseFloat(totalled.bonusSum).toFixed(2)">{{parseFloat(totalled.bonusSum).toFixed(2)}}</td>
+            
+                                <td v-if="totalled.depositSum==undefined">--</td>
+                                <td v-else-if="totalled.depositSum>0" style="color: #a94442;" v-cloak :title="parseFloat(totalled.depositSum).toFixed(2)">{{parseFloat(totalled.depositSum).toFixed(2)}}</td>
+                                <td v-else style="color: blue;" v-cloak :title="parseFloat(totalled.depositSum).toFixed(2)">{{parseFloat(totalled.depositSum).toFixed(2)}}</td>
+            
+                                <td v-if="totalled.depositGivingSum==undefined">--</td>
+                                <td v-else-if="totalled.depositGivingSum>0" style="color: #a94442;" v-cloak :title="parseFloat(totalled.depositGivingSum).toFixed(2)">{{parseFloat(totalled.depositGivingSum).toFixed(2)}}</td>
+                                <td v-else style="color: blue;" v-cloak :title="parseFloat(totalled.depositGivingSum).toFixed(2)">{{parseFloat(totalled.depositGivingSum).toFixed(2)}}</td>
+            
+                                <td v-if="totalled.regGivingSum==undefined">--</td>
+                                <td v-else-if="totalled.regGivingSum>0" style="color: #a94442;" v-cloak :title="parseFloat(totalled.regGivingSum).toFixed(2)">{{parseFloat(totalled.regGivingSum).toFixed(2)}}</td>
+                                <td v-else style="color: blue;" v-cloak :title="parseFloat(totalled.regGivingSum).toFixed(2)">{{parseFloat(totalled.regGivingSum).toFixed(2)}}</td>
+            
+                                <td v-if="totalled.withdrawSum==undefined">--</td>
+                                <td v-else-if="totalled.withdrawSum>0" style="color: #a94442;" v-cloak :title="parseFloat(totalled.withdrawSum).toFixed(2)">{{parseFloat(totalled.withdrawSum).toFixed(2)}}</td>
+                                <td v-else style="color: blue;" v-cloak :title="parseFloat(totalled.withdrawSum).toFixed(2)">{{parseFloat(totalled.withdrawSum).toFixed(2)}}</td>
+            
+                                <td v-if="totalled.fandianSum==undefined">--</td>
+                                <td v-else-if="totalled.fandianSum>0" style="color: #a94442;" v-cloak :title="parseFloat(totalled.fandianSum).toFixed(2)">{{parseFloat(totalled.fandianSum).toFixed(2)}}</td>
+                                <td v-else-if="totalled.fandianSum<=0" style="color: blue;" v-cloak :title="parseFloat(totalled.fandianSum).toFixed(2)">{{parseFloat(totalled.fandianSum).toFixed(2)}}</td>
+            
+                                <td v-if="totalled.addMoneySum==undefined">--</td>
+                                <td v-else-if="totalled.addMoneySum>0" style="color: #a94442;" v-cloak :title="parseFloat(totalled.addMoneySum).toFixed(2)">{{parseFloat(totalled.addMoneySum).toFixed(2)}}</td>
+                                <td v-else style="color: blue;" v-cloak :title="parseFloat(totalled.addMoneySum).toFixed(2)">{{parseFloat(totalled.addMoneySum).toFixed(2)}}</td>
+            
+                                <td v-if="totalled.rgGivingMoneySum==undefined">--</td>
+                                <td v-else-if="totalled.rgGivingMoneySum>0" style="color: #a94442;" v-cloak :title="parseFloat(totalled.rgGivingMoneySum).toFixed(2)">{{parseFloat(totalled.rgGivingMoneySum).toFixed(2)}}</td>
+                                <td v-else style="color: blue;" v-cloak :title="parseFloat(totalled.rgGivingMoneySum).toFixed(2)">{{parseFloat(totalled.rgGivingMoneySum).toFixed(2)}}</td>
+            
+                                <td v-if="totalled.subtractMoneySum==undefined">--</td>
+                                <td v-else-if="totalled.subtractMoneySum>0" style="color: #a94442;" v-cloak :title="parseFloat(totalled.subtractMoneySum).toFixed(2)">{{parseFloat(totalled.subtractMoneySum).toFixed(2)}}</td>
+                                <td v-else style="color: blue;" v-cloak :title="parseFloat(totalled.subtractMoneySum).toFixed(2)">{{parseFloat(totalled.subtractMoneySum).toFixed(2)}}</td>
+            
+                                <td v-if="totalled.betSum==undefined">--</td>
+                                <td v-else-if="totalled.betSum-totalled.bonusSum>0" style="color: #a94442;" v-cloak :title="parseFloat(totalled.betSum-totalled.bonusSum).toFixed(2)">{{parseFloat(totalled.betSum-totalled.bonusSum).toFixed(2)}}</td>
+                                <td v-else-if="totalled.betSum-totalled.bonusSum<=0" style="color: blue;" v-cloak :title="parseFloat(totalled.betSum-totalled.bonusSum).toFixed(2)">{{parseFloat(totalled.betSum-totalled.bonusSum).toFixed(2)}}</td>
+                            </tr> -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="yema">
+                    <p v-cloak>
+                        总共{{total}}条记录.每页显示
+                        <select v-model="pageNum">
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                        条记录
+                    </p>
+                </div>
+                <div id="fenye" style="text-align: right;"></div>
+            </div>
+
+            <!--页码设置-->
+            <!-- <div class="yema">
+                <p v-cloak>
+                    总共{{total}}条记录.每页显示
+                    <select v-model="pageNum">
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option><option value="100">100</option>
+                    </select>
+                    条记录
+                </p>
+            </div>
+            <div id="fenye" style="text-align: right;"></div>
+        </div> -->
+        </fieldset>
+    </div>
+
+
+    <script type="text/javascript" src="../public/js/jquery.js"></script>
+    <!--引入JQ脚本-->
+    <script type="text/javascript" src="../public/js/laydate/laydate.js"></script>
+    <script type="text/javascript" src="../public/js/jqPaginator.js"></script>
+    <!--引入分页脚本-->
+    <script type="text/javascript" src="../plugins/layui/layui.js"></script>
+    <!--引入layui脚本-->
+    <script type="text/javascript" src="../public/js/security.js"></script>
+    <!--引入加密脚本-->
+    <script type="text/javascript" src="../public/js/send_request.js"></script>
+    <!--引入二次封装ajax脚本-->
+    <script type="text/javascript" src="../public/js/vue.min.js"></script>
+    <!--引入vue脚本-->
+    <script type="text/javascript" src="js/teamReportManagement.js"></script>
+    <!--引入本页js代码-->
+</body>
+
+</html>

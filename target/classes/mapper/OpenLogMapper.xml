@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lb.sys.dao.OpenLogMapper">
+	<!-- 查询合买信息 -->
+	<select id="getAll" parameterType="java.util.Map" resultType="map">
+		SELECT ol.openno,ol.curno,ol.opennum,ol.openerrornum,ol.`status`
+		FROM open_log ol
+		WHERE 1=1 
+		<if test="status != null and status !=''  ">
+			AND status=#{status}
+		</if>
+		<if test="openno != null and openno !=''  ">
+			AND ol.openno like CONCAT(CONCAT('%',#{openno,jdbcType=VARCHAR}),'%')
+		</if>
+		ORDER BY ol.openno DESC
+	</select>
+
+
+	<select id="selectByOpenno" parameterType="java.util.Map"
+		resultType="map">
+		SELECT  * 
+		FROM open_log ol
+		where openno=#{openno}
+	</select>
+
+
+	<!-- 查询指定赛事信息 -->
+	<select id="selectMatchById" parameterType="java.lang.String" resultType="map">
+		SELECT
+		fmi.sessions,fmi.home_team_name,fmi.away_team_name,fmi.match_result,fmi.court_score
+		FROM football_match_info fmi WHERE match_id=#{match_id}
+	</select>
+</mapper>

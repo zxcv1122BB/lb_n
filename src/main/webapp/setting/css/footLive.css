@@ -1,0 +1,197 @@
+.clearfix {
+  zoom: 1;
+}
+
+.clearfix:after {
+  content: '\20 ';
+  display: block;
+  height: 0;
+  clear: both;
+}
+
+body {
+  margin: 0 auto;
+  padding: inherit;
+  font-size: 12px;
+  background: #ffffff;
+  color: #333333;
+  height: 100%;
+}
+
+ul li {
+  list-style-type: none;
+}
+
+em {
+  font-style: normal;
+}
+
+i {
+  font-style: normal;
+}
+
+a {
+  color: #333333;
+  text-decoration: none;
+}
+
+.clear {
+  clear: both;
+  height: 10px;
+}
+
+.main {
+  /*border: 1px solid #e0e0e0;*/
+  height: 100%;
+  margin-bottom: 0;
+}
+
+.addColor {
+  display: none;
+}
+
+.addColor tr {
+  height: 40px;
+}
+
+.addColor tr td:first-of-type {
+  width: 30%;
+}
+
+.addColor input {
+  width: 80% !important;
+  height: 30px;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+input[type=text] {
+  width: 30px;
+  text-align: center;
+  border: 1px solid #E3E3E3;
+  outline: none;
+}
+
+input[type=number] {
+  width: 30px;
+  text-align: center;
+  border: 1px solid #E3E3E3;
+  outline: none;
+}
+
+input[type=text]:focus {
+  border: 1px solid gray;
+  padding: 0px;
+}
+
+.date input {
+  height: 30px
+}
+
+#typelist,
+#typelist1 {
+  height: 30px;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: textfield;
+}
+
+.main tr:hover input[type=text] {
+  background: #F4F4F4;
+  box-shadow: none;
+}
+
+.footTitle {
+  margin: 10px;
+}
+
+/*主体界面*/
+
+.mian tr .events {
+  border-bottom: 1px solid #fff;
+}
+
+#dateSelect {
+  /* padding: 5px; */
+  border-radius: 5px;
+  /* font-size: 15px; */
+  height: 35px;
+}
+
+.main td i {
+  margin: 0 3px;
+}
+
+.main .host {
+  color: #1e50a2;
+  cursor: pointer;
+}
+
+.main .host:hover {
+  color: #ba2636;
+}
+
+.main .guest {
+  color: #1e50a2;
+  cursor: pointer;
+}
+
+.main .guest:hover {
+  color: #ba2636;
+}
+
+/*弹出详情*/
+
+.analyMoreTable {
+  display: none;
+  min-height: 380px;
+  height: auto !important;
+  height: 380px;
+  overflow: hidden;
+}
+
+.betting {
+  display: none;
+}
+
+/*日期样式设置*/
+
+#endTime,
+#startTime,
+#startDate,
+#endDate {
+  min-height: 35px;
+  border: 0;
+}
+
+.date {
+  padding: 0 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  width: 180px;
+  position: relative;
+  float: left;
+  margin-right: 10px;
+  .date i {
+    position: absolute;
+    top: 8px;
+    right: 15px;
+  }
+  .dateList {
+    box-sizing: border-box;
+    position: absolute;
+    top: 39px;
+    left: 0;
+    width: 100%;
+    padding: 0 10px;
+    border: 1px solid #ddd;
+  }
+  .footTitle .col {
+    margin-right: 5px;
+    display: inline-block;
+  }

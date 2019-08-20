@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="../plugins/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="../public/css/fenye.css"/>
+    <link href="css/footLive.css" rel="stylesheet"/>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+        
+    </style>
+</head>
+<body>
+<div class="main">
+    <fieldset class="layui-elem-field">
+        <legend>胜负彩列表</legend>
+        <div class="footTitle">
+            <div class="col">
+                期号：
+                <select id="dateSelect" v-cloak>
+                    <option v-for="(item,index) in games" v-cloak>{{item}}</option>
+                </select>
+            </div>
+            <div class="col">
+            开奖状态：
+            <select v-model=matchStatus style="border-radius: 5px;height: 35px;">
+                <option value="">全部</option>
+                <option value="0">已结束</option>
+                <option value="1">未开始</option>
+                <option value="2">半场</option>
+                <option value="3">取消</option>
+                <option value="4">弃赛/中断</option>
+                <option value="5">延期</option>
+                <option value="6">进行中</option>
+            </select>
+            </div>
+            <div class="col">
+            队名：
+            <input type="text" style="width: 120px;height: 35px;border-radius: 5px; border: 1px solid #ccc;" placeholder="主队名或者客队名"
+                   v-model="league" id="league" @keyup="league=league.replace(/\s+/g,'')"/>
+                       赛事编号：<input type="text" style="width: 120px;height:36px; border: 1px solid #999;border-radius: 5px;"
+                       placeholder="赛事编号" v-model="matchId" @keyup="matchId=matchId.replace(/\s+/g,'')"/> 
+            </div>
+            <button class="layui-btn" @click="search">查询</button>
+        </div>
+        <table class="layui-table main" v-cloak>
+            <thead>
+            <tr>
+                <th>赛事编号</th>
+                <th>场次</th>
+                <th>赛事</th>
+                <th>比赛时间</th>
+                <th>轮次</th>
+                <th>状态</th>
+                <th>(排名)主队</th>
+                <th>比分</th>
+                <th>客队(排名)</th>
+                <th>半场</th>
+                <th>让球</th>
+                <th>彩果</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-if="datas.length==0">
+                <td colspan="13">暂无数据</td>
+            </tr>
+            <tr v-else v-for="(item,index) in datas">
+                <td v-cloak>{{item.matchId}}</td>
+                <td v-cloak>{{item.sessions}}</td>
+                <td v-cloak>{{item.leagueName}}</td>
+                <td v-cloak>{{item.matchDate}}</td>
+                <td v-cloak>{{item.groupName}}</td>
+                <td class="borRight" v-cloak>{{item.matchStatus==1?'未开赛':'已结束'}}</td>
+                <td v-cloak>{{item.homeTeam.teamName}}</td>
+                <td>
+                    <input type="number" v-model="item.aa" placeholder="-" onKeypress="keyUp()"/>:
+                    <input type="number" v-model="item.bb" placeholder="-" onKeypress="keyUp()"/>
+                </td>
+                <td class="borRight" v-cloak>{{item.awayTeam.teamName}}</td>
+                <td>
+                    <input type="number" v-model="item.cc" placeholder="-" onKeypress="keyUp()"/>:
+                    <input type="number" v-model="item.dd" placeholder="-" onKeypress="keyUp()"/>
+                </td>
+                <td><input type="text" v-model="item.letballNumber" placeholder="-" onKeypress="keyUp()"/></td>
+                <td class="borRight" v-cloak>{{caiGuo[index]}}</td>
+                <td>
+                    <button class="layui-btn layui-btn-mini"
+                            @click="changeFoot(item.matchId,item.letballNumber,item.aa,item.bb,item.cc,item.dd)">确认修改
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <!--页码设置-->
+        <div class="yema">
+            <!--页码左边-->
+            <div class="selectYema">
+                <p v-cloak>
+                    总共{{total}}条记录.每页显示
+                    <select v-model="pageNum">
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="200">200</option><option value="500">500</option>
+                    </select>
+                    条记录
+                </p>
+            </div>
+            <!--右边分页-->
+            <div id="fenye" style="text-align: right;"></div>
+        </div>
+    </fieldset>
+</div>
+<script type="text/javascript" src="../public/js/jquery.js"></script>
+<script type="text/javascript" src="../public/js/jqPaginator.js"></script>
+<script type="text/javascript" src="../plugins/layui/layui.js"></script>
+<script type="text/javascript" src="../public/js/vue.min.js"></script>
+
+<!-- 用作参数的加密 -->
+<script type="text/javascript" src="../public/js/security.js"></script>
+<script type="text/javascript" src="../public/js/send_request.js"></script>
+<script type="text/javascript" src="js/footWinLose.js"></script>
+</body>
+</html>

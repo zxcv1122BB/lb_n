@@ -1,0 +1,66 @@
+.add_btn{
+    padding: 15px;
+}
+.add_btn input {
+    display: inline-block;
+    width: auto;
+}
+.add_btn i {
+    font-size: 25px;
+    color: #ccc;
+    position: relative;
+    left: -40px;
+    top: 5px;
+    cursor: pointer;
+}
+
+/*删除框设置*/
+.popDel{
+    display: none;
+    padding: 15px;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+/*添加弹框设置*/
+.popAdd{
+    display: none;
+    padding: 15px;
+    box-sizing: border-box;
+}
+
+/*设置选择时间*/
+.col_1{
+    height: 40px;
+    line-height: 38px;
+    margin-right: 10px;
+}
+.date{
+    padding: 0 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 195px;
+    position: relative;
+    margin-bottom: 15px;
+}
+#startDate, #endDate {
+    min-height: 35px;
+    border: 0;
+}
+
+.select {
+    display: inline-block;
+    width: 75%;
+    padding-left: 10px;
+    height: 38px;
+    line-height: 38px;
+    border: 1px solid #e6e6e6;
+    border-radius: 2px;
+    color: #757575;
+}
+
+.popZu{
+    display: none;
+    padding: 15px;
+    box-sizing: border-box;
+}

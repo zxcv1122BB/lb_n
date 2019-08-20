@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" href="../plugins/layui/css/layui.css" media="all" />
+		<link rel="stylesheet" href="../public/css/fenye.css" />
+		<link href="css/footLive.css" rel="stylesheet" />
+		<style>
+			[v-cloak] {
+				display: none;
+			}
+			
+			.date {
+				display: inline-block;
+				position: relative;
+			}
+			
+			.date>input {
+				height: 36px;
+				border: 1px solid #ccc;
+				text-indent: 10px;
+				border-radius: 5px;
+			}
+			
+			.date>i {
+				position: absolute;
+				right: 5px;
+				top: 10px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="main">
+			<fieldset class="layui-elem-field">
+				<legend>竞彩投注管理</legend>
+				<header>
+					<div class="footTitle">
+                       	<button class="layui-btn layui-btn" @click="manualWork();">手动开奖</button>
+                        <button class="layui-btn layui-btn" @click="rollBackBtn();">开奖回滚</button>
+                       	
+					</div>
+				</header>
+
+				<table class="layui-table main" v-cloak>
+					<thead class="thead">
+						<tr>
+							<th width="10%">订单号</th>
+							<th width="8%">用户名</th>
+							<th width="6%">彩种种类</th>
+							<th width="10%">玩法类型</th>
+							<th width="6%">状态</th>
+							<th width="4%">倍数</th>
+							<th width="6%">投注金额</th>
+							<th width="6%">中奖金额</th>
+							<th width="8%">开奖状态</th>
+							<th width="12%">开奖时间</th>
+							<th width="12%">投注时间</th>
+						</tr>
+					</thead>
+					<tbody class="tbody">
+						<tr v-if="datas.length==0">
+							<td colspan="11">暂无数据</td>
+						</tr>
+						<tr v-for="(item,index) in datas" v-else>
+							<td v-cloak>
+								<!--订单id-->
+								<a href="javascript:;" @click="orders(item.orderId,item.id,index)" :title="item.orderId">{{item.orderId}}</a>
+							</td>
+							<td v-cloak>
+								<!--用户名-->
+								<a href="javascript:;" @click="biddingUser(item.userName)" :title="item.userName">{{item.userName}}</a>
+							</td>
+							<td v-cloak>{{item.typeName}}</td>
+							<!--投注彩种类型-->
+							<td v-cloak>{{item.playedGroupName}}</td>
+							<!--玩法类型-->
+							<td v-cloak>{{item.status==0?"未中奖":(item.status==1?"已中奖":(item.status==2?"撤单":"成功"))}}</td>
+							<!--状态-->
+							<td v-cloak>{{item.times}}</td>
+							<!--倍数-->
+							<td v-cloak>{{item.amount}}</td>
+							<!--投注金额-->
+							<td v-cloak>
+								<span v-if="item.status!=1">--</span>
+								<font color="red" v-else>{{item.bonus}}</font>
+							</td>
+							<!--中奖金额-->
+							<td v-cloak>{{item.isCal==0?"未开奖":(item.isCal==1?"已开奖":"开奖失败")}}</td>
+							<!--是否开奖-->
+							<td v-cloak :title="item.calTime">{{item.calTime}}</td>
+							<!--开奖时间-->
+							<td v-cloak :title="item.actionTime">{{item.actionTime}}</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<!--页码设置-->
+				<div class="yema">
+					<!--页码左边-->
+					<div class="selectYema">
+						<p v-cloak>
+							总共{{total}}条记录.每页显示
+							<select v-model="page_num">
+								<option value="50">50</option>
+								<option value="100">100</option>
+								<option value="200">200</option><option value="500">500</option>
+							</select>
+							条记录
+						</p>
+					</div>
+					<!--右边分页-->
+					<div id="fenye" style="text-align: right;"></div>
+				</div>
+			</fieldset>
+		</div>
+
+		<script type="text/javascript" src="../public/js/jquery.js"></script>
+		<script type="text/javascript" src="../public/js/laydate/laydate.js"></script>
+		<script type="text/javascript" src="../public/js/jqPaginator.js"></script>
+		<script type="text/javascript" src="../plugins/layui/layui.js"></script>
+		<script type="text/javascript" src="../public/js/vue.min.js"></script>
+		<!-- 用作参数的加密 -->
+		<script type="text/javascript" src="../public/js/security.js"></script>
+		<script type="text/javascript" src="../public/js/send_request.js"></script>
+		<script type="text/javascript" src="js/noteRecord.js"></script>
+	</body>
+
+</html>

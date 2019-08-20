@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lb.sys.dao.ReportMonthSummaryMapper">
+  <!-- 
+  	   desc:分页查询每月各项的总结统计 
+  	   createTime:2017-10-21
+   -->
+   <select id="queryReportMonthSummaryList" resultType="map">
+   		<![CDATA[
+   		   select 
+   		   		gbs.years,
+   		   		gbs.digital_betting_amount as digitalColorAmount,
+   		   		gbs.system_betting_amount as systemColorAmount,
+   		   		gbs.loss_digital_amount as lossDigitalAmount,
+   		   		gbs.loss_system_amount as lossSystemAmount,
+   		   		gbs.digital_betting_bonus as digitalColorBonus,
+   		   		gbs.system_betting_bonus as systemColorBonus,
+   		   		gbs.register_giving_amount as regisgerGivingAmount,
+   		   		gbs.artificial_add_amount as artificialAddAmount,
+   		   		gbs.betting_num as bettingNum,
+   		   		gbs.deposits_amount as depositsAmount,
+   		   		gbs.cash_out_amount as cashOutAmount,
+   		   		gbs.return_amount as returnAmount,
+   		   		gbs.artificial_sub_amount as artificialSubAmount,
+   		   		gbs.deposits_giving_amount as depositsGivingAmount
+   		   from 
+   		        ls.report_month_summary gbs
+   		   order by gbs.years asc	
+   		]]>
+   </select>
+   
+    <!-- 新增每月各项统计信息 -->
+    <insert id="insert" parameterType="map">
+    	insert into ls.report_month_summary(
+    		years,betting_amount,loss_amount,send_prize_amount,register_giving_amount,
+    		artificial_add_amount,betting_num,deposits_amount,cash_out_amount,return_amount,artificial_sub_amount,deposits_giving_amount)
+    	values (
+    		#{years},#{betting_amount},#{loss_amount},#{send_prize_amount},#{register_giving_amount},
+    		#{artificial_add_amount},#{betting_num},#{deposits_amount},#{cash_out_amount},
+    		#{return_amount},#{artificial_sub_amount},#{deposits_giving_amount}
+    	)
+	</insert>   
+</mapper>

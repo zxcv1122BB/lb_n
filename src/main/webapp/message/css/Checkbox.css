@@ -1,0 +1,74 @@
+
+/*label*/
+.mo-radio, .mo-checkbox, .mo-switch {
+    position: relative;
+    display: inline;
+    margin: 0;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+/*i*/
+.mo-checkbox.mo-checkbox--primary > .icon {
+    border-color: #0275d8;
+}
+.mo-radio > input ~ .icon, .mo-radio > input ~ span, .mo-checkbox > input ~ .icon, .mo-checkbox > input ~ span, .mo-switch > input ~ .icon, .mo-switch > input ~ span {
+    cursor: pointer;
+}
+.mo-checkbox > .icon {
+    border-radius: 0;
+}
+.mo-checkbox > .icon {
+    border-color: #bdbdbd;
+}
+.mo-checkbox > .icon {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+.mo-radio > .icon, .mo-checkbox > .icon, .mo-switch > .icon {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    margin: 0;
+    padding: 0;
+    -webkit-transform: translate(0, -50%);
+    transform: translate(0, -50%);
+    border: 0.0625rem solid transparent;
+    background-color: #fff;
+}
+/*i after*/
+.mo-radio > .icon:after, .mo-checkbox > .icon:after, .mo-switch > .icon:after {
+    position: absolute;
+    content: '';
+}
+.mo-checkbox > .icon:after {
+    top: 11.5%;
+    left: 11.5%;
+    width: 80%;
+    height: 50%;
+    -webkit-transform: rotate(-50deg);
+    transform: rotate(-50deg);
+    border: 0.125rem solid transparent;
+    background-color: transparent;
+    box-sizing: border-box;
+}
+/*i被选取的样式*/
+input[type="checkbox"]:checked ~ .icon:after {
+    -webkit-transition: all 0.06s cubic-bezier(0.55, 0.09, 0.68, 0.53);
+    transition: all 0.06s cubic-bezier(0.55, 0.09, 0.68, 0.53);
+    border-left-color: #0275d8;
+    border-bottom-color: #0275d8;
+}
+
+
+/*默认input隐藏*/
+.mo-radio > input, .mo-checkbox > input, .mo-switch > input {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+}
+/*span标签*/
+.mo-radio > .icon ~ span, .mo-checkbox > .icon ~ span, .mo-switch > .icon ~ span {
+    margin-left: 1.5rem;
+}

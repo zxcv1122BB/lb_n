@@ -1,0 +1,31 @@
+a{
+	color: blur;
+}
+/*弹出框*/
+#main .payEdit,.generalDeposit,.fastDeposit{
+	display: none;
+}
+#main .payEdit tr td,.fastDeposit tr td{
+	width: 25%;
+	padding: 8px;	
+}
+.generalDeposit tr td{
+	padding: 8px;
+}
+.generalDeposit tr td:first-of-type{
+	width: 35%;
+}
+#main .payEdit select,.generalDeposit select,.fastDeposit select{
+	padding: 5px;height: 36px;border-radius: 5px;
+	border: 1px solid #E3E3E3;
+	color: gray
+}
+#main .payEdit tr td:nth-of-type(odd),.generalDeposit tr td:nth-of-type(odd),.fastDeposit tr td:nth-of-type(odd){
+	text-align: right;
+}
+#main .payEdit tr td:nth-of-type(even),.generalDeposit tr td:nth-of-type(even),.fastDeposit tr td:nth-of-type(even){
+	text-align: left;
+}
+#main .payEdit tr td input[type=text],.generalDeposit tr td input[type=text],.fastDeposit tr td input[type=text],#main .payEdit tr td select,.generalDeposit tr td select,.fastDeposit tr td select{
+	width: 100%;
+}

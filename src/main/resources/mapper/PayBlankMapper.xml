@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lb.sys.dao.PayBlankMapper">
+	<!-- 添加银行支付 -->
+	<insert id="insertBlankInfoSelective" parameterType="Map">
+		insert into pay_blank
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="bankName != null">
+				bank_name,
+			</if>
+			<if test="bankAccount != null">
+				bank_account,
+			</if>
+			<if test="accountName != null">
+				account_name,
+			</if>
+			<if test="accountAdr != null">
+				account_adr,
+			</if>
+			<if test="minMoney != null">
+				min_money,
+			</if>
+			<if test="maxMoney != null">
+				max_money,
+			</if>
+			<if test="payOrder != null">
+				pay_order,
+			</if>
+			<if test="payStatus != null">
+				pay_status,
+			</if>
+			<if test="iconUrl != null">
+				icon_url,
+			</if>
+			<if test="quitLevel != null">
+				quit_level,
+			</if>
+			<if test="info != null">
+				info
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id},
+			</if>
+			<if test="bankName != null">
+				#{bankName},
+			</if>
+			<if test="bankAccount != null">
+				#{bankAccount},
+			</if>
+			<if test="accountName != null">
+				#{accountName},
+			</if>
+			<if test="accountAdr != null">
+				#{accountAdr},
+			</if>
+			<if test="minMoney != null">
+				#{minMoney},
+			</if>
+			<if test="maxMoney != null">
+				#{maxMoney},
+			</if>
+			<if test="payOrder != null">
+				#{payOrder},
+			</if>
+			<if test="payStatus != null">
+				#{payStatus},
+			</if>
+			<if test="iconUrl != null">
+				#{iconUrl},
+			</if>
+			<if test="quitLevel != null">
+				#{quitLevel},
+			</if>
+			<if test="info != null">
+				#{info}
+			</if>
+		</trim>
+	</insert>
+	<!-- 更新银行支付 -->
+	<update id="updateBlankInfoByid" parameterType="map">
+		update pay_blank
+		<set>
+			<if test="bankName != null">
+				bank_name = #{bankName},
+			</if>
+			<if test="bankAccount != null">
+				bank_account = #{bankAccount},
+			</if>
+			<if test="accountName != null">
+				account_name = #{accountName},
+			</if>
+			<if test="accountAdr != null">
+				account_adr = #{accountAdr},
+			</if>
+			<if test="minMoney != null">
+				min_money = #{minMoney},
+			</if>
+			<if test="maxMoney != null">
+				max_money = #{maxMoney},
+			</if>
+			<if test="payOrder != null">
+				pay_order = #{payOrder},
+			</if>
+			<if test="payStatus != null">
+				pay_status = #{payStatus},
+			</if>
+			<if test="iconUrl != null">
+				icon_url = #{iconUrl},
+			</if>
+			<if test="quitLevel != null">
+				quit_level = #{quitLevel},
+			</if>
+			<if test="info != null">
+				info = #{info}
+			</if>
+		</set>
+		where id = #{id}
+	</update>
+	<!-- 查询所有的列表 -->
+	<select id="queryPayList" resultType="map">
+		SELECT
+		*
+		FROM
+		pay_blank
+		ORDER BY pay_order+0 ASC
+	</select>
+	<!-- 删除银行支付信息 -->
+	<delete id="delPayBlankInfo" parameterType="int">
+		DELETE FROM pay_blank
+		WHERE id = #{id}
+	</delete>
+</mapper>

@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lb.sys.dao.LogInfoMapper">
+  <resultMap id="BaseResultMap" type="com.lb.log.model.LogInfo">
+    <id column="logId" jdbcType="VARCHAR" property="logid" />
+    <result column="remarkId" jdbcType="INTEGER" property="remarkid" />
+    <result column="remoteAddr" jdbcType="VARCHAR" property="remoteaddr" />
+    <result column="requestUrl" jdbcType="VARCHAR" property="requesturl" />
+    <result column="method" jdbcType="VARCHAR" property="method" />
+    <result column="params" jdbcType="VARCHAR" property="params" />
+    <result column="exception" jdbcType="VARCHAR" property="exception" />
+    <result column="operateDate" jdbcType="TIMESTAMP" property="operatedate" />
+    <result column="timeOut" jdbcType="TIMESTAMP" property="timeout" />
+    <result column="userId" jdbcType="INTEGER" property="userid" />
+    <result column="remark_url" jdbcType="VARCHAR" property="remarkUrl"/>
+    <result column="USER_NAME" jdbcType="VARCHAR" property="userName" />
+  </resultMap>
+  
+  <!-- messageResult -->
+  <resultMap id="messageResult" type="com.lb.sys.tools.model.Message">
+    <result column="code" jdbcType="INTEGER" property="code" />
+    <result column="msg" jdbcType="VARCHAR" property="msg" />
+  </resultMap>
+  
+  
+  
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    logId, remarkId, remoteAddr, requestUrl, method, params, exception, operateDate, 
+    timeOut, userId
+  </sql>
+  
+  
+  <!-- 添加操作日志 -->
+  <select id="addRiZhi" parameterType="com.lb.log.model.LogInfoExample" resultMap="messageResult">
+    CALL addLog(#{log.logid},#{log.requesturl},#{log.remoteaddr},#{log.method},#{log.params},#{log.exception},#{log.userid}) 
+  </select>
+  
+  
+  <!-- 查询日志 -->
+  <select id="selectAllLogs" parameterType="com.lb.log.model.LogInfo"
+		resultMap="BaseResultMap">
+		select llr.remark_url,llr.url AS requestUrl ,lli.*,su.USER_NAME FROM log_log_info lli,sys_user su,log_log_remark llr WHERE su.USER_ID=lli.userId 
+		and lli.remarkId=llr.id
+		<if test="pam.startDate !=null and pam.startDate !='' and pam.endTime !=null and pam.endTime !='' ">
+			and lli.operateDate BETWEEN #{pam.startDate} AND date_add(#{pam.endTime}, INTERVAL 1 day)
+		</if>
+
+		<if
+			test="pam.startDate ==null or pam.startDate =='' or pam.endTime ==null or pam.endTime =='' ">
+			<if test="pam.endTime ==null or pam.endTime =='' ">
+				<if test="pam.startDate !=null and  pam.startDate !='' ">
+					and lli.operateDate like CONCAT(CONCAT('%',#{pam.startDate}),'%')
+				</if>
+			</if>
+
+			<if test="pam.startDate ==null or pam.startDate =='' ">
+				<if test="pam.endTime !=null and pam.endTime !='' ">
+					and lli.operateDate like CONCAT(CONCAT('%',#{pam.endTime}),'%')
+				</if>
+			</if>
+		</if>
+       ORDER BY lli.operateDate DESC
+	</select>
+  
+  <select id="selectByExample" parameterType="com.lb.log.model.LogInfoExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from log_log_info
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from log_log_info
+    where logId = #{logid,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from log_log_info
+    where logId = #{logid,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.lb.log.model.LogInfoExample">
+    delete from log_log_info
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.lb.log.model.LogInfo">
+    insert into log_log_info (logId, remarkId, remoteAddr, 
+      requestUrl, method, params, 
+      exception, operateDate, timeOut, 
+      userId)
+    values (#{logid,jdbcType=VARCHAR}, #{remarkid,jdbcType=INTEGER}, #{remoteaddr,jdbcType=VARCHAR}, 
+      #{requesturl,jdbcType=VARCHAR}, #{method,jdbcType=VARCHAR}, #{params,jdbcType=VARCHAR}, 
+      #{exception,jdbcType=VARCHAR}, #{operatedate,jdbcType=TIMESTAMP}, #{timeout,jdbcType=TIMESTAMP}, 
+      #{userid,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.lb.log.model.LogInfo">
+    insert into log_log_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="logid != null">
+        logId,
+      </if>
+      <if test="remarkid != null">
+        remarkId,
+      </if>
+      <if test="remoteaddr != null">
+        remoteAddr,
+      </if>
+      <if test="requesturl != null">
+        requestUrl,
+      </if>
+      <if test="method != null">
+        method,
+      </if>
+      <if test="params != null">
+        params,
+      </if>
+      <if test="exception != null">
+        exception,
+      </if>
+      <if test="operatedate != null">
+        operateDate,
+      </if>
+      <if test="timeout != null">
+        timeOut,
+      </if>
+      <if test="userid != null">
+        userId,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="logid != null">
+        #{logid,jdbcType=VARCHAR},
+      </if>
+      <if test="remarkid != null">
+        #{remarkid,jdbcType=INTEGER},
+      </if>
+      <if test="remoteaddr != null">
+        #{remoteaddr,jdbcType=VARCHAR},
+      </if>
+      <if test="requesturl != null">
+        #{requesturl,jdbcType=VARCHAR},
+      </if>
+      <if test="method != null">
+        #{method,jdbcType=VARCHAR},
+      </if>
+      <if test="params != null">
+        #{params,jdbcType=VARCHAR},
+      </if>
+      <if test="exception != null">
+        #{exception,jdbcType=VARCHAR},
+      </if>
+      <if test="operatedate != null">
+        #{operatedate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="timeout != null">
+        #{timeout,jdbcType=TIMESTAMP},
+      </if>
+      <if test="userid != null">
+        #{userid,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.lb.log.model.LogInfoExample" resultType="java.lang.Long">
+    select count(*) from log_log_info
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update log_log_info
+    <set>
+      <if test="record.logid != null">
+        logId = #{record.logid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.remarkid != null">
+        remarkId = #{record.remarkid,jdbcType=INTEGER},
+      </if>
+      <if test="record.remoteaddr != null">
+        remoteAddr = #{record.remoteaddr,jdbcType=VARCHAR},
+      </if>
+      <if test="record.requesturl != null">
+        requestUrl = #{record.requesturl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.method != null">
+        method = #{record.method,jdbcType=VARCHAR},
+      </if>
+      <if test="record.params != null">
+        params = #{record.params,jdbcType=VARCHAR},
+      </if>
+      <if test="record.exception != null">
+        exception = #{record.exception,jdbcType=VARCHAR},
+      </if>
+      <if test="record.operatedate != null">
+        operateDate = #{record.operatedate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.timeout != null">
+        timeOut = #{record.timeout,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.userid != null">
+        userId = #{record.userid,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update log_log_info
+    set logId = #{record.logid,jdbcType=VARCHAR},
+      remarkId = #{record.remarkid,jdbcType=INTEGER},
+      remoteAddr = #{record.remoteaddr,jdbcType=VARCHAR},
+      requestUrl = #{record.requesturl,jdbcType=VARCHAR},
+      method = #{record.method,jdbcType=VARCHAR},
+      params = #{record.params,jdbcType=VARCHAR},
+      exception = #{record.exception,jdbcType=VARCHAR},
+      operateDate = #{record.operatedate,jdbcType=TIMESTAMP},
+      timeOut = #{record.timeout,jdbcType=TIMESTAMP},
+      userId = #{record.userid,jdbcType=INTEGER}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lb.log.model.LogInfo">
+    update log_log_info
+    <set>
+      <if test="remarkid != null">
+        remarkId = #{remarkid,jdbcType=INTEGER},
+      </if>
+      <if test="remoteaddr != null">
+        remoteAddr = #{remoteaddr,jdbcType=VARCHAR},
+      </if>
+      <if test="requesturl != null">
+        requestUrl = #{requesturl,jdbcType=VARCHAR},
+      </if>
+      <if test="method != null">
+        method = #{method,jdbcType=VARCHAR},
+      </if>
+      <if test="params != null">
+        params = #{params,jdbcType=VARCHAR},
+      </if>
+      <if test="exception != null">
+        exception = #{exception,jdbcType=VARCHAR},
+      </if>
+      <if test="operatedate != null">
+        operateDate = #{operatedate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="timeout != null">
+        timeOut = #{timeout,jdbcType=TIMESTAMP},
+      </if>
+      <if test="userid != null">
+        userId = #{userid,jdbcType=INTEGER},
+      </if>
+    </set>
+    where logId = #{logid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lb.log.model.LogInfo">
+    update log_log_info
+    set remarkId = #{remarkid,jdbcType=INTEGER},
+      remoteAddr = #{remoteaddr,jdbcType=VARCHAR},
+      requestUrl = #{requesturl,jdbcType=VARCHAR},
+      method = #{method,jdbcType=VARCHAR},
+      params = #{params,jdbcType=VARCHAR},
+      exception = #{exception,jdbcType=VARCHAR},
+      operateDate = #{operatedate,jdbcType=TIMESTAMP},
+      timeOut = #{timeout,jdbcType=TIMESTAMP},
+      userId = #{userid,jdbcType=INTEGER}
+    where logId = #{logid,jdbcType=VARCHAR}
+  </update>
+</mapper>

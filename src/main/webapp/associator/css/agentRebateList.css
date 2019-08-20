@@ -1,0 +1,246 @@
+/*公用样式*/
+[v-cloak]{
+	display: none;
+}
+body{
+-moz-user-select:   none;
+-webkit-user-select:   none;
+-o-user-select:   none;
+}
+.clearfix {
+    zoom: 1;
+}
+.clearfix:after {
+    content: '\20 ';
+    display: block;
+    height: 0;
+    clear: both;
+}
+.hide{
+	display: none;
+	z-index:-1;
+}
+.tr{text-align: right;}
+/*主体内容*/
+#header{
+	line-height: 20px;
+	padding:0 5px;
+	margin:20px 0;
+	background-color: #f0f0f0;
+	height:30px;
+	line-height: 30px;
+}
+#header a{
+	font-size: 12px;
+}
+.c_grey{
+	color:#D2D2D2;
+}
+.c_grey a{
+ 	color:#D2D2D2;
+ }
+.container{
+}
+.container .col{
+	float:left;
+	height: 35px;
+	line-height: 35px;
+	margin-left:10px;
+	position:relative;
+}
+.date{
+	padding:0 10px;
+	border:1px solid #ddd;
+	border-radius: 5px;
+	width:180px;
+	position:relative;
+}
+.date i{
+	position:absolute;
+	top:0;
+	right:15px;	
+}
+.dateList{
+	box-sizing: border-box;
+	position:absolute;
+	top:39px;
+	left:0;
+	width:100%;
+	padding:0 10px;
+	border:1px solid #ddd;
+}
+.labelList input{
+	line-height: 30px;
+	padding-left:10px;
+	font-size:12px;
+}
+.row{
+	display: block;
+	margin-bottom:10px;
+}
+.row>.col{
+	float: left;
+}
+
+.col span{
+	display: inline-block;
+	width:60px;
+	text-align: center;
+	border: 1px solid #ddd;
+	margin-right:5px;
+	border-radius: 5px;
+	cursor: pointer;
+	line-height: 36px;
+}
+.layui-btn{
+	border-radius: 5px;
+    margin-left: 10px;
+}
+.col select{
+	padding: 0 10px;
+	height:35px;
+	border-radius: 5px;
+}
+.col select option{
+	height:35px;
+}
+.btn_choose{
+}
+.recordList{
+	margin:5px 10px;
+	font-size: 12px;
+}
+#recordList_table tr{
+	border: 1px solid #ddd;
+}
+#recordList_table td,#recordList_table th{
+	line-height: 30px;
+	border-right: 1px solid #ddd;
+	text-align: center;
+}
+/*颜色处理*/
+.c_deal{color:green;}
+.c_success{color:blue;}
+.c_failure{color:red;}
+.c_over{color:grey;}
+/*分页样式设置*/
+#page{
+	text-align: right;
+	margin: 0 10px;
+}
+.pagination {
+    display:inline-block;
+    padding-left:0;
+    margin:20px 0;
+    border-radius:4px
+}
+.page{
+    margin: 0;
+}
+.page a{
+    height: 20px;
+    margin-right: 0;
+    border-radius: 0;
+}
+.pagination>li {
+    display:inline-block;
+}
+.pagination>li>a {
+    position:relative;
+    float:left;
+    padding:6px 12px;
+    margin-left:-1px;
+    line-height:1.42857143;
+    color:#337ab7;
+    text-decoration:none;
+    background-color:#fff;
+    border:1px solid #ddd
+}
+.pagination>li:first-child>a {
+    margin-left:0;
+    border-top-left-radius:4px;
+    border-bottom-left-radius:4px
+}
+.pagination>li:last-child>a {
+    border-top-right-radius:4px;
+    border-bottom-right-radius:4px
+}
+.pagination>li>a:focus,.pagination>li>a:hover {
+    z-index:2;
+    color:#23527c;
+    background-color:#eee;
+    border-color:#ddd
+}
+.pagination>.active>a,.pagination>.active>a:focus,.pagination>.active>a:hover {
+    z-index:3;
+    color:#fff;
+    cursor:default;
+    background-color:#337ab7;
+    border-color:#337ab7
+}
+.pagination>.disabled>a,.pagination>.disabled>a:focus,.pagination>.disabled>a:hover {
+    color:#777;
+    cursor:not-allowed;
+    background-color:#fff;
+    border-color:#ddd
+}
+/*日期样式设置*/
+#endTime,#startTime,#startDate,#endDate{
+	min-height:35px;
+	border:0;
+}
+.b_red{color:#fff;background-color:#009688 ;}
+.dealway{cursor: pointer;}
+#recordList .dealwayContent{
+	position: absolute;
+    top: -10px;
+    left: 0;
+    z-index:10;
+    width:200px;
+}
+#recordList .dealwayContent table{
+	
+}
+#recordList .dealwayContent .tips input{
+	width:100px;
+}
+#recordList .btn_close,#recordList .btn_save{
+	height:25px;
+	line-height:25px;
+}
+.dealwayContent table{
+    background: #F0F0F0;
+}
+#recordList .personDetail{
+	cursor: pointer;
+}
+#personDetail{
+	padding:5px 10px;
+}
+.odd_row {
+    background-color: #f9f9f9;
+}
+.detail td {
+    padding: 5px 10px;
+    box-sizing: border-box;
+}
+#dealApplication {
+    padding: 5px 10px;
+}
+#recordList .personDetail {
+    cursor: pointer;
+    text-decoration: underline;
+}
+.layui-icon {
+    font-family: layui-icon !important;
+    font-size: 18px;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    margin-top: 7px;
+    -moz-osx-font-smoothing: grayscale;
+}
+.col>input {
+    min-height: 36px;
+   	padding: 9px 9px; 
+    box-sizing: border-box; 
+}

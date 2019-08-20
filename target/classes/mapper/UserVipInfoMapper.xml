@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lb.sys.dao.UserVipInfoMapper">
+	<resultMap id="BaseResultMap" type="com.lb.sys.model.UserVipInfo">
+		<id column="vipId" jdbcType="INTEGER" property="vipid" />
+		<result column="vipName" jdbcType="VARCHAR" property="vipname" />
+		<result column="depositAmount" jdbcType="DECIMAL" property="depositamount" />
+		<result column="percent" jdbcType="DECIMAL" property="percent" />
+		<result column="vipIcoUrl" jdbcType="VARCHAR" property="vipicourl" />
+		<result column="group" jdbcType="INTEGER" property="group" ></result>
+		<result column="remark" jdbcType="VARCHAR" property="remark" />
+		<result column="inputTime" jdbcType="TIMESTAMP" property="inputtime" />
+		<result column="updateTime" jdbcType="TIMESTAMP" property="updatetime" />
+		<result column="status" jdbcType="INTEGER" property="status" />
+	</resultMap>
+
+
+	<resultMap id="BaseResultMapForCount" type="com.lb.sys.model.UserVipInfo">
+		<id column="vipId" jdbcType="INTEGER" property="vipid" />
+		<result column="vipName" jdbcType="VARCHAR" property="vipname" />
+		<result column="percent" jdbcType="DECIMAL" property="percent" />
+		<result column="depositAmount" jdbcType="DECIMAL" property="depositamount" />
+		<result column="vipIcoUrl" jdbcType="VARCHAR" property="vipicourl" />
+		<result column="group" jdbcType="INTEGER" property="group" ></result>
+		<result column="remark" jdbcType="VARCHAR" property="remark" />
+		<result column="inputTime" jdbcType="TIMESTAMP" property="inputtime" />
+		<result column="updateTime" jdbcType="TIMESTAMP" property="updatetime" />
+		<result column="status" jdbcType="INTEGER" property="status" />
+		<result column="userCount" jdbcType="INTEGER" property="userCount" />
+	</resultMap>
+
+	<resultMap id="BaseResultMapName" type="com.lb.sys.model.UserVipInfo">
+		<id column="vipId" jdbcType="INTEGER" property="vipid" />
+		<result column="vipName" jdbcType="VARCHAR" property="vipname" />
+	</resultMap>
+
+
+	<resultMap id="Message" type="com.lb.sys.tools.model.Message">
+		<id column="code" jdbcType="INTEGER" property="code" />
+		<result column="msg" jdbcType="VARCHAR" property="msg" />
+	</resultMap>
+
+
+
+	<!-- 查询所有的vip类型信息 userCount -->
+	<select id="selectVips" resultType="map">
+		select uvi.*,(SELECT COUNT(*)
+		FROM user_info WHERE VIP_ID=uvi.vipId) as
+		userCount FROM user_vip_info
+		uvi
+        ORDER BY uvi.group ASC
+	</select>
+
+	<!-- 删除一个vip分组 -->
+	<select id="deleteVip" resultMap="Message">
+		CALL deleteVip(#{vipId})
+	</select>
+
+	<!-- 禁用或者开启一个vip分组
+	    mapPa.put("vip_Id", vip_Id);
+		mapPa.put("statu", statu);
+	 -->
+	<update id="upVip" parameterType="java.util.Map" >
+		 UPDATE user_vip_info SET status=#{statu} WHERE vipId=#{vip_Id}
+	</update>
+
+	<!-- 搜索所有状态为可用的vip等级信息 -->
+	<select id="selectAllVipByS0" resultMap="BaseResultMapName">
+		select vipId,vipName
+		FROM user_vip_info WHERE status=#{statu}
+	</select>
+
+    
+    <!-- 根据会员等级名称搜索会员是否已存在 -->
+    <select id="selectCount" parameterType="java.util.Map" resultType="int">
+          SELECT COUNT(*) FROM ls.user_vip_info WHERE vipName=#{vipname}
+    </select>
+
+
+	<!-- 添加一个会员等级 -->
+	<insert id="addUserVip" parameterType="com.lb.sys.model.UserVipInfo">
+	INSERT INTO user_vip_info
+		VALUES(NULL,#{uv.vipname},#{uv.depositamount},#{uv.vipicourl},#{uv.group},#{uv.percent},#{uv.remark},#{uv.inputtime},#{uv.updatetime},0);
+	</insert>
+	
+	<!-- 查询等级是否已经存在 -->
+    <select id="selectCountForGroup" parameterType="int" resultType="int">
+      SELECT COUNT(*) from user_vip_info WHERE `group`=#{group}
+    </select>
+
+	<!-- 批量修改 修改某一个会员等级下的指定会员到指定的组 -->
+	<update id="updateUserVip" parameterType="java.util.Map">
+		update user_info set VIP_ID=#{update_VIP_ID} where  UID in
+		<foreach collection="list" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+	
+	
+	<!-- 根据编号查询详情 -->
+    <select id="selectbyId"  resultMap="BaseResultMap">
+      select * from user_vip_info where vipId=#{vipId}
+    </select>
+
+
+
+	<sql id="Example_Where_Clause">
+		<where>
+			<foreach collection="oredCriteria" item="criteria" separator="or">
+				<if test="criteria.valid">
+					<trim prefix="(" prefixOverrides="and" suffix=")">
+						<foreach collection="criteria.criteria" item="criterion">
+							<choose>
+								<when test="criterion.noValue">
+									and ${criterion.condition}
+								</when>
+								<when test="criterion.singleValue">
+									and ${criterion.condition} #{criterion.value}
+								</when>
+								<when test="criterion.betweenValue">
+									and ${criterion.condition} #{criterion.value}
+									and
+									#{criterion.secondValue}
+								</when>
+								<when test="criterion.listValue">
+									and ${criterion.condition}
+									<foreach close=")" collection="criterion.value" item="listItem"
+										open="(" separator=",">
+										#{listItem}
+									</foreach>
+								</when>
+							</choose>
+						</foreach>
+					</trim>
+				</if>
+			</foreach>
+		</where>
+	</sql>
+	<sql id="Update_By_Example_Where_Clause">
+		<where>
+			<foreach collection="example.oredCriteria" item="criteria"
+				separator="or">
+				<if test="criteria.valid">
+					<trim prefix="(" prefixOverrides="and" suffix=")">
+						<foreach collection="criteria.criteria" item="criterion">
+							<choose>
+								<when test="criterion.noValue">
+									and ${criterion.condition}
+								</when>
+								<when test="criterion.singleValue">
+									and ${criterion.condition} #{criterion.value}
+								</when>
+								<when test="criterion.betweenValue">
+									and ${criterion.condition} #{criterion.value}
+									and
+									#{criterion.secondValue}
+								</when>
+								<when test="criterion.listValue">
+									and ${criterion.condition}
+									<foreach close=")" collection="criterion.value" item="listItem"
+										open="(" separator=",">
+										#{listItem}
+									</foreach>
+								</when>
+							</choose>
+						</foreach>
+					</trim>
+				</if>
+			</foreach>
+		</where>
+	</sql>
+	<sql id="Base_Column_List">
+		vipId, vipName, depositAmount, vipIcoUrl, remark,
+		inputTime, updateTime,
+		status
+	</sql>
+	<select id="selectByExample" parameterType="com.lb.sys.model.UserVipInfoExample"
+		resultMap="BaseResultMap">
+		select
+		<if test="distinct">
+			distinct
+		</if>
+		<include refid="Base_Column_List" />
+		from user_vip_info
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
+		<if test="orderByClause != null">
+			order by ${orderByClause}
+		</if>
+	</select>
+	<select id="selectByPrimaryKey" parameterType="java.lang.Integer"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from user_vip_info
+		where vipId = #{vipid,jdbcType=INTEGER}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from
+		user_vip_info
+		where vipId = #{vipid,jdbcType=INTEGER}
+	</delete>
+	<delete id="deleteByExample" parameterType="com.lb.sys.model.UserVipInfoExample">
+		delete from user_vip_info
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
+	</delete>
+	<insert id="insert" parameterType="com.lb.sys.model.UserVipInfo">
+		insert into user_vip_info
+		(vipId, vipName, depositAmount,
+		vipIcoUrl, remark, inputTime,
+		updateTime, status)
+		values (#{vipid,jdbcType=INTEGER},
+		#{vipname,jdbcType=VARCHAR},
+		#{depositamount,jdbcType=DECIMAL},
+		#{vipicourl,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR},
+		#{inputtime,jdbcType=TIMESTAMP},
+		#{updatetime,jdbcType=TIMESTAMP},
+		#{status,jdbcType=INTEGER})
+	</insert>
+	<insert id="insertSelective" parameterType="com.lb.sys.model.UserVipInfo">
+		insert into user_vip_info
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="vipid != null">
+				vipId,
+			</if>
+			<if test="vipname != null">
+				vipName,
+			</if>
+			<if test="depositamount != null">
+				depositAmount,
+			</if>
+			<if test="vipicourl != null">
+				vipIcoUrl,
+			</if>
+			<if test="remark != null">
+				remark,
+			</if>
+			<if test="inputtime != null">
+				inputTime,
+			</if>
+			<if test="updatetime != null">
+				updateTime,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="vipid != null">
+				#{vipid,jdbcType=INTEGER},
+			</if>
+			<if test="vipname != null">
+				#{vipname,jdbcType=VARCHAR},
+			</if>
+			<if test="depositamount != null">
+				#{depositamount,jdbcType=DECIMAL},
+			</if>
+			<if test="vipicourl != null">
+				#{vipicourl,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				#{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="inputtime != null">
+				#{inputtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updatetime != null">
+				#{updatetime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+	<select id="countByExample" parameterType="com.lb.sys.model.UserVipInfoExample"
+		resultType="java.lang.Long">
+		select count(*) from user_vip_info
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
+	</select>
+	<update id="updateByExampleSelective" parameterType="map">
+		update user_vip_info
+		<set>
+			<if test="record.vipid != null">
+				vipId = #{record.vipid,jdbcType=INTEGER},
+			</if>
+			<if test="record.vipname != null">
+				vipName = #{record.vipname,jdbcType=VARCHAR},
+			</if>
+			<if test="record.depositamount != null">
+				depositAmount = #{record.depositamount,jdbcType=DECIMAL},
+			</if>
+			<if test="record.vipicourl != null">
+				vipIcoUrl = #{record.vipicourl,jdbcType=VARCHAR},
+			</if>
+			<if test="record.remark != null">
+				remark = #{record.remark,jdbcType=VARCHAR},
+			</if>
+			<if test="record.inputtime != null">
+				inputTime = #{record.inputtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="record.updatetime != null">
+				updateTime = #{record.updatetime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="record.status != null">
+				status = #{record.status,jdbcType=INTEGER},
+			</if>
+		</set>
+		<if test="_parameter != null">
+			<include refid="Update_By_Example_Where_Clause" />
+		</if>
+	</update>
+
+
+
+	<update id="updateByExample" parameterType="map">
+		update user_vip_info
+		set vipId = #{record.vipid,jdbcType=INTEGER},
+		vipName = #{record.vipname,jdbcType=VARCHAR},
+		depositAmount =
+		#{record.depositamount,jdbcType=DECIMAL},
+		vipIcoUrl =
+		#{record.vipicourl,jdbcType=VARCHAR},
+		remark =
+		#{record.remark,jdbcType=VARCHAR},
+		inputTime =
+		#{record.inputtime,jdbcType=TIMESTAMP},
+		updateTime =
+		#{record.updatetime,jdbcType=TIMESTAMP},
+		status =
+		#{record.status,jdbcType=INTEGER}
+		<if test="_parameter != null">
+			<include refid="Update_By_Example_Where_Clause" />
+		</if>
+	</update>
+	<update id="updateByPrimaryKeySelective" parameterType="com.lb.sys.model.UserVipInfo">
+		update user_vip_info
+		<set>
+			<if test="vipname != null">
+				vipName = #{vipname,jdbcType=VARCHAR},
+			</if>
+			<if test="depositamount != null">
+				depositAmount = #{depositamount,jdbcType=DECIMAL},
+			</if>
+			<if test="vipicourl != null">
+				vipIcoUrl = #{vipicourl,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				remark = #{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="inputtime != null">
+				inputTime = #{inputtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updatetime != null">
+				updateTime = #{updatetime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=INTEGER},
+			</if>
+			<if test="percent != null">
+				percent = #{percent,jdbcType=DECIMAL},
+			</if>
+		</set>
+		where vipId = #{vipid,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.lb.sys.model.UserVipInfo">
+		update
+		user_vip_info
+		set vipName = #{vipname,jdbcType=VARCHAR},
+		depositAmount =
+		#{depositamount,jdbcType=DECIMAL},
+		vipIcoUrl =
+		#{vipicourl,jdbcType=VARCHAR},
+		remark = #{remark,jdbcType=VARCHAR},
+		inputTime = #{inputtime,jdbcType=TIMESTAMP},
+		updateTime =
+		#{updatetime,jdbcType=TIMESTAMP},
+		status = #{status,jdbcType=INTEGER}
+		where vipId = #{vipid,jdbcType=INTEGER}
+	</update>
+	<!-- //queryVIpNameByids -->
+	<select id="queryVIpNameByids" parameterType="int" resultType="string">
+		select vipName from user_vip_info  where
+		<foreach collection="list" item="vipId" open="vipId in (" close=")" separator=",">
+			#{vipId}
+		</foreach>
+	</select>
+	<select id="queryAllVipNames" resultType="map" parameterType="map" >
+		select vipId,vipName from user_vip_info  
+			where 
+		status=#{status}
+	</select>
+</mapper>

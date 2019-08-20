@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" href="../plugins/layui/css/layui.css" media="all" />
+		<link rel="stylesheet" href="../public/css/fenye.css" />
+		<link href="css/payManager.css" rel="stylesheet" />
+		<style>
+			.layui-tab-title .layui-this {
+	            background-color: antiquewhite;
+	        }
+			[v-cloak] {
+				display: none;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="main">
+			<fieldset class="layui-elem-field">
+				<legend>支付管理</legend>
+				<div class="layui-tab"  lay-filter="test">
+					<ul class="layui-tab-title" id="myClickTest">
+						<li class="layui-this" @click="getdatas(1)"  lay-id="1">在线支付设置</li> 
+						<li  @click="getBlankdatas(1)"  lay-id="2">银行入款设置</li>
+						<li @click="getFastdatas(1)"  lay-id="3">快速支付设置</li>
+					</ul>
+					<div class="layui-tab-content" id="mylay-tab-title">
+						<div class="layui-tab-item" id="payMan1">
+							<div class="add_btn" style="padding: 15px;">
+								<button class="layui-btn" @click="tanMessage(0);">新增</button>
+							</div>
+							<div class="layui-field-box">
+								<table class="layui-table admin-table" v-cloak>
+									<thead>
+										<tr>
+											<th>在线支付方式</th>
+											<th>商户编码</th>
+											<th>商户密钥/商户识别码</th>
+											
+											<th>最小支付金额</th>
+											<th>最大支付金额</th>
+											<th>接口域名</th>
+											<th>支付通知地址</th>
+											<th>支付图标地址</th>
+											<th>第三方支付方式</th>
+											<th>排序</th>
+											<th>限制使用等级</th>
+											<th>显示类型</th>
+											<th>状态</th>
+											<th>操作</th>
+										</tr>
+									</thead>
+									<tbody v-cloak>
+										<tr style="text-align: center;" v-if="datas.length==0">
+											<td colspan="14">暂无数据</td>
+										</tr>
+										<tr v-for="item in datas">
+											<td v-cloak :title="item.compname">{{item.compname}}</td>
+											<td v-cloak :title="item.shop_num">{{item.shop_num}}</td>
+											<td v-cloak :title="item.shop_token">{{item.shop_token}}</td>
+											
+											
+											<td v-cloak :title="item.min_money">{{item.min_money}}</td>
+											<td v-cloak :title="item.max_money">{{item.max_money}}</td>
+											<td v-cloak :title="item.callurl">{{item.callurl}}</td>
+											<td v-cloak :title="item.callbackurl">{{item.callbackurl}}</td>
+											<td v-cloak :title="item.payico_url">{{item.payico_url}}</td>
+											<td v-cloak :title="item.payment_mode">{{item.payment_mode}}</td>
+											<td v-cloak :title="item.pay_order">{{item.pay_order}}</td>
+											<td v-cloak :title="item.quit_level">{{item.quit_level}}</td>
+											<td v-cloak :title="item.show_mode==3?'app端显示':(item.show_mode==2?'手机端显示':(item.show_mode==1?'pc端显示':'所有终端都显示'))">{{item.show_mode==3?"app端":(item.show_mode==2?"手机端":(item.show_mode==1?"pc端":"所有终端"))}}</td>
+
+											<td>
+												<div class="layui-input-block" style="margin-left: 0;" @click="changeStatus(item,0)">
+													<div v-if="!item.pay_state||item.pay_state==1" class="layui-unselect layui-form-switch layui-form-onswitch">
+														<em>启用</em>
+														<i></i>
+													</div>
+													<div v-else class="layui-unselect layui-form-switch">
+														<em>停用</em>
+														<i></i>
+													</div>
+												</div>
+											</td>
+												<td>
+													<button class="layui-btn layui-btn-mini" @click="tanMessage(1,item);">修改</button>
+													<button class="layui-btn layui-btn-mini layui-btn-danger" @click="deleteMes(item.id);">删除</button>
+												</td>
+										</tr>
+										<!-- <tr v-for="item in datas">
+											<td v-cloak :title="item.methname">{{item.methname}}</td>
+											<td v-cloak :title="item.compname">{{item.compname}}</td>
+											<td v-cloak :title="item.min_money">{{item.min_money}}</td>
+											<td v-cloak :title="item.max_money">{{item.max_money}}</td>
+											<td v-cloak :title="item.shop_name">{{item.shop_name}}</td>
+											<td v-cloak :title="item.shop_num">{{item.shop_num}}</td>
+											<td v-cloak :title="item.shop_token">{{item.shop_token}}</td>
+											<td v-cloak :title="item.pay_account">{{item.pay_account}}</td>
+											<td v-cloak :title="item.payment_mode==0?'-':item.payment_mode">{{item.payment_mode==0?"-":item.payment_mode}}</td>
+											<td v-cloak :title="item.show_mode==3?'app端显示':(item.show_mode==2?'手机端显示':(item.show_mode==1?'pc端显示':'所有终端都显示'))">{{item.show_mode==3?"app端显示":(item.show_mode==2?"手机端显示":(item.show_mode==1?"pc端显示":"所有终端都显示"))}}</td>
+											<td v-cloak :title="item.payment_gateway">{{item.payment_gateway}}</td>
+											<td>
+												<div class="layui-input-block" style="margin-left: 0;" @click="changeStatus(item,0)">
+													<div v-if="!item.pay_state||item.pay_state==1" class="layui-unselect layui-form-switch layui-form-onswitch">
+														<em>启用</em>
+														<i></i>
+													</div>
+													<div v-else class="layui-unselect layui-form-switch">
+														<em>停用</em>
+														<i></i>
+													</div>
+												</div>
+											</td>
+											<td v-cloak :title="item.is_default==1?'是':'否'">{{item.is_default==1?"是":"否"}}</td>
+											<td v-cloak :title="item.pay_order">{{item.pay_order}}</td>
+											<td>
+												<button class="layui-btn layui-btn-mini" @click="tanMessage(1,item);">修改</button>
+												<button class="layui-btn layui-btn-mini layui-btn-danger" @click="deleteMes(item.id);">删除</button>
+											</td>
+										</tr> -->
+									</tbody>
+								</table>
+							</div>
+
+							<div class="layui-field-box payEdit">
+								<table class="layui-table" lay-even>
+									<tr>
+										<td>在线支付方式</td>
+										<td>
+											<select v-model="methname" id="onlinePay">
+												<option value="0">请选择</option>
+												<option v-for="(item,index) in payOnline" :value="item.key" :id="item.key">{{item.value}}</option>
+											</select>
+										</td>
+										<td>商户编码</td>
+										<td>
+											<input type="text" name="userNum" lay-verify="required" placeholder="请输入正确的商户编码" autocomplete="off" class="layui-input" v-model="shop_num">
+										</td>
+									</tr>
+									<tr>
+										<td>商户密钥/商户识别码</td>
+										<td colspan="3">
+											<input type="text" name="title" lay-verify="title" autocomplete="off" placeholder="商户密钥/商户识别码" class="layui-input" v-model="shop_token">
+										</td>
+									</tr>
+									 <tr>
+										<td>支付端账户</td>
+										<td colspan="3">
+											<input type="text" name="title" lay-verify="title" autocomplete="off" placeholder="国付宝终端号/融宝卖家邮箱" class="layui-input" v-model="pay_account">
+										</td>
+									</tr> 
+									<tr>
+										<td>支付通知地址</td>
+										<td>
+											<input type="text" name="title" lay-verify="title" autocomplete="off" placeholder="支付通知地址" class="layui-input" v-model="pay_address">
+										</td>
+										<td>接口域名</td>
+										<td>
+											<input type="text" name="title" lay-verify="title" autocomplete="off" placeholder="请输入正确的接口域名" class="layui-input" v-model="callurl">
+										</td>
+									</tr>
+									<tr>
+									<td>APPID</td>
+										<td>
+											<input type="text" name="title" lay-verify="title" autocomplete="off" placeholder="付啦支付APPID" class="layui-input" v-model="appId">
+										</td>
+											<td>支付图标地址</td>
+											<td>
+												<input type="text" name="title" lay-verify="title" autocomplete="off" placeholder="请输入正确的支付图标地址" class="layui-input" v-model="payicourl">
+											</td>
+										<td>状态</td>
+										<td>
+											<select v-model="pay_state">
+												<option value="1">启用</option>
+												<option value="0">关闭</option>
+											</select>
+										</td>
+									</tr>
+									<tr>
+										<td>最小支付金额</td>
+										<td>
+											<input type="text" name="price_min" placeholder="请输入正确的最小支付金额" autocomplete="off" class="layui-input" v-model="min_money">
+										</td>
+										<td>最大支付金额</td>
+										<td>
+											<input type="text" name="price_max" placeholder="请输入正确的最大支付金额" autocomplete="off" class="layui-input" v-model="max_money">
+										</td>
+									</tr>
+									
+									<tr>
+										<td>第三方支付方式</td>
+										<td colspan="3">
+											<select v-model="payment_mode">
+												<option value="">请选择</option>
+												<option value="0">微信</option>
+												<option value="1">支付宝</option>-->
+												<option v-for="item in payTypeLists" :value="item.payeType_name">{{item.payeType_name}}</option>
+											</select>
+										</td>
+									</tr>
+									 <tr>
+										<td>支付网关</td>
+										<td colspan="3">
+											<input type="text" name="userNum" lay-verify="required" placeholder="请输入正确的支付网关" autocomplete="off" class="layui-input" v-model="payment_gateway">
+										</td>
+									</tr>
+									<tr>
+									 <td>是否默认</td>
+										<td>
+											<select v-model="is_default">
+												<option value="1">是</option>
+												<option value="0">否</option>
+											</select>
+										</td> 
+											<td>显示类型</td>
+											<td >
+												<select v-model="show_mode">
+													<option value="0">所有终端都显示</option>
+													<option value="1">pc端显示</option>
+													<option value="2">手机端显示</option>
+													<option value="3">app端显示</option>
+												</select>
+											</td>
+										<td>排序</td>
+										<td>
+											<input type="text" name="userNum" lay-verify="required" placeholder="排序越小排得越前面" autocomplete="off" class="layui-input" v-model="order">
+										</td>
+									</tr>
+									<tr>
+										<td>限制使用等级</td>
+										<td colspan="3">
+											<span v-for="item in zGroups" style="margin-right: 5px;">
+						                    	<span><input type="checkbox" v-model="vipLevel" :value="item.vipName" :id="item.vipName" /> {{item.vipName}}</span>
+											</span>
+										</td>
+									</tr>
+									
+									<tr>
+										<td>备注</td>
+										<td colspan="3">
+											<textarea placeholder="请输入内容" class="layui-textarea" v-model="info"></textarea>
+										</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+
+						<div class="layui-tab-item  layui-show" id="payMan2">
+							<div class="add_btn" style="padding: 15px;">
+								<button class="layui-btn" @click="tanGeneralMessage(0);">新增</button>
+							</div>
+							<div class="layui-field-box">
+								<table class="layui-table admin-table">
+									<thead>
+										<tr>
+											<th>银行名称</th>
+											<th>银行卡号</th>
+											<th>持卡人姓名</th>
+											<th>银行地址</th>
+											<th>最小支付金额</th>
+											<th>最大支付金额</th>
+											<th>排序</th>
+											<th>图标地址</th>
+											<th>限制使用等级</th>
+											<th>状态</th>
+											<th>备注</th>
+											<th>显示类型</th>
+											<th>操作</th>
+										</tr>
+									</thead>
+									<tbody v-cloak>
+										<tr style="text-align: center;" v-if="blankDatas.length==0">
+											<td colspan="13">暂无数据</td>
+										</tr>
+										<tr v-for="item in blankDatas">
+												<td v-cloak :title="item.bank_name">{{item.bank_name}}</td>
+												<td v-cloak :title="item.bank_account">{{item.bank_account}}</td>
+												<td v-cloak :title="item.account_name">{{item.account_name}}</td>
+												<td v-cloak :title="item.account_adr">{{item.account_adr}}</td>
+												<td v-cloak :title="item.min_money">{{item.min_money}}</td>
+												<td v-cloak :title="item.max_money">{{item.max_money}}</td>
+												<td v-cloak :title="item.pay_order">{{item.pay_order}}</td>
+												<td v-cloak :title="item.payico_url">{{item.payico_url}}</td>
+												<td v-cloak :title="item.quit_level">{{item.quit_level}}</td>
+												<td>
+													<div class="layui-input-block" style="margin-left: 0;" @click="changeStatus(item,1)">
+														<div v-if="!item.pay_state||item.pay_state==1" class="layui-unselect layui-form-switch layui-form-onswitch">
+															<em>启用</em>
+															<i></i>
+														</div>
+														<div v-else class="layui-unselect layui-form-switch">
+															<em>停用</em>
+															<i></i>
+														</div>
+													</div>
+												</td>
+												<td v-cloak :title="item.info">{{item.info}}</td>
+												<td v-cloak :title="item.show_mode==3?'app端显示':(item.show_mode==2?'手机端显示':(item.show_mode==1?'pc端显示':'所有终端都显示'))">{{item.show_mode==3?"app端":(item.show_mode==2?"手机端":(item.show_mode==1?"pc端":"所有终端"))}}</td>
+												<td>
+													<button class="layui-btn layui-btn-mini" @click="tanGeneralMessage(1,item);">修改</button>
+													<button class="layui-btn layui-btn-mini layui-btn-danger" @click="deleteBlankMes(item.id);">删除</button>
+												</td>
+										</tr>
+										 <!-- <tr v-for="item in blankDatas">
+											<td v-cloak :title="item.bank_name">{{item.bank_name}}</td>
+											<td v-cloak :title="item.bank_account">{{item.bank_account}}</td>
+											<td v-cloak :title="item.account_name">{{item.account_name}}</td>
+											<td v-cloak :title="item.account_adr">{{item.account_adr}}</td>
+											<td v-cloak :title="item.min_money">{{item.min_money}}</td>
+											<td v-cloak :title="item.max_money">{{item.max_money}}</td>
+											<td v-cloak :title="item.pay_order">{{item.pay_order}}</td>
+											<td>
+												<div class="layui-input-block" style="margin-left: 0;" @click="changeStatus(item,1)">
+													<div v-if="!item.pay_status||item.pay_status==1" class="layui-unselect layui-form-switch layui-form-onswitch">
+														<em>启用</em>
+														<i></i>
+													</div>
+													<div v-else class="layui-unselect layui-form-switch">
+														<em>停用</em>
+														<i></i>
+													</div>
+												</div>
+											</td>
+											<td>
+												<button class="layui-btn layui-btn-mini" @click="tanGeneralMessage(1,item);">修改</button>
+												<button class="layui-btn layui-btn-mini layui-btn-danger" @click="deleteBlankMes(item.id);">删除</button>
+											</td>
+										</tr> -->
+									</tbody>
+								</table>
+							</div>
+
+							<div class="layui-field-box generalDeposit">
+								<table class="layui-table" lay-even>
+									<colgroup>
+										<col width="50%">
+										<col width="50%">
+									</colgroup>
+									<tr>
+										<td width="30%">银行名称</td>
+										<td width="70%">
+											<input type="text" name="userNum" lay-verify="required" placeholder="请输入正确的银行名称" autocomplete="off" class="layui-input" v-model="bank_name" id="bankPay">
+										</td>
+									</tr>
+									<tr>
+										<td>银行卡号</td>
+										<td>
+											<input type="text" name="title" lay-verify="title" autocomplete="off" placeholder="请输入银行卡号" class="layui-input" v-model="bank_account">
+										</td>
+									</tr>
+									<tr>
+										<td>持卡人姓名</td>
+										<td>
+											<input type="text" name="title" lay-verify="title" autocomplete="off" placeholder="请输入持卡人姓名" class="layui-input" v-model="account_name">
+										</td>
+									</tr>
+									<tr>
+										<td>银行地址</td>
+										<td>
+											<input type="text" name="title" lay-verify="title" autocomplete="off" placeholder="请输入银行地址" class="layui-input" v-model="account_adr">
+										</td>
+									</tr>
+									<tr>
+										<td>最小支付金额</td>
+										<td>
+											<input type="text" name="price_min" placeholder="请输入正确的最小支付金额" autocomplete="off" class="layui-input" v-model="min_money">
+										</td>
+									</tr>
+									<tr>
+										<td>最大支付金额</td>
+										<td>
+											<input type="text" name="price_max" placeholder="请输入正确的最大支付金额" autocomplete="off" class="layui-input" v-model="max_money">
+										</td>
+									</tr>
+									<tr>
+										<td>排序</td>
+										<td>
+											<input type="text" name="userNum" lay-verify="required" placeholder="排序越小排得越前面" autocomplete="off" class="layui-input" v-model="order">
+										</td>
+									</tr>
+									<tr>
+										<td>图标地址</td>
+										<td>
+											<select v-model="payicourl" id="payicourlSelect">
+												<option value="0">支付宝</option>
+												<option value="1">微信</option>
+												<option value="2">网银</option>
+											</select>
+											<input type="text" name="title" lay-verify="title" autocomplete="off" placeholder="请输入正确的支付图标地址" class="layui-input" v-model="payicourl"> -->
+										</td>
+									</tr>
+									<tr>
+										<td>限制使用等级</td>
+										<td>
+											<span v-for="item in zGroups" style="margin-right: 5px;">
+						                    <span><input type="checkbox" v-model="vipLevel" :value="item.vipName" :id="item.vipName" /> {{item.vipName}}</span>
+											</span>
+										</td>
+									</tr>
+									<tr>
+										<td>显示类型</td>
+										<td>
+											<select v-model="show_mode">
+												<option value="0">所有终端都显示</option>
+												<option value="1">pc端显示</option>
+												<option value="2">手机端显示</option>
+												<option value="3">APP端显示</option>
+											</select>
+										</td>
+									</tr>
+									<tr>
+										<td>状态</td>
+										<td>
+											<select v-model="pay_state">
+												<option value="1">启用</option>
+												<option value="0">关闭</option>
+											</select>
+										</td>
+									</tr>
+									<tr>
+										<td>备注</td>
+										<td colspan="3">
+											<textarea placeholder="请输入内容" class="layui-textarea" v-model="info"></textarea>
+										</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+						<div class="layui-tab-item" id="payMan3">
+							<div class="add_btn" style="padding: 15px;">
+								<button class="layui-btn" @click="tanFastMessage(0);">新增</button>
+							</div>
+							<div class="layui-field-box">
+								<table class="layui-table admin-table" v-cloak>
+									<thead>
+										<tr>
+											<th>快速入款方式</th>
+											<th>所属公司</th>
+											<th>帐号</th>
+											<th>账户姓名</th>
+											<th>最小支付金额</th>
+											<th>最大支付金额</th>
+											<th>排序</th>
+											<th>二维码图片地址</th>
+											<th>教程图片地址</th>
+											<th>图标地址</th>
+											<th>限制使用等级</th>
+												<th>状态</th>
+													<th>备注</th>
+														<th>显示类型</th>
+												<th>操作</th>
+										</tr>
+	
+									</thead>
+						
+									<tbody v-cloak>
+										<tr style="text-align: center;" v-if="fastDatas.length==0">
+											<td colspan="15">暂无数据</td>
+										</tr>
+										<tr v-for="item in fastDatas">
+											<td v-cloak :title="item.payment_mode">{{item.payment_mode==0?'微信':item.payment_mode==1?'支付宝':item.payment_mode==2?'QQ':''}}</td>
+											<td v-cloak :title="item.compname">{{item.compname}}</td>
+											<td v-cloak :title="item.bank_account">{{item.bank_account}}</td>
+												
+											<td v-cloak :title="item.account_name">{{item.account_name}}</td>
+											<td v-cloak :title="item.min_money">{{item.min_money}}</td>
+											<td v-cloak :title="item.max_money">{{item.max_money}}</td>
+
+											<td v-cloak :title="item.pay_order">{{item.pay_order}}</td>
+											<td v-cloak :title="item.QPcode_url">{{item.QPcode_url}}</td>
+											<td v-cloak :title="item.QRcode">{{item.QRcode}}</td>
+											<td v-cloak :title="item.payico_url">{{item.payico_url}}</td>
+											<td v-cloak :title="item.quit_level">{{item.quit_level}}</td>
+											<td>
+																								<div class="layui-input-block" style="margin-left: 0;" @click="changeStatus(item,2)">
+																									<div v-if="!item.pay_state||item.pay_state==1" class="layui-unselect layui-form-switch layui-form-onswitch">
+																										<em>启用</em>
+																										<i></i>
+																									</div>
+																									<div v-else class="layui-unselect layui-form-switch">
+																										<em>停用</em>
+																										<i></i>
+																									</div>
+																								</div>
+																							</td>
+											<td v-cloak :title="item.info">{{item.info}}</td>
+											<td v-cloak :title="item.show_mode==3?'app端显示':(item.show_mode==2?'手机端显示':(item.show_mode==1?'pc端显示':'所有终端都显示'))">{{item.show_mode==3?"app端":(item.show_mode==2?"手机端":(item.show_mode==1?"pc端":"所有终端"))}}</td>
+											<td>
+												<button class="layui-btn layui-btn-mini" @click="tanFastMessage(1,item);">修改</button>
+												<button class="layui-btn layui-btn-mini layui-btn-danger" @click="deleteFastMes(item.id);">删除</button>
+											</td>
+										</tr>
+										<!-- <tr v-for="item in fastDatas">
+											<td v-cloak :title="item.pay_name">{{item.pay_name}}</td>
+											<td v-cloak :title="item.comp_name">{{item.comp_name}}</td>
+											<td v-cloak :title="item.pay_account">{{item.pay_account}}</td>
+											<td v-cloak :title="item.account_name">{{item.account_name}}</td>
+											<td v-cloak :title="item.min_money">{{item.min_money}}</td>
+											<td v-cloak :title="item.max_money">{{item.max_money}}</td>
+											<td v-cloak :title="item.QPcode_url">{{item.QPcode_url}}</td>
+											<td>
+												<div class="layui-input-block" style="margin-left: 0;" @click="changeStatus(item,2)">
+													<div v-if="!item.pay_status||item.pay_status==1" class="layui-unselect layui-form-switch layui-form-onswitch">
+														<em>启用</em>
+														<i></i>
+													</div>
+													<div v-else class="layui-unselect layui-form-switch">
+														<em>停用</em>
+														<i></i>
+													</div>
+												</div>
+											</td>
+											<td v-cloak :title="item.pay_order">{{item.pay_order}}</td>
+											<td>
+												<button class="layui-btn layui-btn-mini" @click="tanFastMessage(1,item);">修改</button>
+												<button class="layui-btn layui-btn-mini layui-btn-danger" @click="deleteFastMes(item.id);">删除</button>
+											</td>
+										</tr> -->
+									</tbody>
+								</table>
+							</div>
+
+							<div class="layui-field-box fastDeposit">
+								<table class="layui-table" lay-even v-cloak>
+									<tr>
+										<td>快速入款方式</td>
+										<td>
+											<select v-model="pay_name" id="fastPay">
+												<option value="">请选择</option>
+												<option value="0">微信</option>
+												<option value="1">支付宝</option>
+												<option value="2">QQ</option>
+												
+											</select>
+										</td>
+										<td>所属公司</td>
+										<td>
+											<input type="text" name="userNum" lay-verify="required" placeholder="请输入正确的所属公司" autocomplete="off" class="layui-input" v-model="compname">
+										</td>
+									</tr>
+									<tr>
+										<td>账号</td>
+										<td>
+											<input type="text" name="userNum" lay-verify="required" placeholder="请输入正确的账号" autocomplete="off" class="layui-input" v-model="pay_account">
+										</td>
+										<td>账户姓名</td>
+										<td>
+											<input type="text" name="title" lay-verify="title" autocomplete="off" placeholder="请输入正确的账户姓名" class="layui-input" v-model="account_name">
+										</td>
+									</tr>
+									<tr>
+										<td>最小支付金额</td>
+										<td>
+											<input type="text" name="price_min" placeholder="请输入正确的最小支付金额" autocomplete="off" class="layui-input" v-model="min_money">
+										</td>
+										<td>最大支付金额</td>
+										<td>
+											<input type="text" name="price_max" placeholder="请输入正确的最大支付金额" autocomplete="off" class="layui-input" v-model="max_money">
+										</td>
+									</tr>
+									<tr>
+										<td>排序</td>
+										<td>
+											<input type="text" name="userNum" lay-verify="required" placeholder="排序越小排得越前面" autocomplete="off" class="layui-input" v-model="order">
+										</td>
+										<td>二维码图片地址</td>
+										<td>
+											<input type="text" name="title" lay-verify="title" autocomplete="off" placeholder="请输入正确的二维码地址" class="layui-input" v-model="QPcode_url">
+										</td>
+									</tr>
+									<tr>
+										<td>教程图片地址</td>
+										<td>
+											<input type="text" name="title" lay-verify="title" autocomplete="off" placeholder="请输入正确的教程图片地址" class="layui-input" v-model="QRcode">
+										</td>
+										<td>图标地址</td>
+										<td>
+												<select v-model="coinurl" id="coinurlSelect">
+														<option value="0">支付宝</option>
+														<option value="1">微信</option>
+														<option value="2">网银</option>
+													</select>
+											<!-- <input type="text" name="title" lay-verify="title" autocomplete="off" placeholder="请输入正确的图标地址" class="layui-input" v-model="coinurl"> -->
+										</td>
+									</tr>
+									<tr>
+										<td>限制使用等级</td>
+										<td colspan="3">
+											<span v-for="item in zGroups" style="margin-right: 5px;">
+						                    <span><input type="checkbox" v-model="vipLevel" :value="item.vipName" :id="item.vipName" /> {{item.vipName}}</span>
+											</span>
+										</td>
+									</tr>
+									<tr>
+										<td>状态</td>
+										<td>
+											<select v-model="pay_state">
+												<option value="1">启用</option>
+												<option value="0">关闭</option>
+											</select>
+										</td>
+										<td>前端显示名称</td>
+										<td>
+											<input type="text" name="title" lay-verify="title" autocomplete="off" placeholder="请输入前端显示名称" class="layui-input" v-model="show_page">
+										</td>
+									</tr>
+									<tr>
+										<td>显示类型</td>
+										<td colspan="3">
+											<select v-model="show_mode">
+												<option value="0">所有终端都显示</option>
+												<option value="1">pc端显示</option>
+												<option value="2">手机端显示</option>
+												<option value="3">app端显示</option>
+											</select>
+										</td>
+									</tr>
+									<tr>
+										<td>备注</td>
+										<td colspan="3">
+											<textarea placeholder="请输入内容" class="layui-textarea" v-model="info"></textarea>
+										</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!--页码设置-->
+				<div class="yema">
+					<!--页码左边-->
+					<div class="selectYema">
+						<p>
+							总共{{total}}条记录.每页显示
+							<select v-model="pageNum">
+								<option value="50">50</option>
+								<option value="100">100</option>
+								<option value="200">200</option>
+								<option value="500">500</option>
+							</select>
+							条记录
+						</p>
+					</div>
+					<!--右边分页-->
+					<div id="fenye" style="text-align: right;"></div>
+			</fieldset>
+			</div>
+			<script type="text/javascript" src="../public/js/jquery.js"></script>
+			<script type="text/javascript" src="../public/js/jqPaginator.js"></script>
+			<script type="text/javascript" src="../plugins/layui/layui.js"></script>
+			<script type="text/javascript" src="../public/js/vue.min.js"></script>
+			<!-- 用作参数的加密 -->
+			<script type="text/javascript" src="../public/js/security.js"></script>
+			<script type="text/javascript" src="../public/js/send_request.js"></script>
+			<script type="text/javascript" src="js/payManager.js"></script>
+			<script>
+				layui.use('element', function() {
+					 var $ = layui.jquery
+  						,element = layui.element();
+					
+					 //Hash地址的定位
+					  var layid = location.hash.replace(/^#test=/, '');
+					  element.tabChange('test', layid);
+					  
+					  element.on('tab(test)', function(elem){
+					    location.hash = 'test='+ $(this).attr('lay-id');
+					  });
+					  $("#myClickTest li").eq(layid-1).click();
+					  console.log(layid)
+				});
+			</script>
+	</body>
+
+</html>

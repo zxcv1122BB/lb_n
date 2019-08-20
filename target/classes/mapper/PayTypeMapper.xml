@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lb.sys.dao.PayTypeMapper">
+	<!-- 根据pay_type查询不同类型下的支付方式并对其排序 -->
+	<select id="selectPayList" resultType="Map" parameterType="string">
+		SELECT * FROM pay_type_info WHERE pay_type = #{payType} AND del_status = 1 ORDER BY pay_order+0 ASC
+	</select>
+	
+	<!-- 根据id更新删除状态 -->
+	<delete id="delPayTypeByid" parameterType="string">
+		UPDATE pay_type_info SET del_status = 0 WHERE id = #{id}
+	</delete>
+	
+	<!-- 新增支付方式 -->
+	<insert id="insertPayType" parameterType="map">
+		INSERT INTO pay_type_info
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="methname != null">
+				methname,
+			</if>
+			<if test="compname != null">
+				compname,
+			</if>
+			<if test="shop_num != null">
+				shop_num,
+			</if>
+			<if test="shop_token != null">
+				shop_token,
+			</if>
+			<if test="payment_mode != null">
+				payment_mode,
+			</if>
+			<if test="callurl != null">
+				callurl,
+			</if>
+			<if test="callbackurl != null">
+				callbackurl,
+			</if>
+			<if test="bank_name != null">
+				bank_name,
+			</if>
+			<if test="bank_account != null">
+				bank_account,
+			</if>
+			<if test="account_name != null">
+				account_name,
+			</if>
+			<if test="account_adr != null">
+				account_adr,
+			</if>
+			<if test="QRcode != null">
+				QRcode,
+			</if>
+			<if test="QPcode_url != null">
+				QPcode_url,
+			</if>
+			<if test="show_page != null">
+				show_page,
+			</if>
+			<if test="pay_type != null">
+				pay_type,
+			</if>
+			<if test="max_money != null">
+				max_money,
+			</if>
+			<if test="min_money != null">
+				min_money,
+			</if>
+			<if test="pay_order != null">
+				pay_order,
+			</if>
+			<if test="pay_state != null">
+				pay_state,
+			</if>
+			<if test="show_mode != null">
+				show_mode,
+			</if>
+			<if test="del_status != null">
+				del_status,
+			</if>
+			<if test="payico_url != null">
+				payico_url,
+			</if>
+			<if test="quit_level != null">
+				quit_level,
+			</if>
+			<if test="info != null">
+				info,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="methname != null">
+				#{methname},
+			</if>
+			<if test="compname != null">
+				#{compname},
+			</if>
+			<if test="shop_num != null">
+				#{shop_num},
+			</if>
+			<if test="shop_token != null">
+				#{shop_token},
+			</if>
+			<if test="payment_mode != null">
+				#{payment_mode},
+			</if>
+			<if test="callurl != null">
+				#{callurl},
+			</if>
+			<if test="callbackurl != null">
+				#{callbackurl},
+			</if>
+			<if test="bank_name != null">
+				#{bank_name},
+			</if>
+			<if test="bank_account != null">
+				#{bank_account},
+			</if>
+			<if test="account_name != null">
+				#{account_name},
+			</if>
+			<if test="account_adr != null">
+				#{account_adr},
+			</if>
+			<if test="QRcode != null">
+				#{QRcode},
+			</if>
+			<if test="QPcode_url != null">
+				#{QPcode_url},
+			</if>
+			<if test="show_page != null">
+				#{show_page},
+			</if>
+			<if test="pay_type != null">
+				#{pay_type},
+			</if>
+			<if test="max_money != null">
+				#{max_money},
+			</if>
+			<if test="min_money != null">
+				#{min_money},
+			</if>
+			<if test="pay_order != null">
+				#{pay_order},
+			</if>
+			<if test="pay_state != null">
+				#{pay_state},
+			</if>
+			<if test="show_mode != null">
+				#{show_mode},
+			</if>
+			<if test="del_status != null">
+				#{del_status},
+			</if>
+			<if test="payico_url != null">
+				#{payico_url},
+			</if>
+			<if test="quit_level != null">
+				#{quit_level},
+			</if>
+			<if test="info != null">
+				#{info},
+			</if>
+		</trim>
+	</insert>
+	
+	<!-- 更新支付 -->
+	<update id="updatePayType" parameterType="map">
+		update pay_type_info
+		<set>
+			<if test="methname != null">
+				methname = #{methname},
+			</if>
+			<if test="compname != null">
+				compname = #{compname},
+			</if>
+			<if test="shop_num != null">
+				shop_num = #{shop_num},
+			</if>
+			<if test="shop_token != null">
+				shop_token = #{shop_token},
+			</if>
+			<if test="payment_mode != null">
+				payment_mode = #{payment_mode},
+			</if>
+			<if test="callurl != null">
+				callurl = #{callurl},
+			</if>
+			<if test="callbackurl != null">
+				callbackurl = #{callbackurl},
+			</if>
+			<if test="bank_name != null">
+				bank_name = #{bank_name},
+			</if>
+			<if test="bank_account != null">
+				bank_account = #{bank_account},
+			</if>
+			<if test="account_name != null">
+				account_name = #{account_name},
+			</if>
+			<if test="account_adr != null">
+				account_adr = #{account_adr},
+			</if>
+			<if test="QRcode != null">
+				QRcode = #{QRcode},
+			</if>
+			<if test="QPcode_url != null">
+				QPcode_url = #{QPcode_url},
+			</if>
+			<if test="show_page != null">
+				show_page = #{show_page},
+			</if>
+			<if test="pay_type != null">
+				pay_type = #{pay_type},
+			</if>
+			<if test="max_money != null">
+				max_money = #{max_money},
+			</if>
+			<if test="min_money != null">
+				min_money = #{min_money},
+			</if>
+			<if test="pay_order != null">
+				pay_order = #{pay_order},
+			</if>
+			<if test="pay_state != null">
+				pay_state = #{pay_state},
+			</if>
+			<if test="show_mode != null">
+				show_mode = #{show_mode},
+			</if>
+			<if test="del_status != null">
+				del_status = #{del_status},
+			</if>
+			<if test="payico_url != null">
+				payico_url = #{payico_url},
+			</if>
+			<if test="quit_level != null">
+				quit_level = #{quit_level},
+			</if>
+			<if test="info != null">
+				info = #{info},
+			</if>
+		</set>
+		where id = #{id}
+	</update>
+</mapper>

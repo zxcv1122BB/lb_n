@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>后台管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+
+    <link rel="stylesheet" href="../plugins/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="css/demo.css"/>
+    <link rel="stylesheet" href="css/zTreeStyle.css"/>
+    <link rel="stylesheet" href="../public/css/fenye.css"/>
+    <link rel="stylesheet" href="css/menuAdmin.css"/>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <fieldset class="layui-elem-field">
+        <legend>菜单管理</legend>
+        <div class="add_btn" style="padding: 15px;">
+            <button class="layui-btn" @click="popadd">添加</button>
+            <input type="text" placeholder="请输入菜单名称查询..." class="layui-input" v-model="store_search" @keyup="store_search=store_search.replace(/\s+/g,'')"/>
+            <i class="layui-icon" @click="search">&#xe615;</i>
+            <span id="prompt3">{{prompt3}}</span>
+        </div>
+        <div class="layui-field-box">
+            <table class="layui-table admin-table">
+                <thead>
+                <tr>
+                    <th style="width: 5%;">id</th>
+                    <th style="width: 12%;">菜单名称</th>
+                    <th style="width: 7%;">菜单类型</th>
+                    <th style="width: 5%;">层级</th>
+                    <th style="width: 12%;">父级名称</th>
+                    <th style="width: 20%;">描述</th>
+                    <th style="width: 10%;">状态</th>
+                    <th style="width: 29%;">操作</th>
+                </tr>
+                </thead>
+                <tbody id="content">
+                <tr v-if="datas.length==0">
+                    <td colspan="8">暂无数据</td>
+                </tr>
+                <tr v-else v-for="(item,index) in datas">
+                    <td v-cloak>{{item.menuId}}</td>
+                    <td v-cloak>{{item.menuName}}</td>
+                    <td v-cloak>{{item.menuType==1?'目录':'子菜单'}}</td>
+                    <td v-cloak>{{item.menuLevels}}</td>
+                    <td v-cloak>{{item.menuParentName}}</td>
+                    <td v-cloak>{{item.descContent}}</td>
+                    <td v-cloak>
+                        <div class="">
+                            <div class="layui-form-item">
+                                <div class="layui-input-block" style="margin-left: 0;">
+                                    <div v-if="item.menuLevels==1">正常</div>
+                                    <div v-else-if="item.state==1"
+                                         class="layui-unselect layui-form-switch layui-form-onswitch" :id="item.menuId"
+                                         @click="changeType(item.menuId,item.state,index)">
+                                        <em>启用</em>
+                                        <i></i>
+                                    </div>
+                                    <div v-else class="layui-unselect layui-form-switch" :id="item.menuId"
+                                         @click="changeType(item.menuId,item.state,index)">
+                                        <em>停用</em>
+                                        <i></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td v-cloak>
+                        <a v-if="item.menuLevels==1"></a>
+                        <button v-else class="layui-btn layui-btn-mini" @click="set(item.menuId)">修改信息</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <!--页码设置-->
+        <div class="yema">
+            <!--页码左边-->
+            <div class="selectYema">
+                <p v-cloak>
+                    总共{{total}}条记录.每页显示
+                    <select v-model="page_num">
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="200">200</option><option value="500">500</option>
+                    </select>
+                    条记录
+                </p>
+            </div>
+            <!--右边分页-->
+            <div id="fenye" style="text-align: right;"></div>
+        </div>
+    </fieldset>
+    <!--遮罩层-->
+    <div class="zhezhao"></div>
+    <!--添加用户弹出框-默认隐藏-->
+    <div class="popAdd">
+        <p class="title">添加目录/子菜单</p>
+        <div class="inner">
+            <!--添加主页面-->
+            <div class="selectInner">
+                <!--未隐藏的div-->
+                <div class="selectInner-button">
+                    <p>
+                        请选择添加类型:
+                        <select v-model="menuType">
+                            <option value="2">菜单</option>
+                            <option value="1">目录</option>
+                        </select>
+                    </p>
+                    <p>
+                        父级目录:
+                        <button @click="pop">请选择添加</button>
+                        <input id="pName" class="layui-input" type="text" style="margin: 10px auto;" disabled />
+                    </p>
+                    <p>
+                        请输入新标题:
+                        <input type="text" class="layui-input" v-model="newName" style="margin: 10px auto;" @blur="checkName" />
+                    </p>
+                    <p>
+                        请输入新路径:
+                        <input id="path" type="text" class="layui-input" v-model="menuPath" style="margin: 10px auto;"/>
+                    </p>
+                    <p>
+                        输入排序标记:
+                        <input type="number" class="layui-input" v-model="biaoji" style="margin: 10px auto;"/>
+                    </p>
+                    <p>
+                        请输入新描述:
+                        <input type="text" class="layui-input" v-model="descContent" style="margin: 10px auto;"/>
+                    </p>
+                    <p id="prompt1">{{prompt1}}</p>
+                    <!--底部按钮-->
+                    <div class="inner-btn">
+                        <button class="layui-btn" @click="confirm">确定</button>
+                        <button class="layui-btn layui-btn-primary" @click="esc">取消</button>
+                    </div>
+                </div>
+                <!--选择目录菜单弹出层-默认隐藏-->
+                <div class="menuList">
+                    <ul id="treeDemo" style="height: 376px;" class="ztree"></ul>
+                    <div>
+                        <button class="layui-btn-small layui-btn" @click="confirmMenu">确定</button>
+                        <button class="layui-btn-small" @click="escMenu">取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--修改信息弹出层-默认隐藏-->
+    <div class="popEdit">
+        <p class="title">修改目录/子菜单</p>
+        <div class="popEdit-inner">
+            <p>修改类型:{{menuType_==1?'目录':'子菜单'}}</p>
+            <p>
+                修改名称:
+                <input type="text" class="layui-input" v-model="editName" />
+            </p>
+            <p>
+                页面路径:
+                <input v-if="menuType_==2" type="text" class="layui-input" v-model="editPath" />
+                <input v-else type="text" class="layui-input" disabled />
+            </p>
+            <p>
+                排序标记:
+                <input type="number" class="layui-input" v-model="biaoji_" style="margin: 10px auto;"/>
+            </p>
+            <p>
+                修改描述:
+                <input type="text" class="layui-input" v-model="editDescContent" />
+            </p>
+            <div style="text-align: center;">
+                <button class="layui-btn-small layui-btn" @click="confirmEdit">确定</button>
+                <button class="layui-btn-small" @click="escEdit">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="../public/js/jquery.js"></script><!--引入JQ脚本-->
+<script type="text/javascript" src="../public/js/jqPaginator.js"></script><!--引入分页脚本-->
+<script type="text/javascript" src="../plugins/layui/layui.js"></script><!--引入layui脚本-->
+<script type="text/javascript" src="js/jquery.ztree.core.js"></script><!--引入树插件脚本-->
+<script type="text/javascript" src="js/jquery.ztree.excheck.js"></script>
+<script type="text/javascript" src="../public/js/security.js"></script><!--引入加密脚本-->
+<script type="text/javascript" src="../public/js/vue.min.js"></script><!--引入vue脚本-->
+<script type="text/javascript" src="../public/js/send_request.js"></script><!--引入二次封装ajax脚本-->
+<script type="text/javascript" src="js/menuAdmin.js"></script><!--引入本页脚本-->
+</body>
+</html>

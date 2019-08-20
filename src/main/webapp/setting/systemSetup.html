@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>网站基本设置</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="../plugins/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="../public/css/fenye.css"/>
+    <link rel="stylesheet" href="css/systemSetup.css">
+    <style type="text/css">
+    	.layui-tab-title .layui-this {
+            background-color: antiquewhite;
+        }
+        [v-cloak] {
+            display: none;
+        }
+
+    </style>
+</head>
+<body>
+<div class="admin-main">
+    <fieldset class="layui-elem-field">
+        <legend>网站基本设置</legend>
+        <div class="layui-field-box">
+            <div class="layui-tab admin-main" id="app">
+                <!--tab选项卡顶部-->
+                <ul class="layui-tab-title" id="myClickTest">
+                    <li v-for="item in datas" @click="systemChange(item.id)" :id="'moduleId_'+item.id" v-cloak>{{item.name}}</li>
+                </ul>
+                <!--tab选项卡内容-->
+                <div class="layui-tab-content" id="mylay-tab-title">
+                    <!-- v-for="(item,index) in datas"-->
+                    <div class="layui-tab-item">
+                        <div class="layui-form form-list layui-form-pane">
+                            <div class="systemSwitch" v-cloak>
+                                <ul class="ul-left">
+                                    <li v-for="(imte,index) in datas1" v-cloak>{{imte.configureName}}</li>
+                                </ul>
+                                <ul class="ul-center">
+                                    <li v-for="(imte,index) in datas1">
+                                        <div class="layui-form">
+                                            <div class="layui-form-item">
+
+                                                <div class="layui-input-block" style="margin-left: 0;">
+                                                    <div v-if="imte.onOff==1"
+                                                         class="layui-unselect layui-form-switch layui-form-onswitch"
+                                                         :id="imte.configure" @click="changeType(imte.configure,index)">
+                                                        <em>启用</em>
+                                                        <i></i>
+                                                    </div>
+                                                    <div v-else class="layui-unselect layui-form-switch"
+                                                         :id="imte.configure" @click="changeType(imte.configure,index)">
+                                                        <em>停用</em>
+                                                        <i></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                                <ul class="ul-right">
+                                    <li v-for="(imte,index) in datas1">
+                                        <div class="layui-form">
+                                            <div v-if="((imte.isInput==1 || imte.isInput==3) && imte.onOff==1) || ((imte.isInput==2 || imte.isInput==4) && imte.onOff==0)"
+                                                 class="layui-form-item">
+                                                <div v-if="imte.dataType==2"
+                                                     class="layui-input-block reset-layui-form-item">
+                                                    <span v-cloak>{{imte.configureExplain}} :</span>
+
+                                                    <a href="javascript:;"
+                                                       @click="insertText(imte.configure+'-sysConfig',imte,1)"
+                                                       :id="imte.configure+'-sysConfig1'" v-cloak>{{imte.sysConfig1}}</a>
+                                                    <div :id="imte.configure+'-sysConfig1-div'" class="hide">
+                                                        <input :id="imte.configure+'-sysConfig1-input'" type="text"
+                                                               name="title1" class="GadHyA">
+                                                        <button class="layui-btn layui-btn-mini" type="button">
+                                                            <i class="layui-icon aqtMdgv"
+                                                               @click="changeText(imte.configure+'-sysConfig',1,index)">
+                                                                &#xe605;</i>
+                                                        </button>
+                                                        <button class="layui-btn layui-btn-mini" type="button">
+                                                            <i class="layui-icon atMoQl"
+                                                               @click="cancelText(imte.configure+'-sysConfig',1,index)">
+                                                                &#x1006;</i>
+                                                        </button>
+                                                    </div>
+                                                    <span v-if="imte.isInput==3 || imte.isInput==4"> - </span>
+                                                    <a v-if="imte.isInput==3 || imte.isInput==4" href="javascript:;"
+                                                       @click="insertText(imte.configure+'-sysConfig',imte,2)"
+                                                       :id="imte.configure+'-sysConfig2'" v-cloak>{{imte.sysConfig2}}</a>
+                                                    <div v-if="imte.isInput==3 || imte.isInput==4"
+                                                         :id="imte.configure+'-sysConfig2-div'" class="hide">
+                                                        <input :id="imte.configure+'-sysConfig2-input'" type="text"
+                                                               name="title2" class="GadHyA">
+                                                        <button class="layui-btn layui-btn-mini" type="button">
+                                                            <i class="layui-icon aqtMdgv"
+                                                               @click="changeText(imte.configure+'-sysConfig',2,index)">
+                                                                &#xe605;</i>
+                                                        </button>
+                                                        <button class="layui-btn layui-btn-mini" type="button">
+                                                            <i class="layui-icon atMoQl"
+                                                               @click="cancelText(imte.configure+'-sysConfig',2,index)">
+                                                                &#x1006;</i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div v-else-if="imte.dataType==3"
+                                                     class="layui-input-block reset-layui-form-item">
+                                                    <a class="layui-btn layui-btn-mini"
+                                                       @click="listDetail(imte.list,index)" v-cloak>查看{{imte.configureExplain}}详情</a>
+                                                </div>
+                                                <div v-else-if="imte.dataType==4"
+                                                     class="layui-input-block reset-layui-form-item">
+                                                    <span v-cloak>{{imte.configureExplain}} :</span>
+
+                                                    <a href="javascript:;"
+                                                       @click="insertText(imte.configure+'-sysConfig',imte,1)"
+                                                       :id="imte.configure+'-sysConfig1'" v-cloak>{{imte.sysConfig2}}</a>
+                                                    <div :id="imte.configure+'-sysConfig1-div'" class="hide">
+                                                        <select :id="imte.configure+'-sysConfig1-input'" class="GadHyA"
+                                                                style="display: inline-block;">
+                                                            <template v-for="(item1,index1) in imte.list2">
+                                                                <option v-if="item1.id==imte.configure1"
+                                                                        :value="item1.id" v-model="item1.id" selected v-cloak>
+                                                                    {{item1.name}}
+                                                                </option>
+                                                                <option v-else :value="item1.id" v-model="item1.id" v-cloak>
+                                                                    {{item1.name}}
+                                                                </option>
+                                                            </template>
+
+                                                            <!--<option value="1">test1</option>
+                                                            <option value="2">test2</option> -->
+                                                        </select>
+                                                        <button class="layui-btn layui-btn-mini" type="button">
+                                                            <i class="layui-icon aqtMdgv"
+                                                               @click="changeText(imte.configure+'-sysConfig',1,index)">
+                                                                &#xe605;</i>
+                                                        </button>
+                                                        <button class="layui-btn layui-btn-mini" type="button">
+                                                            <i class="layui-icon atMoQl"
+                                                               @click="cancelText(imte.configure+'-sysConfig',1,index)">
+                                                                &#x1006;</i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div v-else-if="imte.dataType==5"
+                                                     class="layui-input-block reset-layui-form-item">
+                                                    <a class="layui-btn layui-btn-mini"
+                                                       @click="updateTextarea(imte,index)" v-cloak>编辑{{imte.configureExplain}}</a>
+                                                </div>
+                                                <div v-else class="layui-input-block reset-layui-form-item">
+                                                	<!--<a class="layui-btn layui-btn-mini"
+                                                       @click="updateTextarea(imte,index)">编辑{{imte.configureExplain}}</a>-->
+                                                    <span>{{imte.configureExplain}} :</span>
+
+                                                    <a href="javascript:;"
+                                                       @click="insertText(imte.configure+'-sysConfig',imte,1)"
+                                                       :id="imte.configure+'-sysConfig1'" v-cloak>{{imte.sysConfig1}}</a>
+                                                    <div :id="imte.configure+'-sysConfig1-div'" class="hide">
+                                                        <input :id="imte.configure+'-sysConfig1-input'" type="text"
+                                                               name="title1" class="GadHyA">
+                                                        <button class="layui-btn layui-btn-mini" type="button">
+                                                            <i class="layui-icon aqtMdgv"
+                                                               @click="changeText(imte.configure+'-sysConfig',1,index)">
+                                                                &#xe605;</i>
+                                                        </button>
+                                                        <button class="layui-btn layui-btn-mini" type="button">
+                                                            <i class="layui-icon atMoQl"
+                                                               @click="cancelText(imte.configure+'-sysConfig',1,index)">
+                                                                &#x1006;</i>
+                                                        </button>
+                                                    </div>
+                                                    <span v-if="imte.isInput==3 || imte.isInput==4"> - </span>
+                                                    <a v-if="imte.isInput==3 || imte.isInput==4" href="javascript:;"
+                                                       @click="insertText(imte.configure+'-sysConfig',imte,2)"
+                                                       :id="imte.configure+'-sysConfig2'" v-cloak>{{imte.sysConfig2}}</a>
+                                                    <div v-if="imte.isInput==3 || imte.isInput==4"
+                                                         :id="imte.configure+'-sysConfig2-div'" class="hide">
+                                                        <input :id="imte.configure+'-sysConfig2-input'" type="text"
+                                                               name="title2" class="GadHyA">
+                                                        <button class="layui-btn layui-btn-mini" type="button">
+                                                            <i class="layui-icon aqtMdgv"
+                                                               @click="changeText(imte.configure+'-sysConfig',2,index)">
+                                                                &#xe605;</i>
+                                                        </button>
+                                                        <button class="layui-btn layui-btn-mini" type="button">
+                                                            <i class="layui-icon atMoQl"
+                                                               @click="cancelText(imte.configure+'-sysConfig',2,index)">
+                                                                &#x1006;</i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div v-else-if="(imte.isInput==5) && imte.onOff==1" class="layui-form-item">
+
+                                                <div v-if="imte.dataType==1"
+                                                     class="layui-input-block reset-layui-form-item">
+                                                    <span v-cloak>{{imte.configureExplain}} :</span>
+
+                                                    <a href="javascript:;"
+                                                       @click="insertText(imte.configure+'-sysConfig',imte,1)"
+                                                       :id="imte.configure+'-sysConfig1'" v-cloak>{{imte.sysConfig1}}</a>
+                                                    <div :id="imte.configure+'-sysConfig1-div'" class="hide">
+                                                        <input :id="imte.configure+'-sysConfig1-input'" type="number"
+                                                               name="title1" class="GadHyA">
+                                                        <button class="layui-btn layui-btn-mini" type="button">
+                                                            <i class="layui-icon aqtMdgv"
+                                                               @click="changeText(imte.configure+'-sysConfig',1,index)">
+                                                                &#xe605;</i>
+                                                        </button>
+                                                        <button class="layui-btn layui-btn-mini" type="button">
+                                                            <i class="layui-icon atMoQl"
+                                                               @click="cancelText(imte.configure+'-sysConfig',1,index)">
+                                                                &#x1006;</i>
+                                                        </button>
+                                                    </div>
+                                                    (秒)&nbsp;:&nbsp;
+                                                    <a href="javascript:;"
+                                                       @click="insertText(imte.configure+'-sysConfig',imte,2)"
+                                                       :id="imte.configure+'-sysConfig2'" v-cloak>{{imte.sysConfig2}}</a>
+                                                    <div :id="imte.configure+'-sysConfig2-div'" class="hide">
+                                                        <input :id="imte.configure+'-sysConfig2-input'" type="number"
+                                                               name="title2" class="GadHyA">
+                                                        <button class="layui-btn layui-btn-mini" type="button">
+                                                            <i class="layui-icon aqtMdgv"
+                                                               @click="changeText(imte.configure+'-sysConfig',2,index)">
+                                                                &#xe605;</i>
+                                                        </button>
+                                                        <button class="layui-btn layui-btn-mini" type="button">
+                                                            <i class="layui-icon atMoQl"
+                                                               @click="cancelText(imte.configure+'-sysConfig',2,index)">
+                                                                &#x1006;</i>
+                                                        </button>
+                                                    </div>
+                                                    (次)
+                                                </div>
+                                            </div>
+                                            <div v-else-if="(imte.isInput==6) && imte.onOff==1" class="layui-form-item">
+
+                                                <div v-if="imte.dataType==0"
+                                                     class="layui-input-block reset-layui-form-item">
+                                                    <span>{{imte.configureExplain}} :</span>
+
+                                                    <a href="javascript:;"
+                                                       @click="insertText(imte.configure+'-sysConfig',imte,1)"
+                                                       :id="imte.configure+'-sysConfig1'" v-cloak>{{imte.sysConfig1}}</a>
+                                                    <div :id="imte.configure+'-sysConfig1-div'" class="hide">
+                                                        <input :id="imte.configure+'-sysConfig1-input'" type="text"
+                                                               name="title1" class="GadHyA">
+                                                        <button class="layui-btn layui-btn-mini" type="button">
+                                                            <i class="layui-icon aqtMdgv"
+                                                               @click="changeText(imte.configure+'-sysConfig',1,index)">
+                                                                &#xe605;</i>
+                                                        </button>
+                                                        <button class="layui-btn layui-btn-mini" type="button">
+                                                            <i class="layui-icon atMoQl"
+                                                               @click="cancelText(imte.configure+'-sysConfig',1,index)">
+                                                                &#x1006;</i>
+                                                        </button>
+                                                    </div>
+                                                  	  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号码&nbsp;:&nbsp;
+                                                    <a href="javascript:;"
+                                                       @click="insertText(imte.configure+'-sysConfig',imte,2)"
+                                                       :id="imte.configure+'-sysConfig2'" v-cloak>{{imte.sysConfig2}}</a>
+                                                    <div :id="imte.configure+'-sysConfig2-div'" class="hide">
+                                                        <input :id="imte.configure+'-sysConfig2-input'" type="text"
+                                                               name="title2" class="GadHyA">
+                                                        <button class="layui-btn layui-btn-mini" type="button">
+                                                            <i class="layui-icon aqtMdgv"
+                                                               @click="changeText(imte.configure+'-sysConfig',2,index)">
+                                                                &#xe605;</i>
+                                                        </button>
+                                                        <button class="layui-btn layui-btn-mini" type="button">
+                                                            <i class="layui-icon atMoQl"
+                                                               @click="cancelText(imte.configure+'-sysConfig',2,index)">
+                                                                &#x1006;</i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div v-else-if="(imte.isInput==7) && imte.onOff==1"  class="layui-form-item">
+                                            	 <div v-if="imte.dataType==0"
+                                                     class="layui-input-block reset-layui-form-item">
+                                                     <span v-cloak>{{imte.configureExplain}} :</span>
+                                                    <a class="layui-btn layui-btn-mini"
+                                                       @click="updateTextarea(imte,index)">编辑</a>
+                                                       <span>，显示人数 :</span>
+
+                                                   <a href="javascript:;"
+                                                       @click="insertText(imte.configure+'-sysConfig',imte,2)"
+                                                       :id="imte.configure+'-sysConfig2'" v-cloak>{{imte.sysConfig2}}</a>
+                                                    <div :id="imte.configure+'-sysConfig2-div'" class="hide">
+                                                        <input :id="imte.configure+'-sysConfig2-input'" type="text"
+                                                               name="title2" class="GadHyA">
+                                                        <button class="layui-btn layui-btn-mini" type="button">
+                                                            <i class="layui-icon aqtMdgv"
+                                                               @click="changeText(imte.configure+'-sysConfig',2,index)">
+                                                                &#xe605;</i>
+                                                        </button>
+                                                        <button class="layui-btn layui-btn-mini" type="button">
+                                                            <i class="layui-icon atMoQl"
+                                                               @click="cancelText(imte.configure+'-sysConfig',2,index)">
+                                                                &#x1006;</i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                             <div v-else-if="(imte.isInput==8) && imte.onOff==1"  class="layui-form-item">
+                                            	 <div v-if="imte.dataType==0"
+                                                     class="layui-input-block reset-layui-form-item">
+                                                     <span v-cloak>{{imte.configureExplain}} :</span>
+                                                   <a href="javascript:;"
+                                                       @click="insertText(imte.configure+'-sysConfig',imte,1)"
+                                                       :id="imte.configure+'-sysConfig1'" v-cloak>{{imte.sysConfig1}}</a>
+                                                    <div :id="imte.configure+'-sysConfig1-div'" class="hide">
+                                                        <input :id="imte.configure+'-sysConfig1-input'" type="text"
+                                                               name="title2" class="GadHyA">
+                                                        <button class="layui-btn layui-btn-mini" type="button">
+                                                            <i class="layui-icon aqtMdgv"
+                                                               @click="changeText(imte.configure+'-sysConfig',1,index)">
+                                                                &#xe605;</i>
+                                                        </button>
+                                                        <button class="layui-btn layui-btn-mini" type="button">
+                                                            <i class="layui-icon atMoQl"
+                                                               @click="cancelText(imte.configure+'-sysConfig',1,index)">
+                                                                &#x1006;</i>
+                                                        </button>
+                                                    </div>,
+                                                     <a class="layui-btn layui-btn-mini"
+                                                       @click="updateText(imte,index)">选择返利彩种</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <!--底部按钮-->
+                            <div class="layui-form-item basic-submit">
+                                <div class="layui-input-block">
+                                    <button lay-submit="" lay-filter="formDemo" class="layui-btn forbid"
+                                            @click="saveData">保存
+                                    </button>
+                                    <button type="reset" class="layui-btn layui-btn-primary cancel">取消</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <!--修改内容是否满足条件-->
+                <transition name="deleteHint">
+                    <div class="layui-layer layui-layer-dialog layer-anim addSucceed" v-show="prompt_message" v-cloak>
+                        {{hint}}
+                    </div>
+                </transition>
+                <div class="zhezhao"></div>
+                <!--选择返利彩种-->
+				<div class="color" style="padding: 2px;display: none;">
+				<div style="margin-left: 5px;"><input type='checkbox' class='input-checkbox' v-model='checked' v-on:click='checkedAll'>全选</div>
+				<ul class="allType">
+					<li v-for="item in gameType">
+							<input type="checkbox" :id="item.gameID" :value="item.gameID" v-model="sysConfig2">
+							<label>{{item.gameName}}</label>
+					</li>
+				</ul>
+			</div>
+                <!--修改返利列表弹出框-默认隐藏-->
+                <div class="sysListData">
+                    <!--<p class="title">添加管理员</p>-->
+                    <div class="inner">
+                        <table class="layui-table">
+                            <colgroup>
+                                <col width="30%"/>
+                                <col width="30%"/>
+                                <col width="30%"/>
+                                <col width="15%"/>
+                            </colgroup>
+                            <thead>
+                            <tr>
+                                <td class="tr">
+                                    返利起始值
+                                </td>
+                                <td class="tr">
+                                    返利上限值
+                                </td>
+                                <td class="tr">
+                                    返利百分比值(%)
+                                </td>
+                                <td class="tr">
+                                    <a class="layui-btn layui-btn-mini" @click="addDetail()">新增</a>
+                                </td>
+                            </tr>
+                            </thead>
+                            <tbody v-cloak>
+                            <tr v-for="(item,index) in list" >
+                                <td>
+                                    <label class="frequency">
+                                        <input type="number" v-model="item.startRange">
+                                </td>
+                                <td>
+                                    <label class="frequency">
+                                        <input type="number" v-model="item.endRange">
+                                </td>
+                                <td>
+                                    <label class="frequency">
+                                        <input type="number" name="rechargeFq" placeholder="该范围的返利百分比"
+                                               v-model="item.value"/>
+                                    </label>
+                                </td>
+                                <td class="tr">
+                                    <a class="layui-btn layui-btn-mini" @click="delDetail(index)">删除</a>
+                                </td>
+                            </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </fieldset>
+</div>
+
+<script type="text/javascript" src="../public/js/jquery.js"></script>
+<script type="text/javascript" src="../public/js/jqPaginator.js"></script>
+<script type="text/javascript" src="../plugins/laydate/laydate.js"></script>
+<script type="text/javascript" src="../plugins/layui/layui.js"></script>
+<script type="text/javascript" src="../public/js/vue.min.js"></script>
+<script type="text/javascript" src="../public/js/security.js"></script>
+<script type="text/javascript" src="../public/js/send_request.js"></script>
+<script type="text/javascript" src="js/systemSetup.js"></script>
+</body>
+</html>

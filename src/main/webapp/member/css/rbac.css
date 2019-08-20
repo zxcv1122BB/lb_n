@@ -1,0 +1,102 @@
+/*搜索框和添加按钮样式*/
+.add_btn>input {
+	display: inline-block;
+	width: 30%;
+}
+
+.add_btn>i {
+	font-size: 25px;
+	color: #ccc;
+	position: relative;
+	left: -40px;
+	top: 5px;
+	cursor: pointer;
+}
+#prompt3{
+	display: none;
+	color: darkred;
+	font-size: 12px;
+}
+/*遮罩层设置*/
+.zhezhao{
+	width: 100%;
+	height: 100%;
+	background-color: #000000;
+	opacity: 0.3;
+	z-index: 12;
+	top: 0;
+	left: 0;
+	position: fixed;
+	display: none;
+}
+/*变更角色弹出层*/
+.popSet{
+	display: none;
+}
+.popSet>div.inner{
+	padding: 17px 20px;
+	box-sizing: border-box;
+	/*height: 500px;*/
+	/*overflow: scroll;*/
+}
+.popSet-btn{
+	margin-top: 20px;
+	text-align: center;
+}
+#prompt1{
+	display: none;
+	color: darkred;
+}
+/*修改密码弹出层*/
+.popPass{
+	display: none;
+}
+.popPass>.inner{
+	padding: 17px 20px;
+	box-sizing: border-box;
+}
+.popPass-btn{
+	margin-top: 20px;
+	text-align: center;
+}
+#prompt{
+	display: none;
+	color: darkred;
+	text-align: center;
+}
+#prompt4{
+	display: none;
+	color: darkred;
+}
+/*设置添加管理员弹出层*/
+.popAdd{
+	display: none;
+}
+.popAdd>.inner{
+	padding: 20px 10px 20px 0;
+	box-sizing: border-box;
+}
+.aaa{
+	height: 35px;
+	width: 110px;
+}
+#prompt2{
+	display: none;
+	color: darkred;
+}
+/*页码设置*/
+.yema{
+	overflow: hidden;
+}
+.selectYema{
+	float: left;
+	line-height: 78px;
+}
+.selectYema>p{
+	text-indent:20px;
+}
+/*设置弹出层按钮颜色*/
+.layui-layer-btn0{
+	background-color: #009688!important;
+	border-color:#009688!important ;
+}

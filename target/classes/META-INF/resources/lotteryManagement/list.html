@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>后台管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+
+    <link rel="stylesheet" href="../plugins/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="../finance/css/withdrawals.css"/>
+    <link rel="stylesheet" href="css/myStyle.css"/>
+    <link rel="stylesheet" href="css/main.css"/>
+    <link rel="stylesheet" href="../public/css/fenye.css"/>
+    <style>
+        .select_btn{
+            display: inline-block;
+            width: 80px;
+            text-align: center;
+            border: 1px solid #ddd;
+            margin-right: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: white;
+            line-height: 35px;
+            padding: 0 10px;
+        }
+        .aa{
+            color: #fff;
+            background-color: #009688;
+        }
+    </style>
+</head>
+
+<body>
+
+<!--
+    作者：tjr
+    时间：2017-09-13
+    描述：显示开奖结果记录
+-->
+<div class="admin-main" id="app">
+    <div class="add_btn" style="padding: 15px;">
+        <!--<a v-for="(item,index) in twos" @click="clickTwo(item.id)"><span class="spanA">{{item.groupname}}</span></a>-->
+        <button :id="'button'+item.id" class="select_btn" v-for="(item,index) in twos" @click="clickTwo(item.id)">{{item.groupname}}</button>
+    </div>
+
+    <div class="row clearfix">
+        <div class="col labelList">
+            <label for="" style="padding-left: 15px;"><input type="text" placeholder="赛事名称" id="name"/></label>
+            <select class="selectFl" id="playId">
+                <option value="0">请选择玩法</option>
+                <option v-for="(item,index) in three" :value="item.id" @click="clickThree">{{item.name }}
+
+                </option>
+            </select>
+            <button class="layui-btn" @click="addTheLotteryRedis">查询</button>
+        </div>
+    </div>
+
+    <fieldset class="layui-elem-field">
+				<legend>竞彩开奖结果</legend>
+				<div class="layui-field-box layui-form">
+					<table class="layui-table admin-table">
+						<thead>
+							<tr>
+								<th style="width: 6.7%;">分组名称</th>
+								<th style="width: 3%;">期 </th>
+								<th style="width: 6.7%;">场次</th>
+								<th style="width: 6.7%;">半场比分</th>
+								<th style="width: 6.7%;">主场球队</th>
+								<th style="width: 6.7%;">客场球队</th>
+								<th style="width: 6.7%;">全场比分</th>
+								<th style="width: 6.7%;">赛果</th>
+								<th style="width: 6.7%;">受让赛果</th>
+								<th style="width: 6.7%;">比赛时间</th>
+								<th style="width: 6.7%;">比赛状态</th>
+								<th style="width: 6.7%;">是否热门</th>
+								<th style="width: 6.7%;">录入时间</th>
+							</tr>
+						</thead>
+						<tbody id="content">
+							<tr v-for="(item,index) in datas">
+								<td>{{item.leagueName == null ? '--' : item.leagueName}}</td>
+								<td>{{item.bannerNumber == null ? '--' :item.bannerNumber}}</td>
+								<td>{{item.sessions == null?'--':item.sessions}}</td>
+								<td>{{item.halfCourtScore == null ? '--':item.halfCourtScore }}</td>
+								<td>{{item.homeTeam.teamName}}</td>
+								<td>{{item.awayTeam.teamName}}</td>
+								<td>{{item.courtScore  == null ? '--':item.courtScore }}</td>
+								<td>{{item.matchResult  == null ? '--':item.matchResult}}</td>
+								<td>{{item.letBallResult==null ? '--':item.letBallResult}}</td>
+								<td>{{item.matchDate}}</td>
+								<td>{{item.matchStatus == 0? '已结束':'未开赛'}}</td>
+								<td>{{item.isHot==1?'否':'是'}}</td>
+								<td>{{item.fmiCreateTime==null ? '--' : item.fmiCreateTime}}</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<!--分页页码设置-->
+
+        <!--页码设置-->
+        <div class="yema">
+            <!--页码左边-->
+            <div class="selectYema">
+                <p>
+                    总共{{total}}条记录.每页显示
+                    <select v-model="pageNum">
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="200">200</option><option value="500">500</option>
+                    </select>
+                    条记录
+                </p>
+            </div>
+            <!--右边分页-->
+            <div id="fenye" style="text-align: right;"></div>
+        </div>
+
+    </fieldset>
+</div>
+
+<script type="text/javascript" src="../public/js/jquery.js"></script>
+<script type="text/javascript" src="../public/js/vue.min.js"></script>
+<script type="text/javascript" src="../public/js/jqPaginator.js"></script>
+<!-- 用作参数的加密 -->
+<script type="text/javascript" src="../public/js/security.js"></script>
+<script type="text/javascript" src="../public/js/send_request.js"></script>
+<script type="text/javascript" src="js/lottery_list.js"></script>
+</body>
+
+</html>

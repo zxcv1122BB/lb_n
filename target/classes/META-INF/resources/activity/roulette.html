@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" href="../plugins/layui/css/layui.css" />
+		<link rel="stylesheet" href="css/roulette.css" />
+	</head>
+
+	<body>
+		<section class="main">
+			<nav id='nav'><span class="active" data-index="1">大转盘管理</span><span data-index="2">大转盘奖项</span><span data-index="3">大转盘记录</span></nav>
+			<!--大转盘管理-->
+			<div id="rouletteManage">
+				<!--頭部-->
+				<div class="clearfix"><span id="addZp" class="btn b_blue layui-btn">添加</span>
+					<div class="right"><span id="refrech"><img class="img-responsive" src="img/refrech.png" alt="" /></span><span class="date"><i class='hide' id="selectDate" ></i><img class="img-responsive" src="img/date.png" alt="" /></span></div>
+				</div>
+				<!--主要內容列表加載-->
+				<div class="content">
+					<table>
+						<colgroup>
+							<col width="9%">
+							<col width="9%">
+							<col width="12%">
+							<col width="12%">
+							<col width="20%">
+							<col width="20%">
+							<col width="10%">
+							<col width="">
+						</colgroup>
+						<thead>
+							<tr>
+								<th><strong>大转盘标题</strong></th>
+								<th><strong>积分总额</strong></th>
+								<th><strong>限制当天IP次数</strong></th>
+								<th><strong>等级分层限制</strong></th>
+								<th><strong>开始时间</strong></th>
+								<th><strong>结束时间</strong></th>
+								<th><strong>状态</strong></th>
+								<th><strong>操作</strong></th>
+							</tr>
+						</thead>
+						<tbody id="dataList">
+						</tbody>
+					</table>
+				</div>
+				<!--添加大转盘彈出框-->
+				<div id="sendZp" class="hide clearfix">
+					<table>
+						<colgroup>
+							<col width="20%" />
+							<col width="25%" />
+							<col width="25%" />
+							<col width="30%" />
+						</colgroup>
+						<tbody>
+							<tr>
+								<td class="tr">大转盘标题：</td>
+								<td>
+									<label>
+										<input class="title" type="text" required/>
+									</label>
+								</td>
+								<td class="tr">积分总额：</td>
+								<td>
+									<label>
+										<input class="money" type="number" />
+									</label>
+								</td>
+							</tr>
+							
+							<tr>
+								<td class="tr">限制当天IP次数：</td>
+								<td colspan="3">
+									<label>
+										<input class="IPnum" type="number" />
+									</label>
+								</td>
+							</tr>
+							<tr>
+								<td class="tr">开始时间：</td>
+								<td>
+									<label>
+										<input id="startTime" type="text" placeholder="开始时间" readonly/>
+										<i class="layui-icon icon">&#xe637;</i>
+									</label>
+								</td>
+								<td class="tr">结束时间：</td>
+								<td class="tl">
+									<label>
+										<input id="endTime" type="text" placeholder="结束时间" readonly/>
+										<i class="layui-icon icon">&#xe637;</i>
+									</label>
+								</td>
+							</tr>
+							<tr>
+								<td class="tr">限制使用等级：</td>
+								<td colspan="3">
+									<div class="checkboxList memberGrade">
+										<span><i class="checkbox active" data-index="1"></i>未分层</span>
+										<span><i class="checkbox" data-index="2"></i>VIP1</span>
+										<span><i class="checkbox" data-index="3"></i>VIP2</span>
+										<span><i class="checkbox" data-index="4"></i>VIP3</span>
+										<span><i class="checkbox" data-index="5"></i>VIP4</span>
+										<span><i class="checkbox" data-index="6"></i>SVIP</span>
+										<span><i class="checkbox" data-index="7"></i>套利层</span>
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<div class="errorMsg hide">
+						<span>数值不能为空,请输入有效字段</span>
+					</div>
+				</div>
+
+				<div id="paging" class="clearfix">
+					<div class="left">
+						总共<span class="sumRecord"></span>数据 每页显示
+						<select name="" class="pageNum">
+							<option value="50">50</option>
+							<option value="100">100</option>
+							<option value="200">200</option><option value="500">500</option>
+						</select>条数据
+					</div>
+
+				</div>
+				<div id="page">
+
+				</div>
+			</div>
+			<!--大转盘奖项-->
+			<div id="rouletteAwards" class="hide">
+				<!--頭部-->
+				<div class="clearfix"><span id="addAwards" class="btn b_blue layui-btn">添加</span>
+					<div class="right"><span id="refrechJx"><img class="img-responsive" src="img/refrech.png" alt="" /></span><span class="date"><i class='hide' id="selectDate" ></i><img class="img-responsive" src="img/date.png" alt="" /></span></div>
+				</div>
+				<!--主要內容列表加載-->
+				<div class="content">
+					<table>
+						<colgroup>
+							<col width="12%">
+							<col width="15%">
+							<col width="16%">
+							<col width="16%">
+							<col width="10%">
+							<col width="10%">
+							<col width="10%">
+							<col width="">
+						</colgroup>
+						<thead>
+							<tr>
+								<th><strong>编号</strong></th>
+								<th><strong>所属大转盘</strong></th>
+								<th><strong>奖励内容</strong></th>
+								<th><strong>奖励金额</strong></th>
+								<th><strong>奖励数量</strong></th>
+								<th><strong>权重</strong></th>
+								<th>状态</th>
+								<th>操作</th>
+							</tr>
+						</thead>
+						<tbody id="rouletteAwardsList">
+						</tbody>
+					</table>
+				</div>
+				<!--添加大转盘奖项彈出框-->
+				<div id="sendJx" class="hide clearfix" style="padding:4px 8px;">
+					<table class="layui-table">
+						<colgroup>
+							<col width="35%" />
+							<col width=""  />
+						</colgroup>
+						<tbody>
+							<tr>
+								<td class="tr">大转盘标题：</td>
+								<td>
+									<select id="allZpMsg">
+									</select>
+								</td>
+							</tr>
+							<tr>
+								<td class="tr">奖励内容：</td>
+								<td>
+									<label>
+										<input class="jxContent" type="text"/>
+									</label>
+								</td>
+							</tr>
+							<tr>
+								<td class="tr">奖励金额：</td>
+								<td>
+									<label>
+										<input class="jxValue" type="number"/>
+									</label>
+								</td>
+							</tr>
+							<tr>
+								<td class="tr">奖励数量：</td>
+								<td>
+									<label>
+										<input class="jxNum" type="number"/>
+									</label>
+								</td>
+							</tr>
+							<tr>
+								<td class="tr">权重：</td>
+								<td>
+									<label>
+										<input class="weight" type="number" />
+									</label>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<div id="paging_awards" class="clearfix">
+					<div class="left">
+						总共<span class="sumRecord"></span>数据 每页显示
+						<select name="" class="pageNum">
+							<option value="50">50</option>
+							<option value="100">100</option>
+							<option value="200">200</option><option value="500">500</option>
+						</select>条数据
+					</div>
+
+				</div>
+				<div id="awardsPage">
+
+				</div>
+			</div>
+			<!--大转盘记录-->
+			<div id="rouletteRecord" class="hide">
+				<div class="clearfix">
+					<div class="labelList fl">
+						<label><input type="text" placeholder="会员账号" class="userName"/></label>
+						<label><input type="text" placeholder="开始日期" class="recordStartTime" readonly/><i class="layui-icon icon">&#xe637;</i></label>
+						<label><input type="text" placeholder="结束日期" class="recordEndTime" readonly/><i class="layui-icon icon">&#xe637;</i></label>
+						<span class="btn_select btn layui-btn">查询</span>
+					</div>
+					<div class="right"><span id="recordRefrech"><img class="img-responsive" src="img/refrech.png" alt="" /></span><span class="date"><i class="hide selectDate" ></i><img class="img-responsive" src="img/date.png" alt="" /></span></div>
+				</div>
+				<div class="content">
+					<table>
+						<colgroup>
+							<col width="20%" />
+							<col width="10%" />
+							<col width="10%" />
+							<col width="20%" />
+							<col width="20%" />
+							<!--<col width="10%" />-->
+							<col width="" />
+						</colgroup>
+						<thead>
+							<tr>
+								<th><strong>用户名</strong></th>
+								<th><strong>大转盘名称</strong></th>
+								<th><strong>大转盘金额</strong></th>
+								<th><strong>创建时间</strong></th>
+								<th><strong>IP</strong></th>
+								<th><strong>状态</strong></th>
+								<!--<th><strong>操作</strong></th>-->
+							</tr>
+						</thead>
+						<tbody id="recordList">
+
+						</tbody>
+					</table>
+				</div>
+				<div id="paging_record" class="clearfix">
+					<div class="left">
+						总共<span class="sumRecord"></span>数据 每页显示
+						<select name="" class="pageNum">
+							<option value="50">50</option>
+							<option value="100">100</option>
+							<option value="200">200</option><option value="500">500</option>
+						</select>条数据
+					</div>
+
+				</div>
+				<div id="recordPage">
+
+				</div>
+			</div>
+		</section>
+		<script src="../public/js/security.js"></script>
+		<script src="../public/js/send_request.js"></script>
+		<script src="../public/js/jquery.js"></script>
+		<script type="text/javascript" src="../public/js/jqPaginator.js"></script>
+		<script src="../public/js/laydate/laydate.js"></script>
+		<script src="../plugins/layui/layui.js"></script>
+		<script src="js/roulette.js"></script>
+	</body>
+
+</html>

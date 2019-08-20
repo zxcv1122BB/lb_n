@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lb.sys.dao.GameTypeMapper">
+  <resultMap id="BaseResultMap" type="com.lb.game.model.GameType">
+    <id column="gameID" jdbcType="TINYINT" property="gameid" />
+    <result column="gameName" jdbcType="VARCHAR" property="gamename" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    gameID, gameName, status
+  </sql>
+  <select id="selectByExample" parameterType="com.lb.game.model.GameTypeExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from game_type
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Byte" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from game_type
+    where gameID = #{gameid,jdbcType=TINYINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Byte">
+    delete from game_type
+    where gameID = #{gameid,jdbcType=TINYINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.lb.game.model.GameTypeExample">
+    delete from game_type
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.lb.game.model.GameType">
+    insert into game_type (gameID, gameName, status
+      )
+    values (#{gameid,jdbcType=TINYINT}, #{gamename,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.lb.game.model.GameType">
+    insert into game_type
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="gameid != null">
+        gameID,
+      </if>
+      <if test="gamename != null">
+        gameName,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="gameid != null">
+        #{gameid,jdbcType=TINYINT},
+      </if>
+      <if test="gamename != null">
+        #{gamename,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=TINYINT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.lb.game.model.GameTypeExample" resultType="java.lang.Long">
+    select count(*) from game_type
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update game_type
+    <set>
+      <if test="record.gameid != null">
+        gameID = #{record.gameid,jdbcType=TINYINT},
+      </if>
+      <if test="record.gamename != null">
+        gameName = #{record.gamename,jdbcType=VARCHAR},
+      </if>
+      <if test="record.status != null">
+        status = #{record.status,jdbcType=TINYINT},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update game_type
+    set gameID = #{record.gameid,jdbcType=TINYINT},
+      gameName = #{record.gamename,jdbcType=VARCHAR},
+      status = #{record.status,jdbcType=TINYINT}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lb.game.model.GameType">
+    update game_type
+    <set>
+      <if test="gamename != null">
+        gameName = #{gamename,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
+    </set>
+    where gameID = #{gameid,jdbcType=TINYINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lb.game.model.GameType">
+    update game_type
+    set gameName = #{gamename,jdbcType=VARCHAR},
+      status = #{status,jdbcType=TINYINT}
+    where gameID = #{gameid,jdbcType=TINYINT}
+  </update>
+  
+  <select id="selectGameNameById" resultType="string" parameterType="string">
+  	SELECT gameName FROM game_type WHERE gameID = #{gameID}
+  </select>
+  
+  <select id="selectSysColorType" resultType="map">
+  		<!-- SELECT gameID, gameName, is_add_zero, lucknum_length FROM game_type WHERE game_type =3 AND `status` = 1 -->
+  		SELECT gt.gameID, gt.gameName, rc.is_add_zero, rc.lucknum_length, rc.max_num, rc.min_num, rc.is_repeat, od.issue, od.luck_number 
+  		FROM game_type gt
+		LEFT JOIN open_data od ON gt.gameID = od.one_type_id
+		LEFT JOIN rebate_config rc ON gt.`code` = rc.`code`
+		WHERE gt.game_type =3 AND gt.`status` = 1
+		GROUP BY gt.gameID
+		ORDER BY gt.gameID,od.issue DESC 
+  </select>
+  
+  <select id="selectSystemColorNum" resultType="map" parameterType="map">
+		SELECT 
+  			id,
+  			one_type_id AS typeId,
+  			type_name_CN AS typeName,
+  			issue AS actionIssue,
+  			luck_number AS luckNumber,
+  			`status`,
+  			open_time AS openTime,
+  			create_time AS createTime,
+  			update_time AS updateTime
+  		FROM 
+  			ls.`open_data` 
+  		WHERE one_type_id IN (SELECT gameID FROM game_type WHERE game_type =3 AND `status` = 1)
+			<if test="typeId != null and typeId != ''">
+  				AND one_type_id=#{typeId} 
+  			</if>
+			<if test="actionIssue != null and actionIssue != ''">
+  				AND issue like CONCAT(CONCAT('%',#{actionIssue}),'%')
+  			</if>
+			<if test="status != null and status != ''">
+  				AND `status`=#{status}
+  			</if>
+			<if test="startTime != null and startTime != ''">
+				and open_time <![CDATA[>=]]> #{startTime}
+		    </if>
+	        <if test="endTime != null and endTime != ''">
+		       	and open_time <![CDATA[<=]]> #{endTime}
+	        </if>
+		ORDER BY one_type_id DESC, open_time DESC
+	</select>
+	
+	<select id="qryAllGameType" resultType="map">
+		SELECT 
+			gameID,gameName,show_name,`status`,
+			current_issue,delay_open,deadline,start_time,end_time 
+		FROM ls.game_type WHERE `status`=1 ORDER BY gameID ASC
+	</select>
+	
+	
+	<select id="findGameTypeGameIds" resultType="String">
+		select GROUP_CONCAT(gameID separator ',') as oneTypeIds from game_type where is_sys=0 and game_type <![CDATA[<>]]> 0
+	</select>
+</mapper>

@@ -1,0 +1,272 @@
+/*顶部*/
+.news_search {
+    padding:15px;
+}
+/*遮罩层*/
+.shade{
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 12;
+    width: 100%;
+    height: 100%;
+    background-color:rgb(0,0,0);
+    opacity: 0.5;
+}
+.shadeA{
+    z-index: 14;
+}
+/*添加弹出层*/
+.concealDiv{
+    position: absolute;
+    top: 30px;
+    left: 50%;
+    z-index: 13;
+    width: 700px;
+    margin: 0 auto;
+    margin-left: -350px;
+    background-color: white;
+}
+/*添加弹出层内容主容器*/
+.site-block{
+    margin: 10px 10px 10px 0;
+}
+/*添加弹出层内容块的间距*/
+.site-block .layui-form-item{
+    margin-bottom:15px
+}
+/*添加弹出层为空提示*/
+.addPromptNull{
+    position: relative;
+    left: 15%;
+    color: red;
+}
+/*添加弹出层下拉选择框*/
+.selectStyle{
+    position: relative;
+    top: 3px;
+    width: 150px;
+    height: 30px;
+}
+/*添加弹出层确认按钮div*/
+.addButtonRight{
+    text-align: right;
+    position: relative;
+    right: 70px;
+}
+/*添加弹出层的标题*/
+.concealDiv .layui-form-label{
+    padding: 9px 0;
+}
+/*页码设置*/
+.yema{
+    overflow: hidden;
+}
+.selectYema{
+    float: left;
+    line-height: 78px;
+}
+.selectYema>p{
+    text-indent:20px;
+}
+#fenye .pagination{
+    position: relative;
+    right: 10%;
+}
+
+/*vue的transition标签*/
+.fade-enter-active, .fade-leave-active {
+    transition: opacity .5s;
+}
+.fade-enter, .fade-leave-active {
+    opacity: 0;
+}
+.deleteHint-enter-active, .deleteHint-leave-active {
+    transition: opacity .5s;
+}
+.deleteHint-enter, .deleteHint-leave-active {
+    opacity: 0;
+}
+.deleteBox-enter-active, .deleteBox-leave-active {
+    transition: opacity .3s;
+}
+.deleteBox-enter, .deleteBox-leave-active {
+    opacity: 0;
+}
+.selectProfile-enter-active, .selectProfile-leave-active {
+    transition: opacity .05s;
+}
+.selectProfile-enter, .deleteHint-leave-active {
+    opacity: 0;
+}
+/*搜索框*/
+.add_btn{
+    padding: 15px;
+}
+.add_btn>input{
+    display: inline-block;
+    width:auto;
+}
+.add_btn>i{
+    font-size: 25px;
+    color: #ccc;
+    position: relative;
+    left: -40px;
+    top: 5px;
+    cursor: pointer;
+}
+.prompt{
+    color: darkred;
+}
+/*添加成功 || 删除成功 提示*/
+.admin-main .addSucceed{
+    margin-left: -50px;
+    margin-top: -25px;
+    top: 50%;
+    left: 50%;
+    z-index: 100;
+    width: 100px;
+    min-width: 100px;
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+    background-color: rgba(0,0,0,.5);
+    color: #fff
+}
+#app .deleteMessage{
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    margin-left: -130px;
+    z-index: 14;
+}
+#app .deleteMessage .box-center{
+    text-align: center;
+}
+/*通用*/
+td{
+    text-align: center;
+}
+.layui-table th{
+    text-align: center;
+}
+.popAuthority{
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 14;
+
+}
+.zTreeDemoBackground{
+    background-color: #fff;
+}
+.popAuthority .zTreeBox{
+    border-radius: 10px;
+}
+.zTreeBox .zTreeTitle{
+    background-color: #ffffff;
+    border-radius: 10px 10px 0 0;
+}
+.select {
+    display: inline-block;
+    width: 75%;
+    padding-left: 10px;
+    height: 38px;
+    line-height: 38px;
+    border: 1px solid #e6e6e6;
+    border-radius: 2px;
+    color: #757575;
+}
+.ztree{
+    margin: 0;
+    color: #333;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.ztree li{
+    flex: 25%;
+}
+/*#treeDemo li span.button.ico_docu{
+    display: none;
+}*/
+.selectorButtonBox{
+    padding: 10px;
+    text-align: center;
+}
+.textHeight{
+    line-height: 36px;
+}
+.textColor{
+    color: red
+}
+.layui-input-block .inputInline{
+    display: inline-block;
+    width: 35%;
+}
+#treeGroup_1_ul{
+    display: flex;
+    flex-wrap: wrap;
+}
+#treeGroup_1_ul li.level1{
+    padding: 10px;
+}
+#treeGroup_5_ul{
+    padding: 0;
+}
+
+/*添加弹框设置*/
+.popAdd{
+    display: none;
+    padding: 15px;
+    box-sizing: border-box;
+}
+/*更改弹框设置*/
+.popEdit{
+    display: none;
+    padding: 15px;
+    box-sizing: border-box;
+}
+/*删除框设置*/
+.popDel{
+    display: none;
+    padding: 15px;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+/*设置选择时间*/
+.col_1{
+    height: 40px;
+    line-height: 38px;
+    margin-right: 10px;
+}
+.date{
+    padding: 0 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 195px;
+    position: relative;
+    margin-bottom: 15px;
+}
+#startDate, #endDate,#startDate_edit,#endDate_edit {
+    min-height: 35px;
+    border: 0;
+}
+.popPermission{
+    display: none;
+    padding: 15px;
+    box-sizing: border-box;
+}
+.popZu{
+    display: none;
+    padding: 15px;
+    box-sizing: border-box;
+}
+.popLook{
+    display: none;
+    padding: 15px;
+    box-sizing: border-box;
+}

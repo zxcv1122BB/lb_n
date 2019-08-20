@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lb.sys.dao.OpenPrizeMapper">
+	<update id = "updateSetLuckNum" parameterType="map">
+		update open_data set luck_number = #{luckNumber} where one_type_id = #{oneTypeId}
+		and issue = #{issue}
+	</update>
+	<select id="selectLuckNum" parameterType="string" resultType="map">
+		SELECT 
+			od.issue, rc.is_add_zero, rc.lucknum_length, rc.max_num, rc.min_num, rc.is_repeat,
+			main.max_issue, main.prefix_format, main.suffix_length 
+		FROM
+			( SELECT
+					gt.gameID,gt.gameName,gt.max_issue, gt.prefix_format, gt.suffix_length, gt.`code`
+				FROM
+					game_type gt
+				WHERE
+					gt.`status` = 1 AND gt.gameID = #{oneTypeId}	
+			) AS main
+		LEFT JOIN (
+			SELECT 
+				one_type_id, max(issue) AS issue
+			FROM open_data
+				WHERE one_type_id = #{oneTypeId} AND is_preinstall != 0
+			
+		) AS od ON main.gameID = od.one_type_id
+		LEFT JOIN rebate_config rc ON main.`code` = rc.`code`
+		<!-- SELECT od.issue, rc.is_add_zero, rc.lucknum_length, rc.max_num, rc.min_num, rc.is_repeat,
+			gt.max_issue, gt.prefix_format, gt.suffix_length FROM game_type gt
+		LEFT JOIN open_data od ON od.one_type_id = gt.gameID
+		LEFT JOIN rebate_config rc ON gt.`code` = rc.`code`
+		WHERE od.one_type_id = #{oneTypeId} AND od.is_preinstall = 1 ORDER BY od.issue DESC LIMIT 1 -->
+		<!-- SELECT issue FROM open_data WHERE one_type_id = #{oneTypeId} AND is_preinstall = 1 ORDER BY issue DESC LIMIT 1 -->
+	</select>
+	<select id="sureIssueInDb" parameterType="string" resultType="string">
+		select luck_number from open_data where id = #{openDataId} 
+	</select>
+	
+	<update id="updateOpenRecord" parameterType="map">
+		UPDATE open_task_digit
+			<set>
+				<if test="dealNum != null">
+					deal_num = #{dealNum},
+				</if>
+				<if test="dealTime != null">
+					deal_time = #{dealTime},
+				</if>
+				<if test="dealErrorNum != null">
+					deal_error_num = #{dealErrorNum},
+				</if>
+				<if test="openState != null">
+					open_state = #{openState},
+				</if>
+				<if test="openTime != null">
+					open_time = #{openTime},
+				</if>
+			</set>
+		WHERE type=#{type} 
+			AND issue=#{issue} 
+			AND luck_number = #{luckNumber}
+			AND open_state = 0
+	</update>
+
+	<select id="selectOpenRecord" resultType="java.lang.Integer">
+		SELECT COUNT(1) FROM open_task_digit
+		WHERE type=#{type} 
+			AND issue=#{issue} 
+			AND luck_number = #{luckNumber}
+			AND open_state = 0
+	</select>
+	
+	<insert id="insertOpenRecord" parameterType="map">
+		insert into open_task_digit
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="issue != null">
+				issue,
+			</if>
+			<if test="type != null">
+				type,
+			</if>
+			<if test="luckNumber != null">
+				luck_number,
+			</if>
+			<if test="dealNum != null">
+				deal_num,
+			</if>
+			<if test="dealTime != null">
+				deal_time,
+			</if>
+			<if test="dealErrorNum != null">
+				deal_error_num,
+			</if>
+			<if test="openState != null">
+				open_state,
+			</if>
+			<if test="openTime != null">
+				open_time,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="issue != null">
+				#{issue},
+			</if>
+			<if test="type != null">
+				#{type},
+			</if>
+			<if test="luckNumber != null">
+				#{luckNumber},
+			</if>
+			<if test="dealNum != null">
+				#{dealNum},
+			</if>
+			<if test="dealTime != null">
+				#{dealTime},
+			</if>
+			<if test="dealErrorNum != null">
+				#{dealErrorNum},
+			</if>
+			<if test="openState != null">
+				#{openState},
+			</if>
+			<if test="openTime != null">
+				#{openTime},
+			</if>
+		</trim>
+	</insert>
+	
+	<select id="selectBeforeOrder" resultType="map">
+		SELECT 
+			is_cal,`status`
+		FROM game_bets 
+		WHERE orderId = #{beforeOrderId}
+	</select>
+		
+	<select id="selectBetInfo" resultType="map">
+		SELECT 
+			orderId,playedid,action_num,before_orderId,
+			action_data_str,
+			amount,bet_odds,
+			bet_rebate,chase,is_stop_chase 
+		FROM game_bets 
+		WHERE type = #{type} AND action_issue = #{issue} AND is_cal = 0  AND `status` = 3
+	</select>
+	
+	<select id="selectGamePlayedInfo" resultType="string">
+		SELECT open_invok FROM game_played WHERE id = #{id}
+	</select>
+	<select id="qryGamePlayedInfo" resultType="map">
+		SELECT open_invok,special_key,special_odds,code
+		 FROM game_played WHERE id = #{id}
+	</select>
+	
+	<update id="updateGameBet" parameterType="map">
+		UPDATE game_bets 
+		<set>
+			<if test="get_count != null and get_count != ''">
+				get_count = #{get_count},
+			</if>
+			<if test="bonus != null and bonus != ''">
+				bonus = #{bonus},
+			</if>
+			<if test="is_cal != null and is_cal != ''">
+				is_cal = #{is_cal}, 	
+			</if>
+			<if test="update_time != null">
+				update_time=#{update_time},
+			</if>
+			<if test="statu != null">
+				`status`=#{statu},
+			</if>
+			<if test="open_no != null and open_no != ''">
+				open_no=#{open_no},
+			</if>
+			<if test="cal_time != null">
+				cal_time=#{cal_time},
+			</if>
+		</set>
+		WHERE is_cal = 0  AND `status` = 3
+			<if test="orderId != null and orderId != ''">
+				AND orderId = #{orderId}
+			</if>
+			<if test="chase != null and chase != '' and isStopChase == 1">
+				AND chase = #{chase} AND is_stop_chase = 1  
+			</if>
+	</update>
+
+</mapper> 

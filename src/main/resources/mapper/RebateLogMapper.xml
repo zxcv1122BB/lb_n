@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lb.sys.dao.RebateLogMapper">
+
+	<!-- [批量投注返利回滚] —— 根据批次号查询某一批次返利信息 -->
+	<select id="qryRebateLogByBatchNo" resultType="map" parameterType="String">
+		SELECT * FROM rebate_log WHERE batch_no=#{batch_no}
+	</select>
+	
+	<!-- 【批量投注返利】查询日志 -->
+	<select id="qryRebateLog" resultType="map">
+		SELECT * FROM rebate_log WHERE create_time>=DATE_SUB(CURRENT_DATE(),INTERVAL 5 DAY) ORDER BY create_time DESC
+	</select>
+	
+	<!-- 【批量投注返利】修改状态为已回滚/已返利 -->
+	<update id="updateStatus" parameterType="map">
+		UPDATE rebate_log SET rebate_type=#{rebate_type} WHERE batch_no = #{batch_no}
+	</update>
+	
+</mapper>

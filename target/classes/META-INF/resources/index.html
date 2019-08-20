@@ -1,0 +1,342 @@
+﻿<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>后台管理首页</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <script>
+        if (!localStorage.userName)
+            window.location.href="login.html";
+    </script>
+    <link rel="stylesheet" href="plugins/layui/css/layui.css" media="all"/>
+    <link rel="shortcut icon" href="images/favicon.ico" />
+    <link rel="stylesheet" href="css/global.css" media="all">
+    <link rel="stylesheet" href="plugins/font-awesome/css/font-awesome.min.css">
+    <style>
+        /*设置弹出层*/
+        .set {
+            display: none;
+        }
+
+        .set > .inner {
+            overflow: hidden;
+            font-size: 12px;
+        }
+
+        .inner-left {
+            float: left;
+            width: 200px;
+            text-align: center;
+            padding: 15px 0 25px 0;
+            box-sizing: border-box;
+        }
+
+        .inner-right {
+            float: left;
+            width: 300px;
+        }
+
+        .inner-right > .tishi {
+            background-color: #B9DF91;
+            box-sizing: border-box;
+            padding: 8px;
+            color: #3C773C;
+            margin: 8px 5px 8px 0;
+            border-radius: 5px;
+        }
+
+        .inner-right > .jieshao {
+            margin: 10px 5px 11px 0;
+        }
+
+        .tubiao {
+            border: 1px solid #CCCCCC;
+            border-radius: 3px;
+            width: 90%;
+            height: 30px;
+        }
+
+        .tubiao > span {
+            background-color: #ABB3BD;
+            color: white;
+            display: inline-block;
+            line-height: 31px;
+            padding: 0 15px;
+            box-sizing: border-box;
+        }
+
+        .tubiao > input {
+            border: none;
+            height: 30px;
+            display: inline-block;
+            padding: 0 10px;
+            box-sizing: border-box;
+            color: #666;
+        }
+
+        .set_btn {
+            margin: 15px 0;
+            text-align: right;
+            padding: 0 30px 0 0;
+            box-sizing: border-box;
+        }
+        /*修改密码弹出层*/
+        .popEditPass {
+            display: none;
+        }
+
+        .popEditPass table {
+            width: 96%;
+            margin: 10px auto;
+        }
+
+        .popEditPass td {
+            padding: 5px 10px;
+            box-sizing: border-box;
+        }
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+
+</head>
+
+<body>
+<div class="layui-layout layui-layout-admin" id="app" style="border-bottom: solid 5px #1aa094;">
+    <!--头部-->
+    <div class="layui-header header header-demo">
+        <div class="layui-main">
+            <!--头部左边-->
+            <div class="admin-login-box">
+                <!--logo字体-->
+                <a class="logo" style="left: 0;" href="index.html">
+                    <span style="font-size: 22px;">后台管理</span>
+                </a>
+                <!--折叠功能栏按钮-->
+                <div class="admin-side-toggle">
+                    <i class="fa fa-bars" aria-hidden="true"></i>
+                </div>
+                <!--全屏按钮-->
+                <div class="admin-side-full">
+                    <i class="fa fa-life-bouy" aria-hidden="true"></i>
+                </div>
+            </div>
+            <!--头部右边-->
+            <ul class="layui-nav admin-header-item">
+                <li class="layui-nba-item" style="display: none;">
+                    <audio controls height="100" width="100" id="music_1">
+                        <source src="audio/1.mp3" type="audio/mpeg">
+                        <source src="audio/1.mp3" type="audio/ogg">
+                        <embed height="50" width="100" src="audio/1.mp3">
+                    </audio>
+                    <audio controls height="100" width="100" id="music_2">
+                        <source src="audio/in_money.wav" type="audio/mpeg" class="ring_2">
+                        <source src="audio/in_money.wav" type="audio/ogg" class="ring_2">
+                        <embed height="50" width="100" src="audio/in_money.wav" class="ring_2">
+                    </audio>
+                    <audio controls height="100" width="100" id="music_3">
+                        <source src="audio/out_money.wav" type="audio/mpeg" class="ring_3">
+                        <source src="audio/out_money.wav" type="audio/ogg" class="ring_3">
+                        <embed height="50" width="100" src="audio/out_money.wav" class="ring_3">
+                    </audio>
+                </li>
+                <!-- <li class="layui-nav-item">
+                    <a href="javascript:void (0);" style="position: relative;" @click="href1">
+                        在线
+                        <span class="layui-badge layui-bg-green" style="right: -6px;" v-cloak>{{online}}</span>
+                    </a>
+                </li> -->
+                <li class="layui-nav-item">
+                    <a href="javascript:void (0);" style="position: relative;" @click="href2">
+                        充值
+                        <span class="layui-badge layui-bg-green" style="right: -6px;" v-cloak>{{deposit}}</span>
+                    </a>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:void (0);" style="position: relative;" @click="href3">
+                        提款
+                        <span class="layui-badge layui-bg-green" style="right: -10px;" v-cloak>{{withdraw}}</span>
+                    </a>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:void (0);" style="position: relative;" @click="change_laba">
+                        <!--<i class="layui-icon">&#xe645;</i>-->
+                        <img src="images/laba.png" id="laba" width="20" height="20"/>
+                    </a>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:void (0);" style="position: relative;">
+                        <select style="height: 30px;border: 1px solid #ccc;border-radius: 5px;" v-model="jiange">
+                            <option value="10000">10</option>
+                            <option value="30000">30</option>
+                            <option value="60000">60</option>
+                            <option value="120000">120</option>
+                        </select>
+                    </a>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:void (0);" style="position: relative;">
+                        <select style="height: 30px;border: 1px solid #ccc;border-radius: 5px;" v-model="ring_">
+                            <option value="1">铃声</option>
+                            <option value="2">语音</option>
+                        </select>
+                    </a>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:void (0)" @click="clear_cache">清除缓存</a>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;" class="admin-header-user">
+                        <img src="images/0.jpg"/>
+                        <!--这个是登录名，需要显示的-->
+                        <span id="userName"></span>
+                    </a>
+                    <!--悬停出现下拉框-->
+                    <dl class="layui-nav-child">
+                        <dd>
+                            <a href="javascript:;" @click="set"><i class="fa fa-gear" aria-hidden="true"></i>谷歌验证码</a>
+                        </dd>
+                        <dd>
+                            <a href="javascript:;" @click="editPass"><i class="fa fa-gear"
+                                                                        aria-hidden="true"></i>修改密码</a>
+                        </dd>
+                        <dd>
+                            <a href="javascript:void (0)" @click="quit"><i class="fa fa-sign-out"
+                                                                           aria-hidden="true"></i> 注销</a>
+                        </dd>
+                    </dl>
+                </li>
+            </ul>
+            <!--这个没找到-->
+            <ul class="layui-nav admin-header-item-mobile">
+                <li class="layui-nav-item">
+                    <a href="login.html"><i class="fa fa-sign-out" aria-hidden="true"></i> 注销</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!--主体左边导航-->
+    <div class="layui-side layui-bg-black" id="admin-side">
+        <div class="layui-side-scroll" id="admin-navbar-side" lay-filter="side"></div>
+    </div>
+    <!--主体右边-正文-->
+    <div class="layui-body" style="bottom: 0;border-left: solid 2px #1AA094;" id="admin-body">
+        <div class="layui-tab admin-nav-card layui-tab-brief" lay-filter="admin-tab">
+            <ul class="layui-tab-title">
+                <li class="layui-this">
+                    <i class="fa fa-dashboard" aria-hidden="true"></i>
+                    <!--<cite>管理员列表</cite>-->
+                </li>
+            </ul>
+            <div class="layui-tab-content" style="min-height: 150px; padding: 5px 0 0 0;">
+                <div class="layui-tab-item layui-show">
+                    <iframe src="welcome.html"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--底部-->
+    <div class="layui-footer footer footer-demo" id="admin-footer">
+        <div class="layui-main">
+            <!-- <p>2017 &copy;
+                <a href="#">www.test.cn/</a>
+                <a href="javascript:void (0)" target="_blank"></a>
+            </p> -->
+        </div>
+    </div>
+    <div class="site-tree-mobile layui-hide">
+        <i class="layui-icon">&#xe602;</i>
+    </div>
+    <div class="site-mobile-shade"></div>
+    <!--谷歌验证码弹出层-->
+    <div class="set">
+        <div class="inner">
+            <div class="inner-left">
+                <p id="qrcode">
+                    <!--<img :src="'http://qr.liantu.com/api.php?text='+pic_url" width="150" height="150" />-->
+                </p>
+                <p>密钥:{{secret_key}}</p>
+            </div>
+            <div class="inner-right">
+                <p class="tishi">提示: 二维码下方是二次验证密钥，请备份在纸上，以便将来更换手机时使用！</p>
+                <p class="jieshao">Google Authenticator 安全验证简称GA验证，功能跟手机短信验证一样，都是用来增加帐户安全。
+                    您可以在Android或iPhone手机上安装Google Authenticator APP应用，然后扫描二维码，
+                    成功后会显示一行6位验证数字，数字下方会显示网站用户帐号和网站域名。</p>
+                <p class="tubiao">
+                    <span>GA 验证码:</span><input type="text" placeholder="6位数字验证码" v-model="yanzhengma"/>
+                </p>
+                <p class="set_btn">
+                    <button class="layui-btn-small layui-btn-primary" @click="close_set">关闭</button>
+                    <button class="layui-btn layui-btn-small" @click="open_set" v-if="state_==0">启用验证</button>
+                    <button class="layui-btn layui-btn-small" @click="shut_set" v-else-if="state_==1">关闭验证</button>
+                </p>
+            </div>
+        </div>
+    </div>
+    <!--修改密码弹出层-->
+    <div class="popEditPass">
+        <div class="inner">
+            <table class="layui-table">
+                <tbody>
+                <!--当前用户名-->
+                <tr>
+                    <td>用户名:</td>
+                    <td>
+                        <input type="text" v-model="username" class="layui-input" readonly/>
+                    </td>
+                </tr>
+                <!--旧密码-->
+                <tr>
+                    <td>旧密码:</td>
+                    <td>
+                        <input type="password" v-model="oddPass" class="layui-input" @blur="check_oddpass"/>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>新密码:</td>
+                    <td>
+                        <input type="password" v-model="newPass" class="layui-input"/>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>确认密码:</td>
+                    <td>
+                        <input type="password" v-model="newPass_" class="layui-input"/>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="public/js/jquery.js"></script>
+<script type="text/javascript" src="public/js/jquery.qrcode.js"></script>
+<script type="text/javascript" src="plugins/layui/layui.js"></script>
+<script type="text/javascript" src="public/js/security.js"></script>
+<script type="text/javascript" src="js/md5.js"></script>
+<script type="text/javascript" src="public/js/send_request.js"></script>
+<script type="text/javascript" src="public/js/util.js"></script>
+<script type="text/javascript" src="datas/nav.js"></script>
+<script type="text/javascript" src="public/js/vue.min.js"></script>
+<script src="js/index.js"></script>
+<script type="text/javascript" src="public/js/ckeditor5-build-classic/ckeditor.js"></script>
+
+<script>
+    $('#userName').html(localStorage.userName);
+    layui.use('layer', function () {
+        var layer = layui.layer;
+        layer.msg('欢迎回来' + localStorage.userName + '!');
+    });
+</script>
+</body>
+
+</html>

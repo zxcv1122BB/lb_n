@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lb.sys.dao.LotteryPlanMapper">
+	<select id="selectIssuePlan" resultType="map">
+		SELECT
+		type, playid,
+		plan_content,
+		plan_num, plan_count, plan_flash
+		FROM `lottery_plan`
+		WHERE
+		issue = #{issue} AND
+		type = #{one_type_id}
+	</select>
+
+	<select id="selectPlanMethod" parameterType="string" resultType="map">
+		SELECT plan_name,plan_invoke,num_invoke,game_type.`suffix_length` FROM `game_played` 
+		LEFT JOIN game_type ON game_type.`gameID`=game_played.`type`
+		WHERE id = #{playId} LIMIT 1
+	</select>
+
+	<update id="insertLotteryData" parameterType="map">
+		INSERT INTO lottery_data
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="type != null">
+				type,
+			</if>
+			<if test="playid != null">
+				playid,
+			</if>
+			<if test="issue != null">
+				issue,
+			</if>
+			<if test="luck_num != null">
+				luck_num,
+			</if>
+			<if test="plan_content != null">
+				plan_content,
+			</if>
+			<if test="plan_flash != null">
+				plan_flash,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="type != null">
+				#{type},
+			</if>
+			<if test="playid != null">
+				#{playid},
+			</if>
+			<if test="issue != null">
+				#{issue},
+			</if>
+			<if test="luck_num != null">
+				#{luck_num},
+			</if>
+			<if test="plan_content != null">
+				#{plan_content},
+			</if>
+			<if test="plan_flash != null">
+				#{plan_flash},
+			</if>
+		</trim>
+	</update>
+	<insert id="insertLotteryPlan" parameterType="map">
+		INSERT INTO lottery_plan
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="type != null">
+				type,
+			</if>
+			<if test="playid != null">
+				playid,
+			</if>
+			<if test="issue != null">
+				issue,
+			</if>
+			<if test="plan_num != null">
+				plan_num,
+			</if>
+			<if test="plan_content != null">
+				plan_content,
+			</if>
+			<if test="plan_flash != null">
+				plan_flash,
+			</if>
+			<if test="plan_count != null">
+				plan_count,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="type != null">
+				#{type},
+			</if>
+			<if test="playid != null">
+				#{playid},
+			</if>
+			<if test="issue != null">
+				#{issue},
+			</if>
+			<if test="plan_num != null">
+				#{plan_num},
+			</if>
+			<if test="plan_content != null">
+				#{plan_content},
+			</if>
+			<if test="plan_flash != null">
+				#{plan_flash},
+			</if>
+			<if test="plan_count != null">
+				#{plan_count},
+			</if>
+		</trim>
+	</insert>
+	<select id="getAllPlay" resultType="map" parameterType="map">
+		SELECT game_played.id AS playid,plan_name,plan_invoke,num_invoke,game_type.`suffix_length` FROM `game_played` 
+		LEFT JOIN game_type ON game_type.`gameID`=game_played.`type`
+		WHERE game_played.`type` = #{one_type_id} AND game_played.`plan_invoke` IS NOT NULL AND game_type.`status` = 1 
+		AND `game_played`.`status` = 1 
+	</select>
+</mapper>

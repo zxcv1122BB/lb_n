@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lb.sys.dao.WebListenerMapper" >
+<select id="selectWebList" resultType="map" parameterType="String">
+	SELECT
+		id,
+		web_name,
+		web_CHname,
+		web_states,
+		link_url,
+		desc_info
+	FROM
+		web_listener
+	WHERE web_name = #{webName}
+</select>
+<select id="selectWebTitleList" resultType="map" >
+	SELECT
+		id,
+		web_name,
+		web_CHname,
+		web_states,
+		link_url,
+		desc_info
+	FROM
+		web_listener
+</select>
+</mapper>

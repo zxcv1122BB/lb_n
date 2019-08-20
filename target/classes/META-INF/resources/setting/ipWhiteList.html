@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>管理ip白名单</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="../plugins/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="../public/css/fenye.css"/>
+    <link rel="stylesheet" href="css/ipWhiteList.css"/>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <fieldset class="layui-elem-field">
+        <legend>管理ip白名单</legend>
+        <div class="add_btn" style="padding: 15px;">
+            <button class="layui-btn" @click="popadd">添加</button>
+            <select v-model="status" style="width: 30%;height: 38px;vertical-align: bottom;border-radius: 4px;">
+                <option value="0">已启用</option>
+                <option value="1">已禁用</option>
+            </select>
+        </div>
+        <div class="layui-field-box">
+            <table class="layui-table admin-table" v-cloak>
+                <thead>
+                <tr>
+                    <th style="width: 5%;">编号</th>
+                    <th style="width: 15%;">ip地址</th>
+                    <th style="width: 15%;">录入时间</th>
+                    <th style="width: 15%;">修改时间</th>
+                    <th style="width: 10%;">状态</th>
+                    <th style="width: 25%;">备注信息</th>
+                    <th style="width: 15%;">操作</th>
+                </tr>
+                </thead>
+                <tbody id="content">
+                <tr v-if="datas.length==0">
+                    <td colspan="7">暂无数据</td>
+                </tr>
+                <tr v-else v-for="(item,index) in datas">
+                    <td v-cloak>{{item.id}}</td>
+                    <td v-cloak :title="item.ipaddress">{{item.ipaddress}}</td>
+                    <td v-cloak>{{item.inputtime}}</td>
+                    <td v-cloak>{{item.updatetime}}</td>
+                    <td v-cloak>
+                        <div class="layui-form">
+                            <div class="layui-form-item">
+                                <div class="layui-input-block" style="margin-left: 0;">
+                                    <div v-if="item.status==0"
+                                         class="layui-unselect layui-form-switch layui-form-onswitch" :id="item.id" @click="changeType(item.id,item.status,index)">
+                                        <em>启用</em>
+                                        <i></i>
+                                    </div>
+                                    <div v-else class="layui-unselect layui-form-switch" :id="item.id" @click="changeType(item.id,item.status,index)">
+                                        <em>禁用</em>
+                                        <i></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td v-cloak :title="item.remark">{{item.remark}}</td>
+                    <td v-cloak>
+                        <a class="layui-btn layui-btn-mini" @click="popMsg(item.id,item.ipaddress,item.remark,item.status)">修改信息</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <!--页码设置-->
+        <div class="yema">
+            <!--页码左边-->
+            <div class="selectYema">
+                <p v-cloak>
+                    总共{{total}}条记录.每页显示
+                    <select v-model="pageNum">
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="200">200</option><option value="500">500</option>
+                    </select>
+                    条记录
+                </p>
+            </div>
+            <!--右边分页-->
+            <div id="fenye" style="text-align: right;"></div>
+        </div>
+    </fieldset>
+    <!--修改信息弹出框-默认隐藏-->
+    <div class="popPass">
+        <div class="inner">
+            <!--当前旧ip-->
+            <div class="layui-form-item">
+                <label class="layui-form-label">当前ip:</label>
+                <div class="layui-input-block" style="padding: 9px 15px;box-sizing: border-box;">{{oddIp}}</div>
+            </div>
+            <!--新ip-->
+            <div class="layui-form-item">
+                <label class="layui-form-label">新ip:</label>
+                <div class="layui-input-inline">
+                    <input type="text" class="layui-input" name="password" placeholder="请输入新ip..." v-model="newIp" />
+                </div>
+            </div>
+            <!--备注信息-->
+            <div class="layui-form-item">
+                <label class="layui-form-label">备注信息</label>
+                <div class="layui-input-block">
+                    <textarea v-model="remark_" style="max-width: 200px;"></textarea>
+                </div>
+            </div>
+            <!--状态信息-->
+            <div class="layui-form-item">
+                <label class="layui-form-label">状态</label>
+                <div class="layui-input-block">
+                    <select v-model="status_" style="height: 35px;width: 100px;">
+                        <option value="0">启用</option>
+                        <option value="1">禁用</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--添加ip弹出框-默认隐藏-->
+    <div class="popAdd">
+        <div class="inner">
+            <!--ip地址-->
+            <div class="layui-form-item">
+                <label class="layui-form-label">ip地址</label>
+                <div class="layui-input-block">
+                    <input type="text" name="title" placeholder="请输入ip地址"
+                    autocomplete="off" class="layui-input" v-model="ipAddress"/>
+                </div>
+            </div>
+            <!--备注信息-->
+            <div class="layui-form-item">
+                <label class="layui-form-label">备注信息</label>
+                <div class="layui-input-block">
+                    <!--<input type="text" name="title" placeholder="备注信息." class="layui-input" v-model="remark"/>-->
+                    <textarea v-model="remark" style="max-width: 240px;"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript" src="../public/js/jquery.js"></script>
+<script type="text/javascript" src="../public/js/jqPaginator.js"></script>
+<script type="text/javascript" src="../plugins/layui/layui.js"></script>
+<script type="text/javascript" src="../public/js/vue.min.js"></script>
+<script type="text/javascript" src="../public/js/security.js"></script>
+<script type="text/javascript" src="../public/js/send_request.js"></script>
+<script type="text/javascript" src="js/ipWhiteList.js"></script>
+<script>
+    layui.use(['layer'], function () {
+        var layer = layui.layer;
+    });
+</script>
+</body>
+</html>

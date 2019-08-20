@@ -1,0 +1,1247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lb.sys.dao.UserModelMapper">
+	<resultMap id="BaseResultMap" type="com.lb.sys.model.UserModel">
+		<id column="UID" jdbcType="BIGINT" property="uid" />
+		<result column="AGENT_ID" jdbcType="BIGINT" property="agentId" />
+		<result column="PROMOTION_CODE" jdbcType="VARCHAR" property="promotionCode" />
+		<result column="PARENT_ID" jdbcType="BIGINT" property="parentId" />
+		<result column="PARENTS" jdbcType="VARCHAR" property="parents" />
+		<result column="USER_NAME" jdbcType="VARCHAR" property="userName" />
+		<result column="PSSWORD" jdbcType="VARCHAR" property="pssword" />
+		<result column="COIN_PSSWORD" jdbcType="VARCHAR" property="coinPssword" />
+		<result column="PHONE_NUMBER" jdbcType="VARCHAR" property="phoneNumber" />
+		<result column="QQ" jdbcType="VARCHAR" property="qq" />
+		<result column="WEIXIN" jdbcType="VARCHAR" property="weixin" />
+		<result column="SOURCE" jdbcType="BIT" property="source" />
+		<result column="NICK_NAME" jdbcType="VARCHAR" property="nickName" />
+		<result column="NAME" jdbcType="VARCHAR" property="name" />
+		<result column="REG_IP" jdbcType="VARCHAR" property="regIp" />
+		<result column="REG_TIME" jdbcType="TIMESTAMP" property="regTime" />
+		<result column="GRADE" jdbcType="TINYINT" property="grade" />
+		<result column="USERTYPE" jdbcType="VARCHAR" property="usertype" />
+		<result column="SCORE" jdbcType="BIGINT" property="score" />
+		<result column="SCORE_TOTAL" jdbcType="BIGINT" property="scoreTotal" />
+		<result column="COIN" jdbcType="DECIMAL" property="coin" />
+		<result column="FCION" jdbcType="REAL" property="fcion" />
+		<result column="BETSUM" jdbcType="DECIMAL" property="betsum" />
+		<result column="STATUS" jdbcType="TINYINT" property="status" />
+		<result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+		<result column="INPUT_TIME" jdbcType="TIMESTAMP" property="inputTime" />
+		<result column="VIP_ID" jdbcType="INTEGER" property="vipId" />
+		<result column="LAST_LOGIN_IP" jdbcType="VARCHAR" property="lastloginip" />
+		<result column="CID" jdbcType="VARCHAR" property="cid"/>
+		<result column="WITHDRAW_NEEDSUM" jdbcType="DECIMAL" property="withdrawNeedsum"/>
+		<result column="RECHARGE_TIMES" jdbcType="INTEGER" property="rechargeTimes"/>
+		<result column="BANK_ACCOUNT" jdbcType="VARCHAR" property="bankAccount"/>
+		<result column="BANK_NAME" jdbcType="VARCHAR" property="bankName"/>
+		<result column="BANK_ADDRESS" jdbcType="VARCHAR" property="bankAddress"/>
+	</resultMap>
+
+	<resultMap id="BaseResultMap2" type="com.lb.sys.model.UserModel">
+		<id column="UID" jdbcType="BIGINT" property="uid" />
+		<result column="AGENT_ID" jdbcType="BIGINT" property="agentId" />
+		<result column="PROMOTION_CODE" jdbcType="VARCHAR" property="promotionCode" />
+		<result column="PARENT_ID" jdbcType="BIGINT" property="parentId" />
+		<result column="PARENTS" jdbcType="VARCHAR" property="parents" />
+		<result column="USER_NAME" jdbcType="VARCHAR" property="userName" />
+		<result column="PSSWORD" jdbcType="VARCHAR" property="pssword" />
+		<result column="COIN_PSSWORD" jdbcType="VARCHAR" property="coinPssword" />
+		<result column="PHONE_NUMBER" jdbcType="VARCHAR" property="phoneNumber" />
+		<result column="QQ" jdbcType="VARCHAR" property="qq" />
+		<result column="WEIXIN" jdbcType="VARCHAR" property="weixin" />
+		<result column="SOURCE" jdbcType="TINYINT" property="source" />
+		<result column="NICK_NAME" jdbcType="VARCHAR" property="nickName" />
+		<result column="NAME" jdbcType="VARCHAR" property="name" />
+		<result column="REG_IP" jdbcType="VARCHAR" property="regIp" />
+		<result column="REG_TIME" jdbcType="TIMESTAMP" property="regTime" />
+		<result column="GRADE" jdbcType="TINYINT" property="grade" />
+		<result column="SCORE" jdbcType="BIGINT" property="score" />
+		<result column="SCORE_TOTAL" jdbcType="BIGINT" property="scoreTotal" />
+		<result column="CION" jdbcType="DECIMAL" property="coin" />
+		<result column="FCION" jdbcType="FLOAT" property="fcion" />
+		<result column="STATUS" jdbcType="TINYINT" property="status" />
+		<result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+		<result column="INPUT_TIME" jdbcType="TIMESTAMP" property="inputTime" />
+		<result column="vipId" jdbcType="INTEGER" property="vipId" />
+		<result column="vipName" jdbcType="VARCHAR" property="vipName" />
+	</resultMap>
+	
+	
+	<resultMap id="BaseResultMap3" type="com.lb.sys.model.UserModel">
+		<id column="UID" jdbcType="BIGINT" property="uid" />
+		<result column="PROMOTION_CODE" jdbcType="VARCHAR" property="promotionCode" />
+		<result column="PARENT_ID" jdbcType="BIGINT" property="parentId" />
+		<result column="USER_NAME" jdbcType="VARCHAR" property="userName" />
+		<result column="PHONE_NUMBER" jdbcType="VARCHAR" property="phoneNumber" />
+		<result column="QQ" jdbcType="VARCHAR" property="qq" />
+		<result column="WEIXIN" jdbcType="VARCHAR" property="weixin" />
+		<result column="NAME" jdbcType="VARCHAR" property="name" />
+		<result column="REG_IP" jdbcType="VARCHAR" property="regIp" />
+		<result column="REG_TIME" jdbcType="TIMESTAMP" property="regTime" />
+        <result column="USERTYPE" jdbcType="VARCHAR" property="usertype" />
+		<result column="SCORE" jdbcType="BIGINT" property="score" />
+		<result column="SCORE_TOTAL" jdbcType="BIGINT" property="scoreTotal" />
+		<result column="CION" jdbcType="DECIMAL" property="coin" />
+		<result column="FCION" jdbcType="FLOAT" property="fcion" />
+		 
+		<result column="BETSUM" jdbcType="DECIMAL" property="betsum" />
+		<result column="EMAIL" jdbcType="VARCHAR" property="email" />
+		
+		<result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+		<result column="INPUT_TIME" jdbcType="TIMESTAMP" property="inputTime" />
+		<result column="vipName" jdbcType="VARCHAR" property="vipName" />
+	</resultMap>
+    <!-- 查询会员数据概况 -->
+	<select id="selectUserDate" parameterType="java.util.Map" resultType="com.lb.report.model.UserCount">
+			select 
+			 	u.user_name,
+			 	u.agent_count,
+			 	u.reg_time,
+			 	u.coin,
+			 	u.betsum,
+			 	u.withdraw_needsum,
+			 	(
+				 	SELECT 
+				 		<!-- 手动充值总计 depositRgSum-->
+				 		IFNULL(sum(case when m.deposit_operate_type=2 then m.amount else 0 end),0.00) as depositRgSum
+					from  member_deposit m
+					WHERE m.uid = u.UID and m.state=3 
+					<!-- 判断时间是否为空 -->
+					 <if test="startTime !=null and startTime!='' and endTime !=null and endTime != '' ">
+					    and m.operate_time BETWEEN #{startTime} AND #{endTime}
+					 </if>
+		       ) as depositRgSum,
+				(SELECT
+					CONCAT(
+						<!-- 竞彩足球投注额fCSumCoin -->
+						IFNULL(sum(case when gb.type=1 then gb.amount else 0.00 end),0.00),",",
+						<!-- 传统足球投注额 hisFSumCoin-->
+						IFNULL(sum(case when gb.type=2 then gb.amount else 0.00 end),0.00),",",
+						<!-- 足球单场投注额fBSumCoin -->
+						IFNULL(sum(case when gb.type=3 then gb.amount else 0.00 end),0.00),",",
+						<!-- 竞彩篮球投注额 BCSumCoin-->
+						IFNULL(sum(case when gb.type=4 then gb.amount else 0.00 end),0.00),",",
+						<!-- 数字彩投注额 BCSumCoin-->
+						IFNULL(sum(case when gb.type <![CDATA[>]]>4 and gb.game_type=1 
+							then gb.amount else 0.00 end),0.00),",",
+						<!-- 棋牌投注额 qpSumCoin-->
+						IFNULL(sum(case when gb.game_type=2 then gb.amount else 0.00 end),0.00)	
+					) as gBet		
+					FROM game_bets gb<!-- ,lshistory.game_bets_his hgb -->
+					WHERE gb.uid = u.UID and gb.status<![CDATA[<>]]>2
+					<!-- 判断时间是否为空 -->
+					 <if test="startTime !=null and startTime!='' and endTime !=null and endTime != '' ">
+					    and gb.action_time BETWEEN #{startTime} AND #{endTime}
+					 </if>
+			       ) as gBet,
+			       (SELECT  
+			      		 <!-- 最近详情lastDeposit lastDepositAwamount，lastDepositTime，lastDepositInfo-->
+						CONCAT(m.amount,",",m.apply_time,",",m.info)
+						from member_deposit  m
+						WHERE m.uid = u.UID and m.state=3
+						<!-- 判断时间是否为空 -->
+						 <if test="startTime !=null and startTime!='' and endTime !=null and endTime != '' ">
+						    and m.apply_time BETWEEN #{startTime} AND #{endTime}
+						 </if>
+						ORDER BY m.apply_time DESC LIMIT 1
+					) as lastDeposit,
+			       (SELECT 
+						<!-- 最近提现详情lastWithdraw lastWithdrwAwamount，lastWithdrawTime，lastWithdrawInfo-->
+						CONCAT(m.amount,",",m.apply_time,",",m.info)
+						from member_withdraw m
+						WHERE m.uid = u.UID and m.state=3
+						<!-- 判断时间是否为空 -->
+						 <if test="startTime !=null and startTime!='' and endTime !=null and endTime != '' ">
+						    and m.apply_time BETWEEN #{startTime} AND #{endTime}
+						 </if>
+						 ORDER BY m.apply_time DESC LIMIT 1
+			       ) as lastWithdraw,
+				(SELECT
+				       CONCAT(
+								<!-- 注册赠送regGivingSum -->
+								IFNULL(sum(case when cl.coin_operate_type=4 then cl.coin else 0.00 end),0.00),",",
+								<!-- 充值赠送depositGivingSum -->
+								IFNULL(sum(case when cl.coin_operate_type=10 then cl.coin else 0.00 end),0.00),",",
+								<!-- 加款addMoneySum-->
+								IFNULL(sum(case when cl.coin_operate_type=6 then cl.coin else 0.00 end),0.00),",",
+								<!-- 减款 subtractMoneySum-->
+								IFNULL(sum(case when cl.coin_operate_type=7 then cl.coin else 0.00 end),0.00),",",
+								<!-- 赠送 rgGivingMoneySumCoin-->
+								IFNULL(sum(case when (cl.coin_operate_type=17 or cl.coin_operate_type=21) 
+									then cl.coin else 0.00 end),0.00),",",
+								<!-- 活动中奖activityBonusCoin-->
+								IFNULL(sum(case when (cl.coin_operate_type=5 or cl.coin_operate_type=14 
+									or cl.coin_operate_type=22 or cl.coin_operate_type=23) 
+									then cl.coin else 0.00 end),0.00),",",
+								<!-- 代理加款proxyAddMoneySumCoin-->
+								IFNULL(sum(case when cl.coin_operate_type=18 then cl.coin else 0.00 end),0.00),",",
+								<!-- 代理减款 proxySubtractMoneySumCoin-->
+								IFNULL(sum(case when cl.coin_operate_type=19 then cl.coin else 0.00 end),0.00),",",
+								<!-- 投注返利betRebate-->
+								IFNULL(sum(case when cl.coin_operate_type=27 then cl.coin else 0.00 end),0.00),",",
+								<!-- 充值总计 depositSum -->
+								IFNULL(sum(case when cl.coin_operate_type=1 then cl.coin else 0.00 end),0.00),",",
+								<!-- 提现总计 withdrawSum-->
+								IFNULL(sum(case when cl.coin_operate_type=2 then cl.coin else 0.00 end),0.00)
+							)
+					FROM  coin_log cl
+					WHERE cl.uid = u.UID
+					<!-- 判断时间是否为空 -->
+					 <if test="startTime !=null and startTime!='' and endTime !=null and endTime != '' ">
+					    and cl.inputTime BETWEEN #{startTime} AND #{endTime}
+					 </if>
+			       ) as cLog
+	 		from  user_info u 
+	 		WHERE u.USER_NAME=#{USER_NAME}
+	</select>
+	<select id="selectLsHistoryUserDate" parameterType="java.util.Map" resultType="com.lb.report.model.UserCount">
+		select 
+		   (SELECT 
+				<!-- 最近提现详情lastWithdraw lastWithdrwAwamount，lastWithdrawTime，lastWithdrawInfo-->
+				CONCAT(m.amount,",",m.apply_time,",",m.info) as lastWithdraw
+				from lshistory.member_withdraw_his m
+				WHERE m.uid = u.UID and m.state=3
+				<!-- 判断时间是否为空 -->
+				 <if test="startTime !=null and startTime!='' and endTime !=null and endTime != '' ">
+				    and m.apply_time BETWEEN #{startTime} AND #{endTime}
+				 </if>
+				 ORDER BY m.apply_time DESC LIMIT 1
+	       ) as lastWithdraw,
+	       (SELECT  
+	      		 <!-- 最近详情lastDeposit lastDepositAwamount，lastDepositTime，lastDepositInfo-->
+				CONCAT(m.amount,",",m.apply_time,",",m.info) as lastDeposit
+				from lshistory.member_deposit_his  m
+				WHERE m.uid = u.UID and m.state=3
+				<!-- 判断时间是否为空 -->
+				 <if test="startTime !=null and startTime!='' and endTime !=null and endTime != '' ">
+				    and m.apply_time BETWEEN #{startTime} AND #{endTime}
+				 </if>
+				ORDER BY m.apply_time DESC LIMIT 1
+			) as lastDeposit,
+		  (
+		 	SELECT 
+		 		<!-- 手动充值总计 depositRgSum-->
+		 		IFNULL(sum(case when m.deposit_operate_type=2 then m.amount else 0 end),0.00) as depositRgSum
+			from  lshistory.member_deposit_his m
+			WHERE m.uid = u.UID and m.state=3 
+			<!-- 判断时间是否为空 -->
+			 <if test="startTime !=null and startTime!='' and endTime !=null and endTime != '' ">
+			    and m.operate_time BETWEEN #{startTime} AND #{endTime}
+			 </if>
+	        ) as depositRgSum,
+			(
+			 SELECT
+				CONCAT(
+					<!-- 竞彩足球投注额fCSumCoin -->
+					IFNULL(sum(case when gb.type=1 then gb.amount else 0.00 end),0.00),",",
+					<!-- 传统足球投注额 hisFSumCoin-->
+					IFNULL(sum(case when gb.type=2 then gb.amount else 0.00 end),0.00),",",
+					<!-- 足球单场投注额fBSumCoin -->
+					IFNULL(sum(case when gb.type=3 then gb.amount else 0.00 end),0.00),",",
+					<!-- 竞彩篮球投注额 BCSumCoin-->
+					IFNULL(sum(case when gb.type=4 then gb.amount else 0.00 end),0.00),",",
+					<!-- 数字彩投注额 BCSumCoin-->
+					IFNULL(sum(case when gb.type <![CDATA[>]]>4 and gb.game_type=1 
+						then gb.amount else 0.00 end),0.00),",",
+					<!-- 棋牌投注额 qpSumCoin-->
+					IFNULL(sum(case when gb.game_type=2 then gb.amount else 0.00 end),0.00)	
+				) as gBet	
+				FROM  lshistory.game_bets_his gb
+				WHERE gb.uid = u.UID and gb.status<![CDATA[<>]]>2
+				<!-- 判断时间是否为空 -->
+				 <if test="startTime !=null and startTime!='' and endTime !=null and endTime != '' ">
+				    and gb.action_time BETWEEN #{startTime} AND #{endTime}
+				 </if>
+		       ) as gBet,
+		       (
+		       	SELECT 
+					<!-- 提现总计 withdrawSum-->
+					IFNULL(sum(m.amount),0.00)
+					from  lshistory.member_withdraw_his m
+					WHERE m.uid = u.UID and m.state=3
+					<!-- 判断时间是否为空 -->
+					 <if test="startTime !=null and startTime!='' and endTime !=null and endTime != '' ">
+					    and m.operate_time BETWEEN #{startTime} AND #{endTime}
+					 </if>
+		       ) as withdrawSum,
+			   (
+			    SELECT
+			       CONCAT(
+							<!-- 注册赠送regGivingSum -->
+							IFNULL(sum(case when cl.coin_operate_type=4 then cl.coin else 0.00 end),0.00),",",
+							<!-- 充值赠送depositGivingSum -->
+							IFNULL(sum(case when cl.coin_operate_type=10 then cl.coin else 0.00 end),0.00),",",
+							<!-- 加款addMoneySum-->
+							IFNULL(sum(case when cl.coin_operate_type=6 then cl.coin else 0.00 end),0.00),",",
+							<!-- 减款 subtractMoneySum-->
+							IFNULL(sum(case when cl.coin_operate_type=7 then cl.coin else 0.00 end),0.00),",",
+							<!-- 赠送 rgGivingMoneySumCoin-->
+							IFNULL(sum(case when (cl.coin_operate_type=17 or cl.coin_operate_type=21) 
+								then cl.coin else 0.00 end),0.00),",",
+							<!-- 活动中奖activityBonusCoin-->
+							IFNULL(sum(case when (cl.coin_operate_type=5 or cl.coin_operate_type=14 
+								or cl.coin_operate_type=22 or cl.coin_operate_type=23) 
+								then cl.coin else 0.00 end),0.00),",",
+							<!-- 代理加款proxyAddMoneySumCoin-->
+							IFNULL(sum(case when cl.coin_operate_type=18 then cl.coin else 0.00 end),0.00),",",
+							<!-- 代理减款 proxySubtractMoneySumCoin-->
+							IFNULL(sum(case when cl.coin_operate_type=19 then cl.coin else 0.00 end),0.00),",",
+							<!-- 投注返利betRebate-->
+							IFNULL(sum(case when cl.coin_operate_type=27 then cl.coin else 0.00 end),0.00),",",
+							<!-- 充值总计 depositSum -->
+							IFNULL(sum(case when cl.coin_operate_type=1 then cl.coin else 0.00 end),0.00),",",
+							<!-- 提现总计 withdrawSum-->
+							IFNULL(sum(case when cl.coin_operate_type=2 then cl.coin else 0.00 end),0.00) 
+						) as cLog
+				FROM  lshistory.`coin_log_his` cl
+				WHERE cl.uid = u.UID
+				<!-- 判断时间是否为空 -->
+				 <if test="startTime !=null and startTime!='' and endTime !=null and endTime != '' ">
+				    and cl.inputTime BETWEEN #{startTime} AND #{endTime}
+				 </if>
+		       ) as cLog
+	 		from  user_info u
+	 		WHERE u.USER_NAME=#{USER_NAME}
+	</select>
+	<select id="selectUserCountByUserName" parameterType="java.util.Map" resultType="int">
+	   SELECT COUNT(*) FROM user_info WHERE <!-- user_info.USERTYPE='NORMAL' AND --> USER_NAME=#{USER_NAME}
+	</select>
+
+	<!-- 查询某一个组中的所有成员 -->
+	<select id="selectVipByUser" resultMap="BaseResultMap2">
+		select uvi.vipId,uvi.vipName,ui.*
+		from user_info ui,user_vip_info uvi
+		where ui.VIP_ID=uvi.vipId AND
+		ui.VIP_ID=#{VIP_ID}
+		<!-- 判断是否需要模糊搜索 -->
+		<if test="username != null and username !='' ">
+			and ui.USER_NAME like CONCAT(CONCAT('%',#{username}),'%')
+		</if>
+	</select>
+
+    <!-- 参数为一个map集合 -->
+	<select id="exportUser_Info"  resultMap="BaseResultMap3">
+		SELECT ui.UID,ui.PROMOTION_CODE,ui.USER_NAME,ui.PHONE_NUMBER,ui.QQ,ui.WEIXIN,
+		ui.NAME,ui.REG_IP,ui.REG_TIME,ui.USERTYPE,ui.SCORE,ui.SCORE_TOTAL,ui.COIN,ui.FCION,ui.BETSUM,ui.EMAIL,
+		ui.UPDATE_TIME,ui.INPUT_TIME,uvi.vipName as vipName
+	    FROM user_info ui,user_vip_info uvi WHERE ui.VIP_Id=uvi.vipId
+		and ui.VIP_ID=#{VIP_Id}
+	</select>
+	
+	    <!-- 参数为一个map集合 -->
+	<select id="selectBankType"  resultType="map">
+		SELECT itemID,itemName from code_library where codeID='bankType'
+	</select>
+
+
+	<!-- 修改会员的禁用状态 -->
+	<update id="updateStatc" parameterType="com.lb.sys.model.UserModel">
+		update user_info 
+		<set>
+			<if test="user.CHAT_ADMIN != null">
+				CHAT_ADMIN=#{user.CHAT_ADMIN},
+			</if>
+			<if test="user.status != null">
+				STATUS=#{user.status},
+			</if>
+		</set>
+		 where UID=#{user.uid}
+	</update>
+
+	<!-- 模糊查询会员的信息 QQ <select id="selectLike" resultMap="BaseResultMap"> select 
+		* from user_info where 1=1 <if test="userModel.phoneNumber != null and userModel.phoneNumber 
+		!= '' "> and PHONE_NUMBER like #{userModel.phoneNumber} </if> <if test="userModel.qq 
+		!= null and userModel.qq != '' "> and QQ like #{userModel.qq} </if> <if test="userModel.weixin 
+		!= null and userModel.weixin != '' "> and WEIXIN like #{userModel.weixin} 
+		</if> <if test="userModel.userName !=null and userModel.userName !='' "> 
+		and USER_NAME like #{userModel.userName} </if> </select> -->
+
+
+
+    <!-- 模糊搜索 -->
+	<select id="selectLike" resultMap="BaseResultMap">
+		SELECT uvi.vipId,uvi.vipName,ui.* FROM user_info ui,user_vip_info uvi WHERE ui.VIP_Id=uvi.vipId
+		<if test="userModel.userName !=null and userModel.userName !='' ">
+			and ui.USER_NAME like CONCAT(CONCAT('%',#{userModel.userName},'%') 
+		</if>
+		<if test="userModel.weixin !=null and userModel.weixin !='' ">
+			and ui.WEIXIN like CONCAT(CONCAT('%',#{userModel.weixin},'%') 
+		</if>
+		<if test="userModel.qq !=null and userModel.qq !='' ">
+			and ui.QQ like CONCAT(CONCAT('%',#{userModel.qq},'%') 
+		</if>
+		<if test="userModel.phoneNumber !=null and userModel.phoneNumber !=''">
+		    and ui.PHONE_NUMBER like CONCAT(CONCAT('%',#{userModel.phoneNumber}),'%') 
+		</if>
+		<if test="userModel.vipId !=null and userModel.vipId !='' ">
+		     and ui. VIP_ID = #{userModel.vipId}
+		</if>
+		<if test="userModel.coin !=null and userModel.coin !='' ">
+		    and ui.COIN > #{userModel.coin}
+		</if>
+		<if test="userModel.shangName !=null and userModel.shangName !='' ">
+		   and PARENT_ID=(SELECT UID FROM user_info WHERE USER_NAME =#{userModel.shangName})
+		</if>
+		
+	</select>
+
+
+	<select id="selectAllUser" resultMap="BaseResultMap2">
+		SELECT uvi.vipId,uvi.vipName,ui.* FROM user_info ui,user_vip_info uvi WHERE ui.VIP_Id=uvi.vipId and ui.STATUS =1;
+		
+	</select>
+
+	<select id="queryUserByUserName" resultMap="BaseResultMap" parameterType="string">
+		select * from
+		user_info where USER_NAME=#{userName}
+
+	</select>
+
+	<update id="updateCoin" parameterType="map">
+		update user_info set
+			<if test="VIP_ID != null and VIP_ID !='' and VIP_ID != -1">
+				VIP_ID = IF(#{VIP_ID}>VIP_ID,#{VIP_ID},VIP_ID),
+			</if> 
+			<choose>
+				<when test="isWithdraw==1">
+					<choose>
+						<when test="deductMoney==1">
+							COIN=COIN+#{coin}
+						</when>
+						<otherwise>
+							COIN=COIN+#{coin},
+							WITHDRAW_NEEDSUM=0.00,
+							BETSUM=0.00
+						</otherwise>
+					</choose>
+				</when>
+				<otherwise>
+					<choose>
+						<!-- 赠送 -->
+						<when test=" giving ==1">
+							COIN=COIN+#{coin},
+							WITHDRAW_NEEDSUM=WITHDRAW_NEEDSUM+#{coin}*IFNULL((SELECT IFNULL(sys_config1,0.00) FROM sys_configure WHERE on_off = 1 AND configure = "cashFlowMultiplier"),0.00) 
+						</when>
+						<!-- 充值 -->
+						<otherwise>
+							RECHARGE_TIMES=RECHARGE_TIMES+1,COIN=COIN+#{coin}+#{depositGive},
+							WITHDRAW_NEEDSUM=WITHDRAW_NEEDSUM+#{coin}*IFNULL((SELECT IFNULL(sys_config1,0.00) FROM sys_configure WHERE on_off = 1 AND configure = "drawRunTimes"),0.00)
+									+#{depositGive}*IFNULL((SELECT IFNULL(sys_config1,0.00) FROM sys_configure WHERE on_off = 1 AND configure = "cashFlowMultiplier"),0.00) 
+							
+						</otherwise>
+					</choose>
+					
+				</otherwise>
+			</choose>
+		where UID=#{uid}
+	</update>
+
+	<update id="updateBetsum" parameterType="com.lb.sys.model.UserModel">
+		update user_info set
+			WITHDRAW_NEEDSUM=WITHDRAW_NEEDSUM+#{user.withdrawNeedsum}
+		where UID=#{user.uid} 
+	</update>
+	<select id="queryUserNameByids" parameterType="long" resultType="string">
+		select USER_NAME from user_info  where
+		<foreach collection="list" item="UID" open="UID in (" close=")" separator=",">
+			#{UID}
+		</foreach>
+	</select>
+	<!-- 站内信查询用户名和id -->
+	<select id="queryUsername"  resultType="com.lb.sys.model.UserModel" parameterType="map">
+		select USER_NAME,NAME,UID,USERTYPE from user_info 
+		<where>
+			<if test="status != null and status != '' ">
+	    		STATUS = #{status}
+	    	</if>
+		</where> 
+	</select>
+	
+	
+	
+	<!-- 修改会员信息 -->
+   <update id="updateByPrimaryKeySelective" parameterType="com.lb.sys.model.UserModel">
+    update user_info
+    <set>
+      <if test="agentId != null">
+        AGENT_ID = #{agentId,jdbcType=INTEGER},
+      </if>
+      <if test="promotionCode != null">
+        PROMOTION_CODE = #{promotionCode,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null">
+        PARENT_ID = #{parentId,jdbcType=BIGINT},
+      </if>
+      <if test="parents != null">
+        PARENTS = #{parents,jdbcType=VARCHAR},
+      </if>
+      <if test="userName != null">
+        USER_NAME = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="pssword != null">
+        PSSWORD = #{pssword,jdbcType=VARCHAR},
+      </if>
+      <if test="coinPssword != null">
+        COIN_PSSWORD = #{coinPssword,jdbcType=VARCHAR},
+      </if>
+      <if test="phoneNumber != null">
+        PHONE_NUMBER = #{phoneNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="qq != null">
+        QQ = #{qq,jdbcType=VARCHAR},
+      </if>
+      <if test="weixin != null">
+        WEIXIN = #{weixin,jdbcType=VARCHAR},
+      </if>
+      <if test="source != null">
+        SOURCE = #{source,jdbcType=BIT},
+      </if>
+      <if test="nickName != null">
+        NICK_NAME = #{nickName,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        NAME = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="regIp != null">
+        REG_IP = #{regIp,jdbcType=VARCHAR},
+      </if>
+      <if test="regTime != null">
+        REG_TIME = #{regTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="grade != null">
+        GRADE = #{grade,jdbcType=TINYINT},
+      </if>
+      <if test="usertype != null">
+        USERTYPE = #{usertype,jdbcType=VARCHAR},
+      </if>
+      <if test="score != null">
+        SCORE = #{score,jdbcType=BIGINT},
+      </if>
+      <if test="scoreTotal != null">
+        SCORE_TOTAL = #{scoreTotal,jdbcType=BIGINT},
+      </if>
+      <if test="coin != null">
+        COIN = #{coin,jdbcType=DECIMAL},
+      </if>
+      <if test="fcion != null">
+        FCION = #{fcion,jdbcType=REAL},
+      </if>
+      <if test="betsum != null">
+        BETSUM = #{betsum,jdbcType=DECIMAL},
+      </if>
+      <if test="status != null">
+        STATUS = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="updateTime != null">
+        UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="inputTime != null">
+        INPUT_TIME = #{inputTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="vipId != null">
+        VIP_ID = #{vipId,jdbcType=INTEGER},
+      </if>
+      <if test="email != null">
+        EMAIL = #{email,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where UID = #{uid,jdbcType=INTEGER}
+  </update>
+	<select id="queryUserList" resultType="com.lb.sys.model.UserVipModel">
+		SELECT
+			u.UID,
+			u.`USER_NAME` AS username,
+			u.name AS fullName,
+			<!-- u1.`USER_NAME` AS parentName, -->
+			u.COIN,
+			u.`AGENT_COUNT` AS proxyName,
+			u.`AGENT_COIN` AS agentCoin,
+			<!-- p.login_account AS proxyName, -->
+			u.VIP_ID AS vipId,
+			u.REG_TIME AS regTime,
+			u.LAST_LOGIN_TIME AS loginTime,
+			u.LAST_LOGIN_IP AS loginIp,
+			u.WITHDRAW_NEEDSUM as withdrawNeedsum,
+			u.remark,
+			v.vipName,
+			u.CHAT_ADMIN,
+			u.`AGENT_GRADE` AS agentGrade,
+			u.`USERTYPE` AS userType,
+			u.`REBATE_DATA` AS `data`,
+			u.status,
+			u.PHONE_NUMBER as phoneNumber,
+			u.qq,
+			u.line,
+			u.weixin,
+			u.CHANNEL as channel,
+			u.email,
+			u.BANK_ACCOUNT AS bankAccount,
+			u.BANK_NAME as bankName,
+			u.betsum,
+			u.REG_IP as regIp,
+			u.source,
+			u.score,
+			u.REG_SYSTEM as regSystem,
+			<!-- "loginAddress" as loginAddress, -->
+			u.BANK_BLACKLIST_STATUS AS bankBlackListStatus,
+			(SELECT user_info.user_name FROM user_info WHERE user_info.uid=u.parent_id) AS parentName,
+			u.BANK_ADDRESS AS bankAddress
+		FROM user_info u
+		<!-- LEFT JOIN user_info u1 ON u1.`UID`=u.PARENT_ID -->
+		LEFT JOIN user_vip_info v ON u.`VIP_ID`=v.`vipId` AND v.`status`=1
+		<!-- LEFT JOIN proxy_info p ON p.id=u.`AGENT_ID` -->
+		WHERE u.status <![CDATA[>=]]> 0 
+		<!-- AND u.USERTYPE='NORMAL' --> 
+		<if test="startTime != null and startTime != ''">
+			and u.REG_TIME <![CDATA[>=]]> #{startTime}
+		</if>
+		<if test="endTime != null and endTime != ''">
+		    and u.REG_TIME <![CDATA[<=]]> #{endTime}
+		</if>
+		<if test="vipName != null and vipName != ''">
+	      	AND v.vipName=#{vipName}
+		</if>
+		<if test="username != null and username != ''">
+	      	AND u.USER_NAME like CONCAT(CONCAT('%',#{username,jdbcType=VARCHAR}),'%')
+		</if>
+		<!-- <if test="parentName != null and parentName != ''">
+			AND u1.`USER_NAME` = #{parentName}
+		</if> -->
+		<!-- <if test="loginAccount != null and loginAccount != ''">
+	      	AND p.login_account =#{loginAccount}
+		</if> -->
+		<if test="loginAccount != null and loginAccount != ''">
+	      	AND u.`AGENT_COUNT` like CONCAT(CONCAT('%',#{loginAccount,jdbcType=VARCHAR}),'%')
+		</if>
+		<!-- <if test="parentName != null and parentName != ''">
+			AND u.`PARENT_ID` IN (SELECT user_info.uid FROM user_info WHERE user_info.`USER_NAME` like CONCAT(CONCAT('%',#{parentName,jdbcType=VARCHAR}),'%'))
+		</if> -->
+		<if test="loginDays != null and loginDays > 0">
+			AND TO_DAYS(NOW()) - TO_DAYS(u.LAST_LOGIN_TIME) <![CDATA[>=]]> #{loginDays}
+		</if>
+		<if test="coin != null and coin != ''">
+			AND u.COIN <![CDATA[>=]]> #{coin}
+		</if>
+		<if test="keywordOption != null and keywordOption != '' and keywordValue != null and keywordValue != ''">
+			AND u.${keywordOption} like CONCAT(CONCAT('%',#{keywordValue}),'%')
+		</if>
+		<if test="rechargeSituation != null and rechargeSituation != ''">
+			AND (SELECT COUNT(1) FROM member_deposit WHERE member_deposit.`uid` = u.`UID`)
+			<choose>
+				<when test="rechargeSituation > 0">
+					<![CDATA[>]]> 0
+				</when>
+				<otherwise>
+					= 0
+				</otherwise>
+			</choose>
+		</if>
+		<choose>
+			<when test="coinSort != null and coinSort != ''">
+				<if test="coinSort == 2">
+					order by u.COIN desc
+				</if>
+				<if test="coinSort == 1">
+					order by u.COIN ASC
+				</if>
+			</when>
+			<when test="timeSort != null and timeSort != ''">
+				<if test="timeSort == 2">
+					order by u.REG_TIME desc
+				</if>
+				<if test="timeSort == 1">
+					order by u.REG_TIME ASC
+				</if>
+			</when>
+			<when test="statusSort != null and statusSort != ''">
+				<if test="statusSort == 2">
+					order by u.status desc
+				</if>
+				<if test="statusSort == 1">
+					order by u.status ASC
+				</if>
+			</when>
+			<when test="remarkSort != null and remarkSort != ''">
+				<if test="remarkSort == 2">
+					order by v.remark desc
+				</if>
+				<if test="remarkSort == 1">
+					order by v.remark ASC
+				</if>
+			</when>
+			<otherwise>
+				order by u.REG_TIME desc
+			</otherwise>
+		</choose>
+	</select>
+	
+   <!-- 会员导出用 -->
+	<select id="exportUserList" resultType="com.lb.download.model.UserDownload">
+	    SELECT
+			u.`USER_NAME` AS username,
+			u.name AS fullName,
+			u.COIN,
+			u.REG_TIME AS regTime,
+			u.LAST_LOGIN_TIME AS loginTime,
+			u.LAST_LOGIN_IP AS loginIp,
+			v.vipName,
+			u.PHONE_NUMBER as phoneNumber,
+			u.qq,
+			u.weixin,
+			u.email,
+			u.BANK_ACCOUNT AS bankAccount,
+			u.BANK_NAME as bankName,
+			u.REG_IP as regIp,
+			u.BANK_ADDRESS AS bankAddress
+		FROM user_info u
+		LEFT JOIN user_vip_info v ON u.`VIP_ID`=v.`vipId`
+		<!-- LEFT JOIN proxy_info p ON p.id=u.`AGENT_ID` -->
+		WHERE  u.status <![CDATA[>=]]> 0
+		<if test="startTime != null and startTime != ''">
+			and u.REG_TIME <![CDATA[>=]]> #{startTime}
+		</if>
+		<if test="endTime != null and endTime != ''">
+		    and u.REG_TIME <![CDATA[<=]]> #{endTime}
+		</if>
+		<if test="vipName != null and vipName != ''">
+	      	and v.vipName=#{vipName}
+		</if>
+		<if test="username != null and username != ''">
+	      	and u.USER_NAME like CONCAT(CONCAT('%',#{username,jdbcType=VARCHAR}),'%')
+		</if>
+		<!-- <if test="loginAccount != null and loginAccount != ''">
+	      	and p.login_account =#{loginAccount}
+		</if> -->
+		<if test="parentName != null and parentName != ''">
+			<!-- AND u.`PARENT_ID` IN (SELECT user_info.uid FROM user_info WHERE user_info.`USER_NAME` like CONCAT(CONCAT('%',#{parentName,jdbcType=VARCHAR}),'%')) -->
+			and u.AGENT_COUNT like CONCAT(CONCAT('%',#{parentName,jdbcType=VARCHAR}),'%')
+		</if>
+		<if test="loginDays != null and loginDays > 0">
+			AND TO_DAYS(NOW()) - TO_DAYS(u.LAST_LOGIN_TIME) <![CDATA[>=]]> #{loginDays}
+		</if>
+		<if test="coin != null and coin != ''">
+			AND u.COIN <![CDATA[>=]]> #{coin}
+		</if>
+		<if test="keywordOption != null and keywordOption != '' and keywordValue != null and keywordValue != ''">
+			AND u.${keywordOption} like CONCAT(CONCAT('%',#{keywordValue}),'%')
+		</if>
+		<if test="rechargeSituation != null and rechargeSituation != ''">
+			AND (SELECT COUNT(1) FROM member_deposit WHERE member_deposit.`uid` = u.`UID`)
+			<choose>
+				<when test="rechargeSituation > 0">
+					<![CDATA[>]]> 0
+				</when>
+				<otherwise>
+					= 0
+				</otherwise>
+			</choose>
+		</if>
+		<choose>
+			<when test="coinSort != null and coinSort != ''">
+				<if test="coinSort == 2">
+					order by u.COIN desc
+				</if>
+				<if test="coinSort == 1">
+					order by u.COIN ASC
+				</if>
+			</when>
+			<when test="timeSort != null and timeSort != ''">
+				<if test="timeSort == 2">
+					order by u.REG_TIME desc
+				</if>
+				<if test="timeSort == 1">
+					order by u.REG_TIME ASC
+				</if>
+			</when>
+			<when test="statusSort != null and statusSort != ''">
+				<if test="statusSort == 2">
+					order by u.status desc
+				</if>
+				<if test="statusSort == 1">
+					order by u.status ASC
+				</if>
+			</when>
+			<when test="remarkSort != null and remarkSort != ''">
+				<if test="remarkSort == 2">
+					order by v.remark desc
+				</if>
+				<if test="remarkSort == 1">
+					order by v.remark ASC
+				</if>
+			</when>
+			<otherwise>
+				order by u.REG_TIME desc
+			</otherwise>
+		</choose>
+	</select>
+	
+	<update id="updateVipUser" parameterType="map">
+    update user_info
+    <set>      
+      <if test="username != null and username != ''">
+        USER_NAME = #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null and password != ''">
+        PSSWORD = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="coinPssword != null and coinPssword != ''">
+        COIN_PSSWORD = #{coinPssword,jdbcType=VARCHAR},
+      </if>
+      <if test="proxyName != null and proxyName != ''">
+        AGENT_COUNT = #{proxyName,jdbcType=VARCHAR},
+      </if>
+      <if test="proxyId != null and proxyId != ''">
+        AGENT_ID = #{proxyId,jdbcType=VARCHAR},
+      </if>
+      <!-- <if test="phoneNumber != null and phoneNumber != ''">
+        PHONE_NUMBER = #{phoneNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="qq != null and qq != ''">
+        QQ = #{qq,jdbcType=VARCHAR},
+      </if>
+      <if test="weixin != null and weixin != ''">
+        WEIXIN = #{weixin,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null and email != ''">
+        EMAIL = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="bankAccount != null and bankAccount != '' and bankAddress != null and bankAddress != '' and bankName != null and bankName != ''">
+        BANK_ACCOUNT = #{bankAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="bankAddress != null and bankAddress != ''">
+        BANK_ADDRESS = #{bankAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="bankName != null and bankName != ''">
+        BANK_NAME = #{bankName,jdbcType=VARCHAR},
+      </if> -->
+      PHONE_NUMBER = #{phoneNumber},
+      QQ = #{qq},
+      LINE = #{line},
+      WEIXIN = #{weixin},
+      EMAIL = #{email},      
+      BANK_ACCOUNT = #{bankAccount},      
+      BANK_ADDRESS = #{bankAddress},      
+      BANK_NAME = #{bankName},
+      <choose>
+      	<when test="bankAccount != null and bankAccount != '' and bankAddress != null and bankAddress != '' and bankName != null and bankName != ''">
+      		PERFECT_MARKER =1,
+      	</when>
+      	<otherwise>
+      		PERFECT_MARKER =0,
+      	</otherwise>
+      </choose>
+      <if test="fullName != null and fullName != ''">
+        NAME = #{fullName,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null and status != ''">
+        STATUS = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="vipId != null and vipId != ''">
+        VIP_ID = #{vipId,jdbcType=INTEGER},
+      </if>
+      
+       <if test="remark != null and remark != ''">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+       <if test="bankBlackListStatus != null and bankBlackListStatus != ''">
+        BANK_BLACKLIST_STATUS = #{bankBlackListStatus},
+      </if>
+        UPDATE_TIME = NOW()
+    </set>
+    where UID = #{uid,jdbcType=INTEGER}
+    </update>
+    
+    <update id="updateVipUser1" parameterType="map">
+    update user_info
+    <set>      
+      <if test="password != null and password != ''">
+        PSSWORD = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="coinPssword != null and coinPssword != ''">
+        COIN_PSSWORD = #{coinPssword,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where UID = #{uid,jdbcType=INTEGER}
+    </update>
+    
+    <insert id="insertVipUser" parameterType="com.lb.sys.model.UserVipModel">
+	    insert into user_info(USER_NAME,PSSWORD,NAME,
+	   		PHONE_NUMBER,
+	   		<if test="qq != null and qq != ''">
+	   			QQ,
+	   		</if>
+	   		<if test="line != null and line != ''">
+	   			LINE,
+	   		</if>
+	   		<if test="weixin != null and weixin != ''">
+		   		WEIXIN,
+		    </if>
+		    <if test="email != null and email != ''">
+		    	EMAIL,
+		    </if>
+		    <if test="bankAccount != null and bankAccount != ''">
+		  		BANK_ACCOUNT,
+		    </if>
+		    <if test="bankAddress != null and bankAddress != ''">
+		  		BANK_ADDRESS,
+		    </if>
+		    <if test="bankName != null and bankName != ''">
+		    	BANK_NAME,
+		    </if>
+		    <if test="status != null and status != ''">
+		    	STATUS,
+		    </if>
+		    <if test="regIp != null and regIp != ''">
+		    	REG_IP,
+		    </if>
+		    <if test="regSystem != null and regSystem != ''">
+		    	REG_SYSTEM,
+		    </if>
+		    <if test="vipId != null and vipId != ''">
+		    	VIP_ID,
+		    </if>
+		    <if test="agentGrade != null and agentGrade != ''">
+		    	AGENT_GRADE,
+		    </if>
+		    <if test="proxyId != null and proxyId != ''">
+		    	AGENT_ID,
+		    </if>
+		    <if test="proxyName != null and proxyName != ''">
+		        AGENT_COUNT,
+		    </if>
+		    <if test="createBy != null and createBy != ''">
+		    	CREATE_BY,
+		    </if>
+		    <if test="userType != null and userType != ''">
+		    	USERTYPE,
+		    </if>
+		    <if test="data != null and data != ''">
+		    	REBATE_DATA,
+		    </if>
+		    <if test="autoSortUid!=null and autoSortUid!=''">
+		    	AUTO_SORT_UID,
+		    </if>
+		    CHANNEL,
+		    REG_TIME
+	    )
+	    VALUES(
+	        #{username,jdbcType=VARCHAR},
+	        #{password,jdbcType=VARCHAR},
+	        #{fullName,jdbcType=VARCHAR},
+	        #{phoneNumber,jdbcType=VARCHAR},
+			 <if test="qq != null and qq != ''">
+		        #{qq,jdbcType=VARCHAR},
+		     </if>
+		     <if test="weixin != null and weixin != ''">
+		        #{weixin,jdbcType=VARCHAR},
+		     </if>
+		     <if test="email != null and email != ''">
+		        #{email,jdbcType=VARCHAR},
+		     </if>
+		     <if test="bankAccount != null and bankAccount != ''">
+		        #{bankAccount,jdbcType=VARCHAR},
+		     </if>
+		      <if test="bankAddress != null and bankAddress != ''">
+		        #{bankAddress,jdbcType=VARCHAR},
+		     </if>
+		      <if test="bankName != null and bankName != ''">
+		        #{bankName,jdbcType=VARCHAR},
+		     </if>
+		      <if test="status != null and status != ''">
+		        #{status,jdbcType=TINYINT},
+		      </if>
+		      <if test="regIp != null and regIp != ''">
+		    	 #{regIp},
+		      </if>
+		      <if test="regSystem != null and regSystem != ''">
+		    	#{regSystem},
+		   	  </if>
+		      <if test="vipId != null and vipId != ''">
+		        #{vipId,jdbcType=INTEGER},
+		      </if>
+			  <if test="agentGrade != null and agentGrade != ''">
+			    	#{agentGrade},
+			  </if>
+		      <if test="proxyId != null and proxyId != ''">
+		    	#{proxyId},
+			  </if>
+			  <if test="proxyName != null and proxyName != ''">
+		        #{proxyName},
+		      </if>
+			  <if test="createBy != null and createBy != ''">
+			    #{createBy},
+			  </if>
+			   <if test="userType != null and userType != ''">
+		    	 #{userType},
+		  	 	</if>
+		  		<if test="data != null and data != ''">
+		    	  #{data},
+		    	</if>
+		    <if test="autoSortUid!=null and autoSortUid!=''">
+		    	#{autoSortUid},
+		    </if>
+		4,
+	 	NOW())
+    </insert>
+    
+	<select id="getMemberList" resultType="com.lb.sys.model.MemeberJsonResult">
+		SELECT 
+			vipId AS id,
+			vipName AS name,
+			STATUS
+		FROM user_vip_info WHERE status=1
+	</select>
+	<select id="getKeyList" resultType="com.lb.sys.model.MemeberJsonResult">
+		SELECT
+			itemID AS id,
+			itemName AS name,
+			STATUS
+		FROM code_library WHERE codeID='MemberQuery' AND status=1
+	</select>
+	<select id="getAllProxyList" resultType="com.lb.sys.model.MemeberJsonResult">
+		SELECT 
+		id,
+		login_account as name,
+		proxy_info.status 
+		FROM proxy_info 
+		WHERE proxy_info.`status`=1
+	</select>
+	<!-- 查询一个会员的cid -->
+	<select id="selectCiDbYuID" resultMap="BaseResultMap">
+	    SELECT CID FROM user_info WHERE UID=#{uid}
+	</select>
+	<select id="getProxyList" resultType="com.lb.sys.model.MemeberJsonResult">
+		SELECT 
+		user_info.`UID`,
+		user_info.`USER_NAME` AS name,
+		user_info.`REBATE_DATA` AS `data`,
+		user_info.`STATUS` AS `status` 
+		FROM ls.`user_info`
+		WHERE
+		user_info.`USERTYPE` = 1
+		<if test="proxyName != null and proxyName != ''">
+			AND user_info.`USER_NAME` LIKE CONCAT(CONCAT('%',#{proxyName}),'%')
+		</if>
+	</select>
+	<select id="checkUsername" resultType="int">
+		SELECT COUNT(1) FROM user_info WHERE USER_NAME=#{username}
+	</select>
+	<select id="getUserByUserName" resultType="com.lb.sys.model.UserVipModel" parameterType="map">
+		SELECT
+			u.UID,
+			u.`USER_NAME` AS username,
+			u.name AS fullName,
+			u.COIN,
+			u.AGENT_ID AS proxyId,
+			u.AGENT_COUNT AS proxyName,
+			u.VIP_ID AS vipId,
+			u.REG_TIME AS regTime,
+			u.LAST_LOGIN_TIME AS loginTime,
+			u.LAST_LOGIN_IP AS loginIp,
+			u.WITHDRAW_NEEDSUM as withdrawNeedsum,
+			u.remark,
+			v.vipName,
+			u.status,
+			u.PHONE_NUMBER as phoneNumber,
+			u.qq,
+			u.weixin,
+			u.CHANNEL as channel,
+			u.email,
+			u.BANK_ACCOUNT AS bankAccount,
+			u.BANK_NAME as bankName,
+			u.betsum,
+			u.REG_IP as regIp,
+			u.source,
+			u.score,
+			u.REG_SYSTEM as regSystem,
+			<!-- "loginAddress" as loginAddress, -->
+			u.BANK_BLACKLIST_STATUS AS bankBlackListStatus,
+			(SELECT user_info.user_name FROM user_info WHERE user_info.uid=u.parent_id) AS parentName,
+			u.BANK_ADDRESS AS bankAddress
+		FROM user_info u
+		LEFT JOIN user_vip_info v ON u.`VIP_ID`=v.`vipId`
+		
+		WHERE  u.USER_NAME=#{userName}
+	</select>
+	<select id="queryUserBetsum" resultType="map" parameterType="string">
+		SELECT
+			u.`USER_NAME` AS userName,
+			u.COIN as coin,
+			u.betsum,
+			u.WITHDRAW_NEEDSUM as betsumNeed
+		FROM user_info u
+		WHERE u.USER_NAME=#{userName}
+	</select>
+	<select id="getOperationUserList"  resultType="map" parameterType="map">
+		SELECT
+			UID,
+			USER_NAME,
+			REG_TIME,
+			REG_IP,
+			LAST_LOGIN_IP,
+			LAST_LOGIN_TIME,
+			TIMESTAMPDIFF(
+				DAY,
+				LAST_LOGIN_TIME,
+				curdate()
+			) AS noLoginDays
+		FROM
+			user_info
+		<where>
+			<if test="startDate != null and startDate != ''">
+				REG_TIME <![CDATA[>=]]> #{startDate}
+			</if>
+			<if test="endDate !=null and endDate != '' ">
+				and REG_TIME <![CDATA[<=]]> #{endDate}
+			</if>	
+		</where>
+	</select>
+	<select id="getRegisterId" resultType="map" parameterType="map">
+		SELECT UID,COIN from user_info where USER_NAME=#{USER_NAME} LIMIT 1
+	</select>
+	<update id="registerUserAfter">
+		update user_info set PROMOTION_CODE=#{newPromotionCode} WHERE UID=#{uid}
+	</update>
+	
+	<!-- 查询VIP分组 -->
+  <select id="queryVIPGroup" resultType="Map">
+  	SELECT * FROM user_vip_info WHERE `status` =1 ORDER BY `group` DESC;
+  </select>
+  <!-- qry item_month deposit-sum -->
+  <select id="queryDepositSUM" resultType="String" parameterType="String">
+  	SELECT 
+  	IF(SUM(mdt.amount) IS NULL,0,SUM(mdt.amount)) 
+  	FROM member_deposit mdt WHERE uid = #{uid}
+  		AND  mdt.state=3
+		AND 
+			mdt.apply_time 
+		BETWEEN  
+			DATE_ADD(curdate(),interval -day(curdate())+1 day) 
+		AND 
+			NOW();
+  </select>
+  <!-- 查询充值赠送方案 -->
+	<select id="queryDepositGiveScheme" resultType="Map">
+		SELECT
+			id,recharge_fq,
+			CASE
+				WHEN giving_way  = 1 THEN 'FIXED'
+				WHEN giving_way = 2 THEN 'PERCENT'
+			END AS giving_way,
+			IF(giving_way =1 ,giving_credits,giving_proportion) AS giving_number,
+			Giving_ceiling,
+			amount_up,
+			amount_down
+		FROM 
+			deposit_giving_strategy 
+		WHERE
+			NOW() BETWEEN start_time 
+			AND end_time 
+			AND state = 1
+	</select>
+	<select id="getRebateConfigList" resultType="map">
+		SELECT
+			`code`,
+			code_name AS codeName,
+			rebate
+		FROM
+			ls.`rebate_config`
+		WHERE
+			rebate_config.`status`=1
+	</select>
+	<select id="getProxyRebate" parameterType="map" resultType="map">
+		SELECT
+			user_info.`UID` AS proxyId,
+			user_info.`USER_NAME` AS proxyName,
+			user_info.`AGENT_GRADE` AS agentGrade,
+			user_info.`USERTYPE` AS userType,
+			user_info.`REBATE_DATA` AS `data`,
+			user_info.AUTO_SORT_UID as autoSort,
+			MAX(CASE WHEN configure='proxyExtensionUrl' THEN sys_config1 ELSE NULL END) AS proxyExtensionUrl,
+			MAX(CASE WHEN configure='appKeySource' THEN sys_config1 ELSE NULL END) AS appKeySource
+		FROM ls.`user_info`
+		LEFT JOIN ls.`sys_configure` ON sys_configure.`status`=1 AND sys_configure.`on_off`=1
+		WHERE
+			<choose>
+				<when test="proxyId != null and proxyId != ''">
+					user_info.`UID`= #{proxyId}
+				</when>
+				<otherwise>
+					user_info.`USER_NAME`= #{proxyName}
+				</otherwise>
+			</choose>
+	</select>
+	<insert id="addInvitateInfo" parameterType="map">
+		INSERT INTO
+		`ls`.`extension_info` (
+		`user_type`,
+		`proxy_id`,
+		`proxy_name`,
+		`data`,
+		`agent_level`,
+		`extension_code`,
+		`extension_url`,
+		`short_url`
+		)
+		VALUES
+		(
+		#{userType},
+		#{uid},
+		#{username},
+		#{data},
+		#{agentGrade},
+		#{invitateCode},
+		#{invitateUrl},
+		#{shortUrl}
+		)
+	</insert>
+	<delete id="removeInvitateInfo" parameterType="map">
+		DELETE FROM
+		ls.`extension_info` WHERE extension_info.`id`=#{invitateId} AND extension_info.`proxy_id`=#{proxyId}
+	</delete>
+	<select id="queryInvitateInfoList" parameterType="map" resultType="map">
+		SELECT 
+		  `id` AS invitateId,
+		  `data`,
+		  `extension_code` AS invitateCode,
+		  `extension_url` AS invitateUrl,
+		  `short_url` AS shortUrl,
+		  `encrypt_url` AS encryptUrl,
+		  `reg_num` AS regNum,
+		  `create_date` AS createDate
+		FROM
+		  `ls`.`extension_info` 
+		WHERE
+			extension_info.`proxy_id`=#{proxyId} AND
+			extension_info.`user_type`=#{userType}
+		ORDER BY extension_info.`create_date` DESC
+	</select>
+	
+	
+	<!-- [批量投注返利回滚] —— 回滚用户余额  -->
+	<update id="updateRollBackCoin" parameterType="list">
+		UPDATE user_info SET COIN=
+		<foreach collection="list" item="item" index="index" separator=" " open="case UID" close="end">
+			WHEN #{item.UID} then COIN+#{item.CHANGE_COIN}
+		</foreach>
+		WHERE UID IN
+	    <foreach collection="list" index="index" item="item" separator="," open="(" close=")">
+	        #{item.UID}
+	    </foreach>
+	</update>
+	
+	<!-- 
+	[批量投注返利回滚] —— 回滚用户余额  
+	<select id="batchQryUserInfo" resultType="map" parameterType="list">
+		SELECT UID,USER_NAME,USERTYPE,COIN,FCION FROM user_info WHERE UID IN
+		<foreach collection="list" item="item" separator="," open="(" close=")" index="index"> 
+			#{item.uid}
+		</foreach>
+	</select>
+	 -->
+	 
+	 <select id="qryMaxAutoSortUidByAgentId" parameterType="String" resultType="String">
+	 	select MAX(auto_sort_uid) as autoSortUid from user_info where AGENT_ID=#{proxyId}
+	 </select>
+</mapper>

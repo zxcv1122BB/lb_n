@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" href="../plugins/layui/css/layui.css" media="all" />
+		<link rel="stylesheet" href="css/memAddDed.css" />
+	</head>
+
+	<body>
+		<section id="container">
+			<div class="clearfix">
+				<div class="col labelList">
+					<label>
+						<input name="userName" type="text" placeholder="会员账号" onkeyup="this.value=this.value.replace(/\s+/g,'')"/>
+					</label>
+				</div>
+				<div class="col btnList">
+					<span id="btn_select" class="layui-btn" @click="select_btn_click">查询</span>
+					<span id="btn_reset" class="layui-btn" @click="handerReset">重置</span>
+				</div>
+			</div>
+			<div class="news_table">
+				<table>
+					<colgroup>
+						<col width="20%" />
+						<col width="80%" />
+					</colgroup>
+					<tbody>
+						<tr>
+							<td class="tr">会员账号：</td>
+							<td><span class="c_blue userName"></span></td>
+						</tr>
+						<tr>
+							<td class="tr">账号余额：</td>
+							<td><span class="c_red remainMoney"></span></td>
+						</tr>
+						<tr>
+							<td class="tr">操作类型：</td>
+							<td class="addDed">
+								<select name="">
+									<option value="6">人工加款</option>
+									<option value="21">人工赠送</option>
+									<option value="7">人工减款</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td class="tr">操作金额：</td>
+							<td>
+								<div class="num">
+									<label>
+										<input type="number" name="number" />
+									</label>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td class="tr">操作原因：</td>
+							<td>
+								<textarea style="resize: none;width:96%;height: 100px;max-width: 96%;max-height: 100px;" class="result" name="" rows="" cols=""></textarea>
+							</td>
+						</tr>
+					</tbody>
+
+				</table>
+				<div id="btn_confirm" class="col btnList confirm">
+					<span class="layui-btn" @click="btn_confirm_click">确认</span>
+				</div>
+			</div>
+
+		</section>
+		<script src='../plugins/layui/layui.js'></script>
+		<script type="text/javascript" src="../public/js/jquery.js"></script>
+		<script src="../public/js/security.js"></script>
+		<script src="../public/js/send_request.js"></script>
+		<script src="../public/js/vue.min.js"></script>
+		<script src="js/memAddDed.js"></script>
+	</body>
+
+</html>

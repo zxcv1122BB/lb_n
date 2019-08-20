@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lb.sys.dao.DigitalLotteryMaintMapper">
+  	<select id="getNewDigitalLotteryList" resultType="map">
+  		SELECT 
+  			id,
+  			one_type_id AS typeId,
+  			type_name_CN AS typeName,
+  			issue AS actionIssue,
+  			luck_number AS luckNumber,
+  			`status`,
+  			open_time AS openTime,
+  			create_time AS createTime,
+  			update_time AS updateTime
+  		FROM 
+  			ls.`open_data` 
+  		WHERE one_type_id IN (SELECT gameID FROM game_type WHERE game_type IN(1,2) AND `status` = 1)
+		<if test="typeId != null and typeId != ''">
+			AND open_data.`one_type_id`=#{typeId} 
+		</if>
+  		<if test="actionIssue != null and actionIssue != ''">
+  			AND issue like CONCAT(CONCAT('%',#{actionIssue}),'%')
+  		</if>
+  		<if test="status != null and status != ''">
+  			AND open_data.`status`=#{status}
+  		</if>
+  		<if test="startTime != null and startTime != ''">
+  			AND open_time &gt;= #{startTime}
+  		</if>
+  		<if test="endTime != null and endTime != ''">
+  			AND open_time &lt;= #{endTime}
+  		</if>
+  		ORDER BY one_type_id DESC, open_time DESC
+  	</select>
+  	<select id="getDigitalLotteryTypeList" resultType="map">
+  		SELECT 
+  			gt.gameID AS typeId,
+  			gt.gameName AS typeName,
+  			IF(gt.gameID=6,1,0) AS isChecked,
+  			rc.is_add_zero,
+  			rc.lucknum_length, 
+  			rc.max_num, 
+  			rc.min_num, 
+  			rc.is_repeat, 
+  			max(od.issue) as issue, 
+  			max(od.luck_number) as luck_number
+  		FROM 
+  			game_type gt
+  		LEFT JOIN open_data od ON gt.gameID = od.one_type_id
+		LEFT JOIN rebate_config rc ON gt.`code` = rc.`code`
+  		WHERE gt.game_type in (1,2) 
+  		AND gt.`status`=1
+  		group by gt.gameID
+  		ORDER BY gt.gameID,od.issue DESC 
+  	</select>
+  	<select id="getDigitalLotteryIssueList" resultType="map">
+  		SELECT 
+  			DISTINCT issue AS actionIssue
+  		FROM 
+  			ls.`open_data` 
+  		WHERE 
+  		<choose>
+  			<when test="typeId != null and typeId != ''">
+  				open_data.`one_type_id`=#{typeId} 
+  			</when>
+  			<otherwise>
+  				open_data.`one_type_id`=6 
+  			</otherwise>
+  		</choose>
+  		ORDER BY issue DESC
+  	</select>
+  	
+  	
+  	<select id="qryOpenDataById" resultType="map" parameterType="String">
+  		select * from open_data where id=#{id}
+  	</select>
+</mapper>

@@ -1,0 +1,1034 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lb.sys.dao.ProxyDistributionMapper">
+		<!-- 
+			desc:新增代理商分销信息
+			createTime:2017-10-26
+		 -->
+		 <insert id="insert" parameterType="map">
+		 	insert into proxy_distribution(
+		 		id,uid,amount,startDate,endDate,agent_id,rebates_amount,rebates_type,rebates_num
+		 	) values (
+		 		0,#{uid},#{amount},#{startDate},#{endDate},#{agentId},#{rebatesAmount},#{rebatesType},#{rebatesNum}
+		 	)
+		 </insert>
+		 
+		 <!-- 
+		 	desc:查询代理商分销情况信息
+		 	createTime:2017-10-27
+		  -->
+		  <select id="findProxyDistributionInfo" resultType="map" parameterType="map">
+		  	  select  
+		  	  		pd.id,
+		  	  		pd.uid,
+		  	  		pd.startDate,
+		  	  		pd.endDate,
+		  	  		pd.agent_id as agentId,
+		  	  		pd.rebates_amount as rebatesAmount,
+		  	  		cast(pd.rebates_type as char) as rebatesType,
+		  	  		cast(pd.status as char) as status
+		  	  from proxy_distribution pd 
+		  	  where 1=1
+		  	  <if test="status!=null and status!=''">
+		  	  	and pd.status=#{status}
+		  	  </if>
+		  	  <if test="startDate!=null and startDate!=''">
+		  	  	and pd.startDate <![CDATA[>=]]>#{startDate}
+		  	  </if>
+		  	  <if test="endDate!=null and endDate!=''">
+		  	  	and pd.endDate <![CDATA[<=]]>#{endDate}
+		  	  </if>
+		  </select>
+		  
+		  <!-- 
+		  	  desc:更新代理商分销状态或返点时间信息
+		  	  createTime:2017-10-27
+		   -->
+		  <update id="updateProxyStatus" parameterType="map">
+		  		update proxy_distribution 
+		  		set status=#{status}
+		  		<if test="rebatesTime!=null and rebatesTime!=''">
+		  			,rebates_time=#{rebatesTime}
+		  		</if>
+		  		where id=#{id}
+		  </update>
+		  <!-- 多级代理返点记录 -->
+		  <select id="getAgentRebateList" resultType="map" parameterType="map">
+			SELECT  
+				c.order_id,
+				c.uid AS proxyId,
+				u.USER_NAME AS proxyName,
+				(SELECT USER_NAME FROM user_info WHERE UID = g.uid) AS userName,
+				(SELECT amount FROM game_bets WHERE orderid = c.order_id) AS betCoin,
+				(SELECT REBATE_DATA FROM user_info WHERE UID = c.uid) AS rebateData,
+				c.info,
+				c.coin,
+				c.inputTime AS returnTime
+			FROM 
+			<choose>
+				<when test="outOfThrity!=null and outOfThrity!='' and outOfThrity==1">
+					lshistory.`coin_log_his` c
+				   LEFT JOIN lshistory.`game_bets_his` g
+				</when>
+				<otherwise>
+					ls.`coin_log` c
+			 	 LEFT JOIN ls.`game_bets` g
+				</otherwise>
+			</choose>
+			ON c.order_id = g.orderId
+			LEFT JOIN user_info u ON c.uid = u.UID
+			WHERE c.coin_operate_type in(25, 26)
+			<if test="loginAccount != null and loginAccount != '' ">
+			 and u.USER_NAME LIKE CONCAT(CONCAT('%',#{loginAccount}),'%')
+			  </if>
+			  <if test="startDate != null and startDate != '' ">
+			 and c.inputTime <![CDATA[>=]]> #{startDate}
+			  </if>
+			  <if test="endDate != null and endDate != '' ">
+			 and c.inputTime <![CDATA[<=]]> #{endDate}
+			  </if>
+			  order by c.inputTime desc
+		  </select>
+		  <!-- 更新proxyDistribution表 -->
+	 <update id="rollBackProxyDistribution" parameterType="map" >
+	 	UPDATE
+		 proxy_distribution
+		SET 
+		  rebates_amount = #{rebatesAmount},
+		 `status` = #{status}
+		WHERE
+			id = #{id}
+	 </update>
+  <!-- 查询统计概况 -->
+  <select id="queryCountGK" resultType="map" >
+  	select 
+		 bets.userAllSum,
+		 bets.agencySum,
+		 bets.userSum,
+		 bets.userCoinSum,
+		 bets.todayRegSum,
+		 bets.yesTodayRegSum,
+		 bets.TodayBetSum,
+		 bets.TodayBonusSum,
+		 bets.TodayWithdrawSum,
+		 bets.TodayDepositSum,
+		 (bets.currentCoin-bets.currentCoin1) as TodayFandianSum
+	from (
+		select 
+			<!-- 用户总数 -->
+			(select count(1) from user_info where user_info.`USERTYPE` between 1 and 2) as userAllSum,
+			<!-- 代理总数 -->
+			(select count(1) from user_info where user_info.`USERTYPE`=1) as agencySum,
+			<!-- 会员总数 -->
+			(select count(1) from user_info where user_info.`USERTYPE`=2) as userSum,
+			<!-- 总余额 -->
+			(select sum(COIN) from user_info where user_info.`USERTYPE` between 1 and 2)as userCoinSum,
+			<!-- 今日注册总数 -->
+			(select count(1) from user_info where to_days(now())=to_days(REG_TIME)) as todayRegSum,
+			<!-- 昨日注册总数 -->
+			(select count(1) from user_info where to_days(now())-to_days(REG_TIME)=1) as yesTodayRegSum,
+			<!-- 今日投注总额-->
+			(select IFNULL(sum(case when gb.status<![CDATA[<>]]>2 then gb.amount else 0.00 end),0.00) from game_bets gb 
+				where to_days(now())=to_days(gb.action_time) and gb.user_type between 1 and 2) as TodayBetSum,
+			<!-- 今日中奖总额-->
+			(select IFNULL(sum(gb.bonus),0.00) from game_bets gb 
+			where to_days(now())=to_days(gb.cal_time) and gb.user_type between 1 and 2) as TodayBonusSum,
+			<!-- 今日提现总额-->
+			(select IFNULL(sum(case when m.state in (1,2,3) then m.amount else 0.00 end),0.00) from member_withdraw m 
+			where to_days(now())=to_days(m.operate_time) and m.user_type between 1 and 2) as TodayWithdrawSum,
+			<!-- 今日充值总额-->
+			(select IFNULL(sum(case when m.state in (1,2,3) then m.amount else 0.00 end),0.00) from  member_deposit m 
+				where to_days(now())=to_days(m.operate_time) and m.uid in (
+					select u.uid from user_info u where u.usertype between 1 and 2
+				)) as TodayDepositSum,
+			<!-- 今日返点总额-->
+			(select IFNULL(sum(c.coin),0.00) from coin_log c 
+				where c.coin_operate_type=25 and to_days(now())=to_days(c.operate_time)) as currentCoin,
+			(select IFNULL(sum(c.coin),0.00) from coin_log c 
+				where c.coin_operate_type=26 and to_days(now())=to_days(c.operate_time)) as currentCoin1
+		FROM  DUAL
+	) as bets
+  </select>
+  
+  <!-- 是否存在下线代理 -->
+  <select id="isExsitAgency" parameterType="map" resultType="int">
+		SELECT 
+			COUNT(*)
+		FROM 
+			user_info
+		WHERE
+			user_name=#{agentCount} AND user_info.`USERTYPE`=1
+	</select>
+  <!-- 查询团队报表 -->
+  <select id="queryTeamCount" resultType="map" parameterType="map">
+  	  select 
+  	  	uid,
+		username,
+		agentname,
+		autoSortUid,
+		userType,
+		level,
+		format(betAmount,2) as betAmount,
+		format(betSystemAmount,2) as betSystemAmount,
+		format(betDigitalAmount,2) as betDigitalAmount,
+		betCount,
+		format(isCalBetAmount,2) as isCalBetAmount,
+		format(bonusAmount,2) as bonusAmount,
+		format(bonusSystemAmount,2) as bonusSystemAmount,
+		format(bonusDigitalAmount,2) as bonusDigitalAmount,
+		format(betRebate,2) as betRebate,
+		format(cashinAmount,2) as cashinAmount,
+		format(cashinGive,2) as cashinGive,
+		format(registerGive,2) as registerGive,
+		format(cashoutAmount,2) as cashoutAmount,
+		format((betReturnSum-betReturnRollSum),2) as rebateAmount,
+		format(artificialPlus,2) as artificialPlus,
+		format(artificialSub,2) as artificialSub,
+		format(artificialGive,2) as artificialGive,
+		firstCashinMoneyCount,
+		registerUserCount,
+		downAgentCount,
+		<!-- ((bonusAmount+betRebate)-(isCalBetAmount+activeAmount+(betReturnSum-betReturnRollSum))) as profit -->
+		format((betSystemAmount-bonusSystemAmount),2) as systemAmount,
+		format((betDigitalAmount-bonusDigitalAmount),2) as digitalAmount,
+		format(((betSystemAmount+betDigitalAmount)-(bonusSystemAmount+bonusDigitalAmount)),2) as winAmount,
+		format(((bonusAmount+betRebate+(betReturnSum-betReturnRollSum))-(isCalBetAmount)),2) as profit
+  	  from (
+  			select
+  				tp.uid,
+				tp.username,
+				tp.user_type as userType,
+				uu.AGENT_COUNT as agentname,
+				uu.auto_sort_uid as autoSortUid,
+				tp.level,
+				IFNULL(sum(tp.bet_amount),0) as betAmount,
+				IFNULL(sum(tp.bet_system_amount),0) as betSystemAmount,
+				IFNULL(sum(tp.bet_digital_amount),0) as betDigitalAmount,
+				(
+					select 
+		  	  			count(distinct gg.uid) 
+		  	  		from (
+						select g.uid as uid from game_bets g where g.status<![CDATA[<>]]>2
+						<if test="startTime!=null and startTime!=''">
+							and g.action_time <![CDATA[>=]]>#{startTime}
+						</if>
+						<if test="endTime!=null and endTime!=''">
+							and g.action_time <![CDATA[<=]]>#{endTime} 
+						</if>
+			  	  		union all
+			  	  		select hg.uid as uid from lshistory.game_bets_his hg where hg.status<![CDATA[<>]]>2
+			  	  		<if test="startTime!=null and startTime!=''">
+							and hg.action_time <![CDATA[>=]]>#{startTime} 
+						</if>
+						<if test="endTime!=null and endTime!=''">
+							and hg.action_time <![CDATA[<=]]>#{endTime}
+						</if>
+					) as gg 
+					where gg.uid in (select UID from user_info where AUTO_SORT_UID like CONCAT(uu.AUTO_SORT_UID,'%'))
+				) as betCount,
+				IFNULL(sum(tp.is_calBet_amount),0) as isCalBetAmount,
+				IFNULL(sum(tp.bonus_amount),0) as bonusAmount,
+				IFNULL(sum(tp.bonus_system_amount),0) as bonusSystemAmount,
+				IFNULL(sum(tp.bonus_digital_amount),0) as bonusDigitalAmount,
+				IFNULL(sum(tp.bet_rebate),0) as betRebate,
+				IFNULL(sum(tp.cashin_amount),0) as cashinAmount,
+				IFNULL(sum(tp.cashin_give),0) as cashinGive,
+				IFNULL(sum(tp.register_give),0) as registerGive,
+				IFNULL(sum(tp.cashout_amount),0) as cashoutAmount,
+				IFNULL(sum(tp.bet_return),0) as betReturnSum,
+				IFNULL(sum(tp.bet_return_rollback),0) as betReturnRollSum,	
+				IFNULL(sum(tp.artificial_plus),0) as artificialPlus,
+				IFNULL(sum(tp.artificial_sub),0) as artificialSub,
+				IFNULL(sum(tp.artificial_give),0) as artificialGive,
+				(
+					select COUNT(1) as firstCashinMoneyCount from user_info u 
+					where u.AUTO_SORT_UID like CONCAT(uu.AUTO_SORT_UID,'%')
+					and u.RECHARGE_TIMES = 1
+					<if test="startTime!=null and startTime!=''">
+						and u.INPUT_TIME <![CDATA[>=]]>#{startTime}
+					</if>
+					<if test="endTime!=null and endTime!=''">
+						and u.INPUT_TIME <![CDATA[<=]]>#{endTime}
+					</if>
+				) as firstCashinMoneyCount,
+				IFNULL(sum(tp.active_amount),0) as activeAmount,
+				(
+					select COUNT(1) as registerUserCount from user_info u 
+					where u.AUTO_SORT_UID like CONCAT(uu.AUTO_SORT_UID,'%')
+					<if test="startTime!=null and startTime!=''">
+						and u.INPUT_TIME <![CDATA[>=]]>#{startTime}
+					</if>
+					<if test="endTime!=null and endTime!=''">
+						and u.INPUT_TIME <![CDATA[<=]]>#{endTime} 
+					</if>
+				)  as registerUserCount,
+				(select COUNT(1) AS downAgentCount from user_info u where u.AUTO_SORT_UID like CONCAT(uu.AUTO_SORT_UID,'%')
+					and u.AUTO_SORT_UID <![CDATA[<>]]> uu.AUTO_SORT_UID) as downAgentCount
+  			from team_report_info tp
+  			left join user_info uu on tp.uid = uu.UID
+  			where 1=1
+  			<if test="username!=null and username!=''">
+				and tp.username = #{username}
+			</if> 
+			<if test="type!=null and type!='' and type==1">
+				and uu.AUTO_SORT_UID like CONCAT(
+					(select u.AUTO_SORT_UID from user_info u where u.UID = (
+						select u.AGENT_ID from user_info u where u.UID=#{uid}
+					)),'%'
+				)
+			</if>
+			<if test="type!=null and type!='' and type==2">
+				and uu.AUTO_SORT_UID like CONCAT(#{autoSortUid},'%')
+				and uu.AUTO_SORT_UID<![CDATA[<>]]>#{autoSortUid}
+			</if>
+			<if test="startTime!=null and startTime!=''">
+				and tp.report_date <![CDATA[>=]]>DATE_FORMAT(#{startTime},'%Y-%m-%d') 
+			</if>
+			<if test="endTime!=null and endTime!=''">
+				and tp.report_date <![CDATA[<=]]>DATE_FORMAT(#{endTime},'%Y-%m-%d') 
+			</if>
+			group by tp.uid
+			order by tp.uid
+		) as bets
+    </select>
+  <!-- 查询统计概况 -->
+  <select id="queryTotalTeamCount" resultType="com.lb.report.model.TeamCount" parameterType="map">
+			<!-- 查询会员统计 -->
+		  		select 
+		  			(SELECT 
+				 			IFNULL(sum(u.COIN ),0.00)
+				 		from user_info u 
+				 		where <!-- u.USERTYPE='NORMAL' --> 1=1
+				 		<if test="userName !=null and userName !=''">
+				 			 and u.user_name like CONCAT(CONCAT('%',#{userName}),'%')
+				 		</if>
+				 		<if test="agentCount !=null and agentCount !=''">
+				 			 and  (u.AGENT_COUNT=#{agentCount} or u.user_name=#{agentCount})
+				 		</if>
+				 		<if test="userType !=null and userType !=''">
+				 			 and u.USERTYPE=#{userType}
+				 		</if>
+					    <if test="optionKey != null and optionKey !='' and optionKey ==1">
+							AND u.AGENT_ID = #{proxyId}
+						</if>
+						<!-- 上一级 -->
+					    <if test="optionKey != null and optionKey !='' and optionKey ==2">
+							AND u.UID=(SELECT AGENT_ID FROM user_info WHERE user_info.UID=#{proxyId})
+						</if>
+				 	)	as coin,
+					(SELECT
+						CONCAT(
+							<!-- 投注次数bSum -->
+							IFNULL(sum(case when gb.status in (0,1) 
+							   <if test="startTime != null and startTime != ''">
+									and gb.action_time <![CDATA[>=]]> #{startTime}
+							   </if>
+						       <if test="endTime != null and endTime != ''">
+							        and gb.action_time <![CDATA[<=]]> #{endTime}
+						       </if> then 1 else 0 end),0),",",
+							<!-- 投注额BetSum -->
+							IFNULL(sum(case when gb.status in (0,1) 
+							   <if test="startTime != null and startTime != ''">
+									and gb.action_time <![CDATA[>=]]> #{startTime}
+							   </if>
+						       <if test="endTime != null and endTime != ''">
+							        and gb.action_time <![CDATA[<=]]> #{endTime}
+						       </if> then gb.amount else 0.00 end),0.00),",",
+							<!-- 中奖额bonusSum -->
+							IFNULL(sum(case when  gb.status=1 
+							   <if test="startTime != null and startTime != ''">
+									and gb.cal_time <![CDATA[>=]]> #{startTime}
+							   </if>
+						       <if test="endTime != null and endTime != ''">
+							        and gb.cal_time <![CDATA[<=]]> #{endTime}
+						       </if> then gb.bonus else 0.00 end),0.00)
+						)		
+						FROM
+						 	<choose>
+								<when test="outOfThrity!=null and outOfThrity!='' and outOfThrity==1">
+									lshistory.game_bets_his gb
+								</when>
+								<otherwise>
+									 ls.game_bets  gb
+								</otherwise>
+							</choose>
+							where  gb.uid in
+								(SELECT 
+							 			u.UID 
+							 		from user_info u 
+							 		where <!-- u.USERTYPE='NORMAL' --> 1=1
+							 		<if test="userName !=null and userName !=''">
+							 			 and u.user_name like CONCAT(CONCAT('%',#{userName}),'%')
+							 		</if>
+							 		<if test="agentCount !=null and agentCount !=''">
+							 			 and (u.AGENT_COUNT=#{agentCount} or u.user_name=#{agentCount})
+							 		</if>
+							 		<if test="userType !=null and userType !=''">
+							 			 and u.USERTYPE=#{userType}
+							 		</if>
+								    <if test="optionKey != null and optionKey !='' and optionKey ==1">
+										AND u.AGENT_ID = #{proxyId}
+									</if>
+									<!-- 上一级 -->
+								    <if test="optionKey != null and optionKey !='' and optionKey ==2">
+										AND u.UID=(SELECT AGENT_ID FROM user_info WHERE user_info.UID=#{proxyId})
+									</if>
+							 		GROUP BY u.UID
+							 	)							
+				       ) as gBet,
+				       (SELECT 
+								<!-- 充值总计 depositSum-->
+								IFNULL(sum(case when m.state=3 then m.amount else 0 end),0.00)
+							from 
+							<choose>
+								<when test="outOfThrity!=null and outOfThrity!='' and outOfThrity==1">
+									lshistory.member_deposit_his m
+								</when>
+								<otherwise>
+									 ls.member_deposit  m
+								</otherwise>
+							</choose>
+							where  m.uid in
+								(SELECT 
+							 			u.UID 
+							 		from user_info u 
+							 		where <!-- u.USERTYPE='NORMAL' --> 1=1
+							 		<if test="userType !=null and userType !=''">
+							 			 and u.USERTYPE=#{userType}
+							 		</if>
+							 		<if test="userName !=null and userName !=''">
+							 			 and u.user_name like CONCAT(CONCAT('%',#{userName}),'%')
+							 		</if>
+							 		<if test="agentCount !=null and agentCount !=''">
+							 			 and (u.AGENT_COUNT=#{agentCount} or u.user_name=#{agentCount})
+							 		</if>
+								    <if test="optionKey != null and optionKey !='' and optionKey ==1">
+										AND u.AGENT_ID = #{proxyId}
+									</if>
+									<!-- 上一级 -->
+								    <if test="optionKey != null and optionKey !='' and optionKey ==2">
+										AND u.UID=(SELECT AGENT_ID FROM user_info WHERE user_info.UID=#{proxyId})
+									</if>
+							 		GROUP BY u.UID
+							 	)
+							<if test="startTime != null and startTime != ''">
+								and m.operate_time <![CDATA[>=]]> #{startTime}
+						   </if>
+					       <if test="endTime != null and endTime != ''">
+						        and m.operate_time <![CDATA[<=]]> #{endTime}
+					       </if>
+				       ) as depositSum,
+				       (SELECT 
+							<!-- 提现总计 withdrawSum-->
+							IFNULL(sum(case when m.state=3 then m.amount else 0 end),0.00)
+							from 
+							<choose>
+								<when test="outOfThrity!=null and outOfThrity!='' and outOfThrity==1">
+									lshistory.member_withdraw_his m
+								</when>
+								<otherwise>
+									 ls.member_withdraw  m
+								</otherwise>
+							</choose>
+							where <!-- m.user_type=2 and --> m.uid in
+								(SELECT 
+							 			u.UID 
+							 		from user_info u 
+							 		where <!-- u.USERTYPE='NORMAL' --> 1=1
+							 		<if test="userType !=null and userType !=''">
+							 			 and u.USERTYPE=#{userType}
+							 		</if>
+							 		<if test="userName !=null and userName !=''">
+							 			 and u.user_name like CONCAT(CONCAT('%',#{userName}),'%')
+							 		</if>
+							 		<if test="agentCount !=null and agentCount !=''">
+							 			 and (u.AGENT_COUNT=#{agentCount} or u.user_name=#{agentCount})
+							 		</if>
+								    <if test="optionKey != null and optionKey !='' and optionKey ==1">
+										AND u.AGENT_ID = #{proxyId}
+									</if>
+									<!-- 上一级 -->
+								    <if test="optionKey != null and optionKey !='' and optionKey ==2">
+										AND u.UID=(SELECT AGENT_ID FROM user_info WHERE user_info.UID=#{proxyId})
+									</if>
+							 		GROUP BY u.UID
+							 	)
+							<if test="startTime != null and startTime != ''">
+								and m.operate_time <![CDATA[>=]]> #{startTime}
+						   </if>
+					       <if test="endTime != null and endTime != ''">
+						        and m.operate_time <![CDATA[<=]]> #{endTime}
+					       </if>
+				       ) as withdrawSum,
+					(SELECT
+					       CONCAT(
+									<!-- 加款addMoneySum-->
+									IFNULL(sum(case when cl.coin_operate_type=6 then cl.coin else 0.00 end),0.00),",",
+									<!-- 减款 subtractMoneySum-->
+									IFNULL(sum(case when cl.coin_operate_type=7 then cl.coin else 0.00 end),0.00),",",
+									<!-- 加款rgGivingMoneySum-->
+									IFNULL(sum(case when cl.coin_operate_type in (17,21) then cl.coin else 0.00 end),0.00),",",
+									<!-- 注册赠送regGivingSum -->
+									IFNULL(sum(case when cl.coin_operate_type=4 then cl.coin else 0.00 end),0.00),",",
+									<!-- 充值赠送depositGivingSum -->
+									IFNULL(sum(case when cl.coin_operate_type=10 then cl.coin else 0.00 end),0.00),",",
+									<!-- 活动中奖activityBonusCoin-->
+									IFNULL(sum(case when cl.coin_operate_type in (5,14,22,23) then cl.coin else 0.00 end),0.00),",",
+									<!-- 投注返利betRebate-->
+									IFNULL(SUM(CASE WHEN cl.coin_operate_type = 27 THEN cl.coin ELSE 0.00 END),0.00)
+								)
+						FROM
+							<choose>
+								<when test="outOfThrity!=null and outOfThrity!='' and outOfThrity==1">
+									lshistory.`coin_log_his` cl
+								</when>
+								<otherwise>
+									ls.`coin_log` cl
+								</otherwise>
+							</choose>
+							where <!-- cl.user_type=2 and --> cl.uid in
+								(SELECT 
+							 			u.UID 
+							 		from user_info u 
+							 		where <!-- u.USERTYPE='NORMAL' --> 1=1
+							 		<if test="userType !=null and userType !=''">
+							 			 and u.USERTYPE=#{userType}
+							 		</if>
+							 		<if test="userName !=null and userName !=''">
+							 			 and u.user_name like CONCAT(CONCAT('%',#{userName}),'%')
+							 		</if>
+							 		<if test="agentCount !=null and agentCount !=''">
+							 			 and (u.AGENT_COUNT=#{agentCount} or u.user_name=#{agentCount})
+							 		</if>
+							 		<!-- 下一级 -->
+								    <if test="optionKey != null and optionKey !='' and optionKey ==1">
+										AND u.AGENT_ID = #{proxyId}
+									</if>
+									<!-- 上一级 -->
+								    <if test="optionKey != null and optionKey !='' and optionKey ==2">
+										AND u.UID=(SELECT AGENT_ID FROM user_info WHERE user_info.UID=#{proxyId})
+									</if>
+							 		GROUP BY u.UID
+							 	)
+						   <if test="startTime != null and startTime != ''">
+							 	and cl.inputTime <![CDATA[>=]]> #{startTime}
+						   </if>
+					       <if test="endTime != null and endTime != ''">
+						     	and cl.inputTime <![CDATA[<=]]> #{endTime}
+					       </if>
+				       ) as cLog
+			<!-- </otherwise>
+		</choose> -->
+    </select>
+	<!--   全局报表管理 -->
+	<select id="queryGlobalCount" resultType="com.lb.report.model.GlobalCount" parameterType="map">
+		select * from (
+			<!-- 总投注人数 -->
+			(
+				select 
+					count(1) as betSum
+				from (
+					select 
+						g.uid
+					from 
+						game_bets g
+					where g.status<![CDATA[<>]]>2 and g.user_type between 1 and 2
+					<if test="username!=null and username!=''">
+						and g.user_name like concat(#{username},'%')
+					</if>
+					<if test="startTime!=null and startTime!=''">
+						and g.action_time <![CDATA[>=]]>#{startTime}
+					</if>
+					<if test="endTime!=null and endTime!=''">
+						and g.action_time <![CDATA[<=]]>#{endTime}
+					</if>
+					group by g.uid
+				) as betSum
+			) as betSum,
+			<!-- 手动处理 -->
+			(
+				select  	
+					<!-- 手动确认充值depositRgSumCoin-->
+					IFNULL(sum(case when m.deposit_operate_type=2 then m.amount else 0 end),0.00) as depositRgSumCoin
+				from 
+					member_deposit m
+				where  
+					m.state=3 
+					and m.uid in (select u.uid from user_info u where u.USERTYPE between 1 and 2 and u.`STATUS`=1)
+				<if test="username!=null and username!=''">
+					and m.user_name like concat(#{username},'%')
+				</if>
+				<if test="startTime!=null and startTime!=''">
+					and m.apply_time <![CDATA[>=]]>#{startTime}
+				</if>
+				<if test="endTime!=null and endTime!=''">
+					and m.apply_time <![CDATA[<=]]>#{endTime}
+				</if>
+			) as depositRgSumCoin,
+		   (
+		   		SELECT
+			       CONCAT(
+						<!-- 注册赠送 regGivingSumCoin-->
+						IFNULL(sum(case when cl.coin_operate_type=4 then cl.coin else 0.00 end),0.00),",",
+						<!-- 充值赠送depositGivingSumCoin -->
+						IFNULL(sum(case when cl.coin_operate_type=10 then cl.coin else 0.00 end),0.00),",",
+						<!-- 人工加款addMoneySumCoin-->
+						IFNULL(sum(case when cl.coin_operate_type=6 then cl.coin else 0.00 end),0.00),",",
+						<!-- 人工减款 subtractMoneySumCoin-->
+						IFNULL(sum(case when cl.coin_operate_type=7 then cl.coin else 0.00 end),0.00),",",
+						<!-- 人工赠送 rgGivingMoneySumCoin-->
+						IFNULL(sum(case when cl.coin_operate_type=21 then cl.coin else 0.00 end),0.00),",",
+						<!-- 活动中奖bonusSumCoin 红包、大转盘、优惠卡-->
+						IFNULL(sum(case when cl.coin_operate_type in (4,5,10,14,17,21,22,23) then cl.coin else 0.00 end),0.00) ,",",
+						<!-- 代理加款proxyAddMoneySumCoin-->
+						IFNULL(sum(case when cl.coin_operate_type=18 then cl.coin else 0.00 end),0.00),",",
+						<!-- 代理减款 proxySubtractMoneySumCoin-->
+						IFNULL(sum(case when cl.coin_operate_type=19 then cl.coin else 0.00 end),0.00),",",
+						<!-- 投注返利betRebate-->
+						IFNULL(sum(case when cl.coin_operate_type=27 then cl.coin else 0.00 end),0.00),",",
+						<!-- 返点-->
+						IFNULL(sum(case when cl.coin_operate_type=25 then cl.coin else 0.00 end),0.00),",",
+						IFNULL(sum(case when cl.coin_operate_type=26 then cl.coin else 0.00 end),0.00),",",
+						<!-- 充值总计 depositSumCoin-->
+						IFNULL(sum(case when cl.coin_operate_type=1 then cl.coin else 0.00 end),0.00),",",
+						<!-- 提现总计 withdrawSumCoin-->
+						IFNULL(sum(case when cl.coin_operate_type=2 then cl.coin else 0.00 end),0.00)
+					) as cLog
+				FROM
+					coin_log as cl
+				WHERE  cl.user_type between 1 and 2
+				<if test="username!=null and username!=''">
+					and cl.user_name like concat(#{username},'%')
+				</if>
+				<if test="startTime!=null and startTime!=''">
+					and cl.inputTime <![CDATA[>=]]>#{startTime}
+				</if>
+				<if test="endTime!=null and endTime!=''">
+					and cl.inputTime <![CDATA[<=]]>#{endTime}
+				</if>
+		    ) as cLog,
+		    <!-- 相关投注、派奖总计 -->
+		    (
+		    	select 
+					CONCAT(
+						<!-- 足球下注、中奖 -->
+						IFNULL(SUM(
+								case 
+									when g.type=1 and g.game_type=1 then amount 
+									else 0 
+								end),0),',',
+						IFNULL(SUM(
+								case 
+									when g.type=1 and g.game_type=1 and g.is_cal=1 and g.status=1 then bonus 
+									else 0 
+								end),0),',',
+					   <!-- 传统下注、中奖 -->
+						IFNULL(SUM(
+								case 
+									when g.type=2 and g.game_type=1 then amount 
+									else 0 
+								end),0),',',
+						IFNULL(SUM(
+								case 
+									when g.type=2 and g.game_type=1 and g.is_cal=1 and g.status=1 then bonus 
+									else 0 
+								end),0),',',
+						<!-- 单场下注、中奖 -->
+						IFNULL(SUM(
+								case 
+									when g.type=3 and g.game_type=1 then amount 
+									else 0 
+								end),0),',',
+						IFNULL(SUM(
+								case 
+									when g.type=3 and g.game_type=1 and g.is_cal=1 and g.status=1 then bonus 
+									else 0 
+								end),0),',',
+					    <!-- 篮球下注、中奖 -->
+						IFNULL(SUM(
+								case 
+									when g.type=4 and g.game_type=1 then amount 
+									else 0 
+								end),0),',',
+						IFNULL(SUM(
+								case 
+									when g.type=4 and g.game_type=1 and g.is_cal=1 and g.status=1 then bonus 
+									else 0 
+								end),0),',',
+						<!--数字彩下注、中奖 -->
+						IFNULL(SUM(
+								case 
+									when g.type<![CDATA[>]]>4 and g.game_type=1 then amount 
+									else 0 
+								end),0),',',
+						IFNULL(SUM(
+								case 
+									when g.type<![CDATA[>]]>4 and g.game_type=1 and g.is_cal=1 and g.status=1 then bonus 
+									else 0 
+								end),0),',',
+						<!--棋牌下注、中奖 -->
+						IFNULL(SUM(
+								case 
+									when  g.game_type=2 then amount 
+									else 0 
+								end),0),',',
+						IFNULL(SUM(
+								case 
+									when g.game_type=2 and g.is_cal=1 and g.status=1 then bonus 
+									else 0 
+								end),0)
+					) as gBet
+				from 
+					game_bets g
+				where g.status<![CDATA[<>]]>2 and g.user_type between 1 and 2 
+				<if test="username!=null and username!=''">
+					and g.user_name like concat(#{username},'%')
+				</if>
+				<if test="startTime!=null and startTime!=''">
+					and g.action_time <![CDATA[>=]]>#{startTime}
+				</if>
+				<if test="endTime!=null and endTime!=''">
+					and g.action_time <![CDATA[<=]]>#{endTime}
+				</if>
+		    ) as gBet
+	    )
+  </select>
+  
+	  <select id="queryLsHistoryGlobalCount" resultType="com.lb.report.model.GlobalCount" parameterType="map">
+			select * from (
+				<!-- 总投注人数 -->
+				(
+					select 
+						count(1) as betSum
+					from (
+						select 
+							g.uid
+						from 
+							lshistory.game_bets_his g
+						where g.status<![CDATA[<>]]>2 and g.user_type between 1 and 2
+						<if test="username!=null and username!=''">
+							and g.user_name like concat(#{username},'%')
+						</if>
+						<if test="startTime!=null and startTime!=''">
+							and g.action_time <![CDATA[>=]]>#{startTime}
+						</if>
+						<if test="endTime!=null and endTime!=''">
+							and g.action_time <![CDATA[<=]]>#{endTime}
+						</if>
+						group by g.uid
+					) as betSum
+				) as betSum,
+				<!-- 手动处理 -->
+				(
+					select  
+						<!-- 手动确认充值depositRgSumCoin-->
+						IFNULL(sum(case when m.deposit_operate_type=2 and m.state=3 then m.amount else 0 end),0.00) as depositRgSumCoin
+					from 
+						lshistory.member_deposit_his m
+					where  
+						m.uid in (select u.uid from user_info u where u.USERTYPE between 1 and 2 and u.`STATUS`=1)
+					<if test="username!=null and username!=''">
+						and m.user_name like concat(#{username},'%')
+					</if>
+					<if test="startTime!=null and startTime!=''">
+						and m.apply_time <![CDATA[>=]]>#{startTime}
+					</if>
+					<if test="endTime!=null and endTime!=''">
+						and m.apply_time <![CDATA[<=]]>#{endTime}
+					</if>
+				) as depositRgSumCoin,
+			   (
+			   		SELECT
+				       CONCAT(
+							<!-- 注册赠送 regGivingSumCoin-->
+							IFNULL(sum(case when cl.coin_operate_type=4 then cl.coin else 0.00 end),0.00),",",
+							<!-- 充值赠送depositGivingSumCoin -->
+							IFNULL(sum(case when cl.coin_operate_type=10 then cl.coin else 0.00 end),0.00),",",
+							<!-- 人工加款addMoneySumCoin-->
+							IFNULL(sum(case when cl.coin_operate_type=6 then cl.coin else 0.00 end),0.00),",",
+							<!-- 人工减款 subtractMoneySumCoin-->
+							IFNULL(sum(case when cl.coin_operate_type=7 then cl.coin else 0.00 end),0.00),",",
+							<!-- 人工赠送 rgGivingMoneySumCoin-->
+							IFNULL(sum(case when cl.coin_operate_type=21 then cl.coin else 0.00 end),0.00),",",
+							<!-- 活动赠送bonusSumCoin 红包、大转盘、优惠卡-->
+							IFNULL(sum(case when cl.coin_operate_type in (4,5,10,14,17,21,22,23) then cl.coin else 0.00 end),0.00) ,",",
+							<!-- 代理加款proxyAddMoneySumCoin-->
+							IFNULL(sum(case when cl.coin_operate_type=18 then cl.coin else 0.00 end),0.00),",",
+							<!-- 代理减款 proxySubtractMoneySumCoin-->
+							IFNULL(sum(case when cl.coin_operate_type=19 then cl.coin else 0.00 end),0.00),",",
+							<!-- 投注返利betRebate-->
+							IFNULL(sum(case when cl.coin_operate_type=27 then cl.coin else 0.00 end),0.00),",",
+							<!-- 返点-->
+							IFNULL(sum(case when cl.coin_operate_type=25 then cl.coin else 0.00 end),0.00),",",
+							IFNULL(sum(case when cl.coin_operate_type=26 then cl.coin else 0.00 end),0.00),",",
+							<!-- 充值总计 depositSumCoin-->
+							IFNULL(sum(case when cl.coin_operate_type=1 then cl.coin else 0.00 end),0.00),",",
+							<!-- 提现总计 withdrawSumCoin-->
+							IFNULL(sum(case when cl.coin_operate_type=2 then cl.coin else 0.00 end),0.00)
+						) as cLog
+					FROM
+						lshistory.coin_log_his as cl
+					WHERE  cl.user_type between 1 and 2
+					<if test="username!=null and username!=''">
+						and cl.user_name like concat(#{username},'%')
+					</if>
+					<if test="startTime!=null and startTime!=''">
+						and cl.inputTime <![CDATA[>=]]>#{startTime}
+					</if>
+					<if test="endTime!=null and endTime!=''">
+						and cl.inputTime <![CDATA[<=]]>#{endTime}
+					</if>
+			    ) as cLog,
+			    <!-- 相关投注、派奖总计 -->
+			    (
+			    	select 
+						CONCAT(
+							<!-- 足球下注、中奖 -->
+							IFNULL(SUM(
+									case 
+										when g.type=1 and g.game_type=1 then amount 
+										else 0 
+									end),0),',',
+							IFNULL(SUM(
+									case 
+										when g.type=1 and g.game_type=1 and g.is_cal=1 and g.status=1 then bonus 
+										else 0 
+									end),0),',',
+						   <!-- 传统下注、中奖 -->
+							IFNULL(SUM(
+									case 
+										when g.type=2 and g.game_type=1 then amount 
+										else 0 
+									end),0),',',
+							IFNULL(SUM(
+									case 
+										when g.type=2 and g.game_type=1 and g.is_cal=1 and g.status=1 then bonus 
+										else 0 
+									end),0),',',
+							<!-- 单场下注、中奖 -->
+							IFNULL(SUM(
+									case 
+										when g.type=3 and g.game_type=1 then amount 
+										else 0 
+									end),0),',',
+							IFNULL(SUM(
+									case 
+										when g.type=3 and g.game_type=1 and g.is_cal=1 and g.status=1 then bonus 
+										else 0 
+									end),0),',',
+						    <!-- 篮球下注、中奖 -->
+							IFNULL(SUM(
+									case 
+										when g.type=4 and g.game_type=1 then amount 
+										else 0 
+									end),0),',',
+							IFNULL(SUM(
+									case 
+										when g.type=4 and g.game_type=1 and g.is_cal=1 and g.status=1 then bonus 
+										else 0 
+									end),0),',',
+							<!--数字彩下注、中奖 -->
+							IFNULL(SUM(
+									case 
+										when g.type<![CDATA[>]]>4 and g.game_type=1 then amount 
+										else 0 
+									end),0),',',
+							IFNULL(SUM(
+									case 
+										when g.type<![CDATA[>]]>4 and g.game_type=1 and g.is_cal=1 and g.status=1 then bonus 
+										else 0 
+									end),0),',',
+							<!--棋牌下注、中奖 -->
+							IFNULL(SUM(
+									case 
+										when  g.game_type=2 then amount 
+										else 0 
+									end),0),',',
+							IFNULL(SUM(
+									case 
+										when g.game_type=2 and g.is_cal=1 and g.status=1 then bonus 
+										else 0 
+									end),0)
+						) as gBet
+					from 
+						lshistory.game_bets_his g
+					where g.status<![CDATA[<>]]>2 and g.user_type between 1 and 2 
+					<if test="username!=null and username!=''">
+						and g.user_name like concat(#{username},'%')
+					</if>
+					<if test="startTime!=null and startTime!=''">
+						and g.action_time <![CDATA[>=]]>#{startTime}
+					</if>
+					<if test="endTime!=null and endTime!=''">
+						and g.action_time <![CDATA[<=]]>#{endTime}
+					</if>
+			    ) as gBet
+		    )
+	</select>
+  
+ 	<select id="getCoinCount" parameterType="map" resultType="map">
+		SELECT
+		    (IFNULL(sum(case when cl.coin_operate_type=1 then cl.coin else 0.00 end),0.00)-IFNULL(sum(case when cl.coin_operate_type=15 then cl.coin else 0.00 end),0.00)) as depositSumCoin,
+		    (IFNULL(sum(case when cl.coin_operate_type=2 then cl.coin else 0.00 end),0.00)-IFNULL(sum(case when cl.coin_operate_type=13 then cl.coin else 0.00 end),0.00)) as withdrawSumCoin,
+		    IFNULL(sum(case when cl.coin_operate_type=4 then cl.coin else 0.00 end),0.00) as regGivingSumCoin,
+		    IFNULL(sum(case when cl.coin_operate_type=10 then cl.coin else 0.00 end),0.00) as depositGivingSumCoin,
+		    IFNULL(sum(case when cl.coin_operate_type=6 then cl.coin else 0.00 end),0.00) as addMoneySumCoin,
+		    IFNULL(sum(case when cl.coin_operate_type=7 then cl.coin else 0.00 end),0.00) as subtractMoneySumCoin,
+			(IFNULL(sum(case when cl.coin_operate_type=3 then cl.coin else 0.00 end),0.00)-IFNULL(sum(case when cl.coin_operate_type=12 then cl.coin else 0.00 end),0.00)) as betSumCoin,
+			(IFNULL(sum(case when cl.coin_operate_type=11 then cl.coin else 0.00 end),0.00)-IFNULL(sum(case when cl.coin_operate_type=16 then cl.coin else 0.00 end),0.00)) as rebateSumCoin,
+			(IFNULL(sum(case when cl.coin_operate_type=5 then cl.coin else 0.00 end),0.00)+IFNULL(sum(case when cl.coin_operate_type=14 then cl.coin else 0.00 end),0.00)) as bonusSumCoin
+			FROM
+				<choose>
+					<when test="outOfThrity!=null and outOfThrity!='' and outOfThrity==1">
+						lshistory.`coin_log_his` cl
+					</when>
+					<otherwise>
+						ls.`coin_log` cl
+					</otherwise>
+				</choose>
+			<!-- (SELECT * from ls.coin_log union all SELECT * from lshistory.coin_log_his) AS cl -->
+			LEFT JOIN ls.user_info AS u ON cl.uid = u.UID
+			WHERE
+				cl.trial_sign = 'NORMAL'
+			   and cl.user_type = 2 
+		 <if test="loginCount != null and loginCount !=''">
+			and u.AGENT_COUNT =#{loginCount}
+		 </if>
+		 <if test="userName != null and userName !=''">
+			and cl.user_name= #{userName}
+		 </if>
+		 <if test="startTime != null and startTime != ''">
+			and cl.inputTime <![CDATA[>=]]> #{startTime}
+		  </if>
+	      <if test="endTime != null and endTime != ''">
+		    and cl.inputTime <![CDATA[<=]]> #{endTime}
+	      </if>
+	</select>
+ 	<select id="getBetsCount" parameterType="map" resultType="map">
+		SELECT
+			<!-- IFNULL(sum(case when gb.status in (0,1,3) then gb.amount else 0.00 end),0.00) as betSumCoin, -->
+			(select SUM(t.betSum) from
+				   (
+							SELECT 
+									case when gb.status in (0,1,3) then 1 else 0 end as betSum
+							FROM 	
+								<choose>
+									<when test="outOfThrity!=null and outOfThrity!='' and outOfThrity==1">
+										lshistory.game_bets_his gb
+									</when>
+									<otherwise>
+										 ls.game_bets  gb
+									</otherwise>
+								</choose>
+							<!-- FROM 	(SELECT * from ls.game_bets union all SELECT * from lshistory.game_bets_his) gb -->
+							LEFT JOIN ls.user_info AS u ON gb.uid = u.UID 
+							WHERE u.USERTYPE='NORMAL'
+								 <if test="loginCount != null and loginCount !=''">
+									and u.AGENT_COUNT=#{loginCount}
+								 </if>
+								 <if test="userName != null and userName !=''">
+									and gb.user_name= #{userName}
+								 </if>
+								 <if test="startTime != null and startTime != ''">
+									and gb.action_time <![CDATA[>=]]> #{startTime}
+							     </if>
+						         <if test="endTime != null and endTime != ''">
+							        and gb.action_time <![CDATA[<=]]> #{endTime}
+						         </if>
+								GROUP BY gb.uid
+				    )  t) as betSum,
+				IFNULL(sum(case when gb.type=1 AND gb.status in (0,1,3) then gb.amount else 0.00 end),0.00) as fCSumCoin,
+				IFNULL(sum(case when gb.type=1 AND gb.status=1 then gb.bonus else 0.00 end),0.00) as fCPJSumCoin,
+				IFNULL(sum(case when gb.type=1 AND gb.status in (0,1,3) then gb.amount else 0.00 end)-sum(case when gb.type=1 AND gb.status=1 then gb.bonus else 0.00 end),0.00) as fCPJWin,
+				
+				IFNULL(sum(case when gb.type=2 AND gb.status in (0,1,3) then gb.amount else 0.00 end),0.00) as hisFSumCoin,
+				IFNULL(sum(case when gb.type=2 AND gb.status=1 then gb.bonus else 0.00 end),0.00) as hisFPJSumCoin,
+				IFNULL(sum(case when gb.type=2 AND gb.status in (0,1,3) then gb.amount else 0.00 end)-sum(case when gb.type=2 AND gb.status=1 then gb.bonus else 0.00 end),0.00) as hisFPJWin,
+				
+				IFNULL(sum(case when gb.type=3 AND gb.status in (0,1,3) then gb.amount else 0.00 end),0.00) as fBSumCoin,
+				IFNULL(sum(case when gb.type=3 AND gb.status=1 then gb.amount else 0.00 end),0.00) as fBPJSumCoin,
+				IFNULL(sum(case when gb.type=3 AND gb.status in (0,1,3) then gb.amount else 0.00 end)-sum(case when gb.type=3 AND gb.status=1 then gb.bonus else 0.00 end),0.00) as fBPJWin,
+				
+				IFNULL(sum(case when gb.type=4 AND gb.status in (0,1,3) then gb.amount else 0.00 end),0.00) as BCSumCoin,
+				IFNULL(sum(case when gb.type=4 AND gb.status=1 then gb.amount else 0.00 end),0.00) as BCPJSumCoin,
+				IFNULL(sum(case when gb.type=4 AND gb.status in (0,1,3) then gb.amount else 0.00 end)-sum(case when gb.type=4 AND gb.status=1 then gb.bonus else 0.00 end),0.00) as BCPJWin
+			FROM
+			 	<choose>
+					<when test="outOfThrity!=null and outOfThrity!='' and outOfThrity==1">
+						lshistory.game_bets_his gb
+					</when>
+					<otherwise>
+						 ls.game_bets  gb
+					</otherwise>
+				</choose>
+			<!-- (SELECT * from ls.game_bets union all SELECT * from lshistory.game_bets_his) gb -->
+			LEFT JOIN ls.user_info AS u ON gb.uid = u.UID
+			WHERE u.USERTYPE='NORMAL'
+			<if test="loginCount != null and loginCount !=''">
+				and u.AGENT_COUNT =#{loginCount}
+			 </if>
+			<if test="userName != null and userName !=''">
+				and gb.user_name= #{userName}
+			</if>
+			<if test="startTime != null and startTime != ''">
+				and gb.action_time <![CDATA[>=]]> #{startTime}
+		   </if>
+	       <if test="endTime != null and endTime != ''">
+		        and gb.action_time <![CDATA[<=]]> #{endTime}
+	       </if>
+	</select>
+ 	<select id="getWithDrawCount" parameterType="map" resultType="map">
+		SELECT 
+ 			IFNULL(sum(case when m.deposit_operate_type=2 and m.state in (1,2,3) then m.amount else 0 end),0.00) as withdrawRgSumCoin
+		from 
+			<choose>
+				<when test="outOfThrity!=null and outOfThrity!='' and outOfThrity==1">
+					lshistory.member_deposit_his m
+				</when>
+				<otherwise>
+					 ls.member_deposit  m
+				</otherwise>
+			</choose>
+			LEFT JOIN ls.user_info AS u ON m.uid = u.UID
+			WHERE u.USERTYPE='NORMAL'
+			<if test="loginCount != null and loginCount !=''">
+				and u.AGENT_COUNT =#{loginCount}
+			</if>
+			<if test="userName != null and userName !=''">
+				and m.user_name= #{userName}
+			</if>
+			<if test="startTime != null and startTime != ''">
+				and m.apply_time <![CDATA[>=]]> #{startTime}
+		   </if>
+	       <if test="endTime != null and endTime != ''">
+		        and m.apply_time <![CDATA[<=]]> #{endTime}
+	       </if>
+	</select>
+	
+	<!-- 首页今日运营明显 -->
+	<select id="queryHomeTodayReports" resultType="map">
+		select 
+			total_times as totalTimes,
+			effective_times as effectiveTimes,
+			register_times as registerTimes,
+			register_proxy_times as registerProxyTimes,
+			first_recharge_times as firstRechargeTimes,
+			second_recharge_times as secondRechargeTimes,
+			today_deposit_times as todayDepositTimes,
+			today_withdraw_times as todayWithdrawTimes,
+			today_push_recharge_coin as pushRechargeCoin,
+			today_proxy_rebate_coin as proxyRebateCoin,
+			yesterday_user_rebate_amount as totalUserRebateAmount,
+			chess_card_proxy_amount as agentChessCardMoney,
+			today_chess_card_amount as todayChessCardAmount,
+			yesterday_chess_card_amount as yesterDayChessCardAmount,
+			system_color_total_amount as systemColorAmount,
+			digital_color_total_amount as digitalColorAmount
+		from operation_details
+	</select>
+	
+	<!-- 今日团队报表统计 -->
+	<select id="queryTodayTeamReports">
+		call today_team_report_pro()
+	</select>
+</mapper>

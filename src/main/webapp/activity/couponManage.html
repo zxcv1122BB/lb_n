@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="../plugins/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="../public/css/fenye.css"/>
+    <link rel="stylesheet" href="css/couponManage.css"/>
+    <title>卡卷管理</title>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <fieldset class="layui-elem-field">
+        <legend>卡卷管理</legend>
+        <div class="add_btn layui-inline">
+            <form :action="exportUser+'/download/exportPreferentialCard'" method="post" id="form_">
+                <button class="layui-btn" type="button" @click="popAddCoupon">添加</button>
+                <input @keyup.13="search" type="text" placeholder="输入批次查询" class="layui-input" v-model="search_input" name="batch" />
+                <i class="layui-icon" @click="search">&#xe615;</i>
+                <select v-model="state" style="width: 100px;height: 38px;" name="flag">
+                    <option value="1">已使用</option>
+                    <option value="0">未使用</option>
+                </select>
+                <button class="layui-btn" type="button" @click="export1" style="margin-left: 30px;">导出</button>
+            </form>
+        </div>
+        <div class="layui-field-box ">
+            <table class="layui-table">
+                <thead>
+                <tr>
+                    <th width="3%">ID</th>
+                    <th width="7%">卡卷帐号</th>
+                    <th width="5%">批次</th>
+                    <th width="7%">是否使用</th>
+                    <th width="20%">适用VIP等级</th>
+                    <th width="7%">单张面额</th>
+                    <th width="13%">开始时间</th>
+                    <th width="13%">结束时间</th>
+                    <th width="7%">状态</th>
+                    <th width="11%">领取人帐号</th>
+                    <th width="7%">操作</th>
+                </tr>
+                </thead>
+                <tbody id="content">
+                <tr v-if="datas.length==0">
+                    <td colspan="11">暂无数据</td>
+                </tr>
+                <tr v-else v-for="(item,index) in datas">
+                    <td v-cloak>{{item.id}}</td>
+                    <td v-cloak>{{item.account}}</td>
+                    <td v-cloak>{{item.batch}}</td>
+                    <td v-cloak>{{item.flag==1?'已使用':'未使用'}}</td>
+                    <td v-cloak>{{item.vips}}</td>
+                    <td v-cloak>{{item.money}}</td>
+                    <td v-cloak>{{item.startTime}}</td>
+                    <td v-cloak>{{item.endTime}}</td>
+                    <td>
+                        <div class="layui-form">
+                            <div class="layui-form-item">
+                                <div class="layui-input-block" style="margin-left: 0;">
+                                    <div v-if="item.status==1" class="layui-unselect layui-form-switch layui-form-onswitch" :id="item.id" @click="changeType(item.id,item.status,index)">
+                                        <em>启用</em>
+                                        <i></i>
+                                    </div>
+                                    <div v-else class="layui-unselect layui-form-switch" :id="item.id" @click="changeType(item.id,item.status,index)">
+                                        <em>禁用</em>
+                                        <i></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td v-cloak>{{item.userName}}</td>
+                    <td>
+                        <a href="javascript:void (0)" class="layui-btn layui-btn-mini layui-btn-danger" @click="delCoupon(item.id)">删除</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <!--页码设置-->
+        <div class="yema">
+            <!--页码左边-->
+            <div class="selectYema">
+                <p v-cloak>
+                    总共{{total}}条记录.每页显示
+                    <select v-model="page_num">
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="200">200</option><option value="500">500</option>
+                    </select>
+                    条记录
+                </p>
+            </div>
+            <!--右边分页-->
+            <div id="fenye" style="text-align: right;"></div>
+        </div>
+    </fieldset>
+
+    <!--添加弹出层-->
+    <div class="popAdd">
+        <div class="layui-form-item">
+            <label class="layui-form-label">数量</label>
+            <div class="layui-input-block">
+                <input type="number" placeholder="请输入数量" v-model="count" class="layui-input" style="width: 80%;">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">单张面额</label>
+            <div class="layui-input-block">
+                <input type="number" placeholder="请输入面额" v-model="money" class="layui-input" style="width: 80%;">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">状态</label>
+            <div class="layui-input-block">
+                <select class="select" v-model="status">
+                    <option value="1">启用</option>
+                    <option value="0">禁用</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">适用VIP组</label>
+            <div class="layui-input-block">
+                <p style="margin-bottom: 10px;">
+                    <button class="layui-btn-mini layui-btn" @click="sendGroup">选择</button>
+                    <span v-cloak>{{select_group}}</span>
+                </p>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">有效期</label>
+            <div class="layui-input-block">
+                <div class="col_1">
+                    <div class="date">
+                        <input id="startDate" placeholder="开始时间" readonly/>
+                        <i class="layui-icon icon">&#xe637;</i>
+                    </div>
+                    <div class="date">
+                        <input id="endDate" placeholder="结束时间" readonly/>
+                        <i class="layui-icon icon">&#xe637;</i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--选择vip组弹出窗-->
+    <div class="popZu">
+        <div>
+            <table class="layui-table">
+                <thead>
+                <tr>
+                    <th width="10%"></th>
+                    <th width="10%">组ID</th>
+                    <th width="80%">组名称</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="item in zGroups">
+                    <td><input type="checkbox" v-model="zu" :value="item.vipId" :id="item.vipId" /></td>
+                    <td v-cloak>{{item.vipId}}</td>
+                    <td v-cloak>{{item.vipName}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!--提示是否删除-->
+    <div class="popDel">
+        <div>
+            <i class="layui-layer-ico layui-layer-ico3"></i>确定删除此卡卷？
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="../public/js/jquery.js"></script>
+<script type="text/javascript" src="../public/js/laydate/laydate.js"></script>
+<script type="text/javascript" src="../public/js/jqPaginator.js"></script>
+<script type="text/javascript" src="../public/js/vue.min.js"></script>
+<script type="text/javascript" src="../public/js/send_request.js"></script>
+<script type="text/javascript" src="../public/js/security.js"></script>
+<script type="text/javascript" src="../plugins/layui/layui.js"></script>
+<script type="text/javascript" src="js/couponManage.js"></script>
+</body>
+</html>

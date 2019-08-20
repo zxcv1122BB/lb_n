@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>会员数据概况</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="../plugins/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="../public/css/fenye.css"/>
+    <link rel="stylesheet" href="css/systemRiskEvaluation.css"/>
+    <link rel="stylesheet" href="css/userDataSurvey.css"/>
+
+    <style>
+        .layui-tab-title .layui-this {
+            background-color: antiquewhite;
+        }
+    </style>
+</head>
+<body>
+
+<div class="admin-main" id="app">
+    <fieldset class="layui-elem-field">
+        <legend>会员数据概况</legend>
+        <div class="layui-tab">
+            <div class="layui-tab-content">
+                <div class="row clearfix">
+                    <div class="col">
+                        <div class="date">
+                            <input id="startDate" name="startTime" placeholder="开始时间" readonly/>
+                            <i class="layui-icon icon">&#xe637;</i>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <span id="now"  @click="now">今天</span>
+                        <span id="yes" @click="yes">昨天</span>
+                        <span id="week" @click="week">本周</span>
+                    </div>
+                    <div class="col">
+                      <input placeholder="会员帐号" name="username" type="text" class="input" v-model="USER_NAME" @keyup="USER_NAME=USER_NAME.replace(/\s+/g,'')">
+                       <!--   <select name="payType" id="payType" @change="getTypeData">
+                            <option value="2" id="userInfo_">会员</option>
+                            <option value="1" id="proxyInfo_">代理</option>
+                        </select>   --> 
+                        <span class="layui-btn" @click="selectUserCountByUserName">查询</span>
+                    </div>
+                </div>
+                <div class="row clearfix">
+                    <div class="col">
+                        <div class="date">
+                            <input id="endDate" name="endTime" placeholder="结束时间" readonly/>
+                            <i class="layui-icon icon">&#xe637;</i>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <span id="lastWeek"  @click="lastWeek" >上周</span>
+                        <span id="month"  @click="month" >本月</span>
+                        <span id="lastMonth" @click="lastMonth">上月</span>
+                    </div>
+                </div>
+                <!-- 会员基本信息 -->
+                <div class="layui-tab-item layui-show">
+                    <div>
+                        <table class="layui-table">
+                            <thead>
+                              <tr>
+                                <th>账号</th>
+                                <th>所属代理</th>
+                                <th>注册时间</th>
+                                <th>余额</th>
+                                <th>当前打码量</th>
+                                <th>出款所需打码量</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                               <tr>
+                                 <td>{{data.USER_NAME}}</td>
+                                 <td>{{data.AGENT_COUNT !=null ? data.AGENT_COUNT : '--'}}</td>
+                                 <td>{{data.REG_TIME}}</td>
+                                 <td>{{data.COIN != null ? data.COIN : '--'}}</td>
+                                 <td>{{data.BETSUM !=null ? data.BETSUM : '--'}}</td>
+                                 <td>{{data.WITHDRAW_NEEDSUM !=null ? data.WITHDRAW_NEEDSUM:'--'}}</td>
+                               </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- 存款 -->
+                <div class="layui-tab-item layui-show">
+                    <div>
+                        <table class="layui-table">
+                            <thead>
+                              <tr>
+                                <th>在线存款总计</th>
+                                <th>手动加款总计</th>
+                                <th>手动确认充值金额</th>
+                                <th>最后充值金额</th>
+                                <th>最后充值时间</th>
+                                <th>最后充值简介</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                               <tr>
+                                 <td>{{data.amount_online !=null ? data.amount_online : '--'}}</td>
+                                 <td>{{data.amount_manual !=null ? data.amount_manual : '--' }}</td>
+                                 <td>{{data.depositAmountRGSum !=null ? data.depositAmountRGSum : '--'}}</td>
+                                 <td>{{data.lastAmount !=null ? data.lastAddMoney : '--'}}</td>
+                                 <td>{{data.latTime !=null ? data.lastAddTime : '--'}}</td>
+                                 <td>{{data.lastInfo !=null ? data.lastAddInfo : '--'}}</td>
+                               </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- 提款记录 -->
+                <div class="layui-tab-item layui-show">
+                    <div>
+                        <table class="layui-table">
+                            <thead>
+                              <tr>
+                                <th>在线提款总计</th>
+                                <th>手动扣款总计</th>
+                                <th>最后提款金额</th>
+                                <th>最后提款时间</th>
+                                <th>最后提款简介</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                               <tr>
+                                 <td>{{data.Withdrawals_online !=null ? data.Withdrawals_online : '--'}}</td>
+                                 <td>{{data.artificial_deduction !=null ? data.artificial_deduction : '--'}}</td>
+                                 <td>{{data.lastWithdrawalsMoney !=null ? data.lastWithdrawalsMoney : '--'}}</td>
+                                 <td>{{data.lastWithdrawalsTime !=null ? data.lastWithdrawalsTime : '--'}}</td>
+                                 <td>{{data.lastWithdrawalsInfo !=null ? data.lastWithdrawalsInfo : '--'}}</td>
+                               </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- 活动奖金 -->
+                <div class="layui-tab-item layui-show">
+                    <div>
+                        <table class="layui-table">
+                            <thead>
+                              <tr>
+                                <th>存款赠送总计</th>
+                                <th>注册赠送总计</th>
+                                <th>活动中奖总计</th>
+                                <th>反水总计</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                               <tr>
+                                 <td>{{data.addSum !=null ? data.addSum : '--'}}</td>
+                                 <td>{{data.registerSum !=null ? data.registerSum : '--'}}</td>
+                                 <td>{{data.winningSum !=null ? data.winningSum : '--'}}</td>
+                                 <td>{{data.defectionSum !=null ? data.defectionSum : '--'}}</td>
+                               </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- 下注 -->
+                <div class="layui-tab-item layui-show">
+                    <div>
+                        <table class="layui-table">
+                            <thead>
+                              <tr>
+                                <th>竞彩下注总计</th>
+                                <th>单场下注总计</th>
+                                <th>传统下注总计</th>
+                                <th>所有下注总计</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                               <tr>
+                                 <td>{{data.jcBetting !=null ? data.jcBetting : '--'}}</td>
+                                 <td>{{data.dcBetting !=null ? data.dcBetting : '--'}}</td>
+                                 <td>{{data.ctBetting !=null ? data.ctBetting : '--'}}</td>
+                                 <td>{{data.allBetting !=null ? data.allBetting : '--'}}</td>
+                               </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+        </div>
+    </fieldset>
+</div>
+
+<script type="text/javascript" src="../public/js/jquery.js"></script>
+<script type="text/javascript" src="../public/js/laydate/laydate.js"></script>
+<script type="text/javascript" src="../public/js/jqPaginator.js"></script>
+<script type="text/javascript" src="../plugins/layui/layui.js"></script>
+<script type="text/javascript" src="../public/js/vue.min.js"></script>
+<script type="text/javascript" src="../public/js/security.js"></script>
+<script type="text/javascript" src="../public/js/send_request.js"></script>
+<script type="text/javascript" src="js/userDataSurvey.js"></script>
+</body>
+</html>

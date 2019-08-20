@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="../plugins/layui/css/layui.css" media="all" />
+    <link rel="stylesheet" href="../public/css/fenye.css" />
+    <link rel="stylesheet" href="css/openRecord.css" />
+    <title>开奖记录管理</title>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+
+        .layui-table-sort .layui-edge {
+            border-width: 7px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <fieldset class="layui-elem-field">
+            <legend>开奖记录管理</legend>
+            <!--搜索条件-->
+            <div class="search">
+                <!-- <form :action="exportUser+'/download/exportUserList'" method="post" id="form_"> -->
+                    <form action="">
+                    <p>查询条件中的日期只针对开奖时间进行查询</p>
+                    <div class="col_1 ">
+                        <div>
+                            <div class="date">
+                                <input id="startDate" name="startTime" placeholder="开始时间" readonly />
+                                <!--导出用-->
+                                <i class="layui-icon icon">&#xe637;</i>
+                            </div>
+                        </div>
+                        <div class="btns">
+                            <a id="now" @click="now">今日</a>
+                            <a id="yes" @click="yes">昨日</a>
+                            <a id="week" @click="week">本周</a>
+                        </div>
+                        <div>
+                           
+                            <!--导出用-->
+                            <select v-model="store_sportsType" name="vipName">
+                                <!--导出用-->
+                                <option value="">彩种/全部</option>
+                                <option v-for="item in types" :value="item.gameID" v-cloak>{{item.gameName}}</option>
+                            </select>
+                            <select v-model="store_statius" name="keywordOption">
+                                <!--导出用-->
+                                <option value="">状态/全部</option>
+                                <option v-for="item in statius" :value="item.code" v-cloak>{{item.name}}</option>
+                            </select>
+                            <!--导出用-->
+                        </div>
+                        
+                    </div>
+                    <div class="col_2">
+                        <div>
+                            <div class="date">
+                                <input id="endDate" name="endTime" placeholder="结束时间" readonly />
+                                <!--导出用-->
+                                <i class="layui-icon icon">&#xe637;</i>
+                            </div>
+                        </div>
+                        <div class="btns">
+                            <a id="lastWeek" @click="lastWeek">上周</a>
+                            <a id="month" @click="month">本月</a>
+                            <a id="lastMonth" @click="lastMonth">上月</a>
+                        </div>
+                        <div>
+                            <input placeholder="期次" name="username" type="text" v-model="issue" @keyup="issue=issue.replace(/\s+/g,'')" />
+                            <a class="layui-btn" @click="search">查询</a>
+                        </div>
+                        
+                    </div>
+                </form>
+            </div>
+            <!--列表内容-->
+            <div class="layui-field-box">
+                <table class="layui-table admin-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 6%;">彩种</th>
+                            <th style="width: 6%;">期次</th>
+                            <th style="width: 12%;">开奖号码</th>
+                            <th style="width: 6%;">
+                                处理条数
+                            </th>
+                            <th style="width: 7%;">异常条数</th>
+                            <th style="width: 6%;">处理时间/ms</th>
+                            <th style="width: 12%;">
+                                处理信息
+                            </th>
+                            <th style="width: 12%;">开奖状态</th>
+                            <th style="width: 9%;">开奖时间</th>
+                        </tr>
+                    </thead>
+                    <tbody id="content" v-cloak>
+                        <tr v-if="data_list.length==0">
+                            <td colspan="9">暂无数据</td>
+                        </tr>
+                        <tr v-for="(item,index) in data_list" v-cloak>
+                            <td>{{item.gameName}}</td>
+                            <td>{{item.issue}}</td>
+                            <td>{{item.luckNumber}}</td>
+                            <td>{{item.dealNum}}</td>
+                            <td>{{item.dealErrorNum}}</td>
+                            <td>{{item.dealTime}}</td>
+                            <td>{{item.dealMsg}}</td>
+                            <td>{{item.openState==0?'未处理':'已处理'}}</td>
+                            <td>{{item.openTime}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!--页码设置-->
+            <div class="yema">
+                <!--页码左边-->
+                <div class="selectYema">
+                    <p v-cloak>
+                        总共{{total}}条记录.每页显示
+                        <select v-model="pageNum">
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option><option value="100">100</option>
+                        </select>
+                        条记录
+                    </p>
+                </div>
+                <!--右边分页-->
+                <div id="fenye" style="text-align: right;"></div>
+            </div>
+        </fieldset>
+   
+    </div>
+
+    <script type="text/javascript" src="../public/js/jquery.js"></script>
+    <script type="text/javascript" src="../public/js/laydate/laydate.js"></script>
+    <script type="text/javascript" src="../public/js/jqPaginator.js"></script>
+    <script type="text/javascript" src="../public/js/vue.min.js"></script>
+    <script type="text/javascript" src="../public/js/send_request.js"></script>
+    <script type="text/javascript" src="../public/js/security.js"></script>
+    <script type="text/javascript" src="../public/js/mobile-detect.min.js"></script>
+    <script type="text/javascript" src="../plugins/layui/layui.js"></script>
+    <script type="text/javascript" src="js/digitOpenRecord.js"></script>
+</body>
+
+</html>

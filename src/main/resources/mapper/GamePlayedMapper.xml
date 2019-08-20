@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lb.sys.dao.GamePlayedMapper">
+  <resultMap id="BaseResultMap" type="com.lb.game.model.GamePlayed">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="type" jdbcType="TINYINT" property="type" />
+    <result column="groupId" jdbcType="SMALLINT" property="groupid" />
+    <result column="sort" jdbcType="INTEGER" property="sort" />
+    <result column="maxCount" jdbcType="INTEGER" property="maxcount" />
+    <result column="maxBet" jdbcType="INTEGER" property="maxbet" />
+    <result column="minAmount" jdbcType="REAL" property="minamount" />
+    <result column="satatus" jdbcType="BIT" property="satatus" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+  </resultMap>
+  
+  <select id="selectFootballGamePlayedByGroup" parameterType="java.lang.Integer"
+		resultMap="BaseResultMap">
+		SELECT gp.* FROM game_played gp, game_play_group gpg WHERE
+		gp.groupId=gpg.id AND gpg.id=#{id} ORDER BY gp.sort ASC
+	</select>
+	
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, name, type, groupId, sort, maxCount, maxBet, minAmount, satatus, create_date, 
+    update_date
+  </sql>
+  <select id="selectByExample" parameterType="com.lb.game.model.GamePlayedExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from game_played
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from game_played
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from game_played
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.lb.game.model.GamePlayedExample">
+    delete from game_played
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.lb.game.model.GamePlayed">
+    insert into game_played (id, name, type, 
+      groupId, sort, maxCount, 
+      maxBet, minAmount, satatus, 
+      create_date, update_date)
+    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{type,jdbcType=TINYINT}, 
+      #{groupid,jdbcType=SMALLINT}, #{sort,jdbcType=INTEGER}, #{maxcount,jdbcType=INTEGER}, 
+      #{maxbet,jdbcType=INTEGER}, #{minamount,jdbcType=REAL}, #{satatus,jdbcType=BIT}, 
+      #{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.lb.game.model.GamePlayed">
+    insert into game_played
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="groupid != null">
+        groupId,
+      </if>
+      <if test="sort != null">
+        sort,
+      </if>
+      <if test="maxcount != null">
+        maxCount,
+      </if>
+      <if test="maxbet != null">
+        maxBet,
+      </if>
+      <if test="minamount != null">
+        minAmount,
+      </if>
+      <if test="satatus != null">
+        satatus,
+      </if>
+      <if test="createDate != null">
+        create_date,
+      </if>
+      <if test="updateDate != null">
+        update_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=TINYINT},
+      </if>
+      <if test="groupid != null">
+        #{groupid,jdbcType=SMALLINT},
+      </if>
+      <if test="sort != null">
+        #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="maxcount != null">
+        #{maxcount,jdbcType=INTEGER},
+      </if>
+      <if test="maxbet != null">
+        #{maxbet,jdbcType=INTEGER},
+      </if>
+      <if test="minamount != null">
+        #{minamount,jdbcType=REAL},
+      </if>
+      <if test="satatus != null">
+        #{satatus,jdbcType=BIT},
+      </if>
+      <if test="createDate != null">
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null">
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.lb.game.model.GamePlayedExample" resultType="java.lang.Long">
+    select count(*) from game_played
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update game_played
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.name != null">
+        name = #{record.name,jdbcType=VARCHAR},
+      </if>
+      <if test="record.type != null">
+        type = #{record.type,jdbcType=TINYINT},
+      </if>
+      <if test="record.groupid != null">
+        groupId = #{record.groupid,jdbcType=SMALLINT},
+      </if>
+      <if test="record.sort != null">
+        sort = #{record.sort,jdbcType=INTEGER},
+      </if>
+      <if test="record.maxcount != null">
+        maxCount = #{record.maxcount,jdbcType=INTEGER},
+      </if>
+      <if test="record.maxbet != null">
+        maxBet = #{record.maxbet,jdbcType=INTEGER},
+      </if>
+      <if test="record.minamount != null">
+        minAmount = #{record.minamount,jdbcType=REAL},
+      </if>
+      <if test="record.satatus != null">
+        satatus = #{record.satatus,jdbcType=BIT},
+      </if>
+      <if test="record.createDate != null">
+        create_date = #{record.createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateDate != null">
+        update_date = #{record.updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update game_played
+    set id = #{record.id,jdbcType=INTEGER},
+      name = #{record.name,jdbcType=VARCHAR},
+      type = #{record.type,jdbcType=TINYINT},
+      groupId = #{record.groupid,jdbcType=SMALLINT},
+      sort = #{record.sort,jdbcType=INTEGER},
+      maxCount = #{record.maxcount,jdbcType=INTEGER},
+      maxBet = #{record.maxbet,jdbcType=INTEGER},
+      minAmount = #{record.minamount,jdbcType=REAL},
+      satatus = #{record.satatus,jdbcType=BIT},
+      create_date = #{record.createDate,jdbcType=TIMESTAMP},
+      update_date = #{record.updateDate,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lb.game.model.GamePlayed">
+    update game_played
+    <set>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=TINYINT},
+      </if>
+      <if test="groupid != null">
+        groupId = #{groupid,jdbcType=SMALLINT},
+      </if>
+      <if test="sort != null">
+        sort = #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="maxcount != null">
+        maxCount = #{maxcount,jdbcType=INTEGER},
+      </if>
+      <if test="maxbet != null">
+        maxBet = #{maxbet,jdbcType=INTEGER},
+      </if>
+      <if test="minamount != null">
+        minAmount = #{minamount,jdbcType=REAL},
+      </if>
+      <if test="satatus != null">
+        satatus = #{satatus,jdbcType=BIT},
+      </if>
+      <if test="createDate != null">
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null">
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lb.game.model.GamePlayed">
+    update game_played
+    set name = #{name,jdbcType=VARCHAR},
+      type = #{type,jdbcType=TINYINT},
+      groupId = #{groupid,jdbcType=SMALLINT},
+      sort = #{sort,jdbcType=INTEGER},
+      maxCount = #{maxcount,jdbcType=INTEGER},
+      maxBet = #{maxbet,jdbcType=INTEGER},
+      minAmount = #{minamount,jdbcType=REAL},
+      satatus = #{satatus,jdbcType=BIT},
+      create_date = #{createDate,jdbcType=TIMESTAMP},
+      update_date = #{updateDate,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

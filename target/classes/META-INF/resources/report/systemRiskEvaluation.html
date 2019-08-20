@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>系统风险评估</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="../plugins/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="../public/css/fenye.css"/>
+    <link rel="stylesheet" href="css/systemRiskEvaluation.css"/>
+
+    <style>
+        .layui-tab-title .layui-this {
+            background-color: antiquewhite;
+        }
+
+        [v-cloak] {
+            display: none;
+        }
+        
+    </style>
+</head>
+<body>
+
+<div class="admin-main" id="app">
+    <fieldset class="layui-elem-field">
+        <legend>系统风险评估</legend>
+        <div class="layui-tab">
+            <ul class="layui-tab-title">
+                <li class="layui-this" @click="change1">运营分析</li>
+                <!--<li @click="change2">存取款分析</li>-->
+                <li @click="change2">彩票分析</li>
+            </ul>
+            <div class="layui-tab-content">
+                <div class="row clearfix">
+                    <div class="col">
+                        <div class="date">
+                            <input id="startDate" name="startTime" placeholder="开始时间" readonly/>
+                            <i class="layui-icon icon">&#xe637;</i>
+                        </div>
+                    </div>
+                    <div class="col quitTime">
+                        <span id="now">今天</span>
+                        <span id="yes">昨天</span>
+                        <span id="week">本周</span>
+                        <span id="lastWeek">上周</span>
+                        <span id="month">本月</span>
+                        <span id="lastMonth">上月</span>
+                    </div>
+                   	<div>
+						<button class="layui-btn" @click="search">查询</button>
+						<button class="layui-btn" @click="resetting">重置</button>
+					</div>
+                   <!-- <div class="col">
+                    	<select name="city" class="select" v-model="outOfThrity">
+	                         <option value="0">7天之内</option>
+	                         <option value="1">7天之外</option>
+	                     </select>
+                        <span id="btn_select_byDate" class="layui-btn" @click="search">查询</span>
+                    </div> -->
+                </div>
+                <div class="row clearfix">
+                    <div class="col">
+                        <div class="date">
+                            <input id="endDate" name="endTime" placeholder="结束时间" readonly/>
+                            <i class="layui-icon icon">&#xe637;</i>
+                        </div>
+                    </div>
+                    <!-- <div class="col">
+                        <span id="lastWeek">上周</span>
+                        <span id="month">本月</span>
+                        <span id="lastMonth">上月</span>
+                    </div> -->
+				    <div class="col" v-if='type==1'> 
+                         <select v-model="getType"> 
+                            <option value="0">全部</option>
+                            <option value="1">代理</option>
+                            <option value="2">会员</option>
+                         </select> 
+                    </div>
+                    <div class="col">
+                        <input type="text" placeholder="用户帐号" v-model="username_proxy"
+                               style="padding: 0 10px;height: 35px;border-radius: 5px;border: 1px solid #ccc;"/>
+                    </div>
+                    <div class="col" v-if="type==2">
+                        <select v-model="caiAllType">
+                            <option value="1,2,3">全部</option>
+                            <option value="1,2">官方彩</option>
+                            <option value="3">系统彩</option>
+                        </select>
+                        <select v-model="caiType">
+                            <option value="">全部</option>
+                            <template v-for="(its,inds) in caiTypeList" v-bind:key="inds">
+                                <option v-if="caiAllType.indexOf(its.game_type)!=-1" :value="its.gameId">{{its.gameName}}</option>
+                            </template>
+                            
+                        </select>
+                    </div>
+                </div>
+                <!--运营内容-->
+                <div class="layui-tab-item layui-show">
+                    <div>
+                        <table class="layui-table">
+                            <thead>
+                            <tr>
+                                <th>用户账号</th>
+                                <th>用户类型</th>
+                                <th>存款次数</th>
+                                <th>取款次数</th>
+                                <th>存款额</th>
+                                <th>取款额</th>
+                                <th>盈亏额</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr v-if="datas.length==0">
+                                <td colspan="7">暂无数据</td>
+                            </tr>
+                            <tr v-for="item in datas">
+                                <td v-cloak>{{item.user_name}}</td>
+                                <td v-cloak>{{item.user_type==2?'会员':'代理'}}</td>
+
+                                <td v-if="item.depositCount==undefined">--</td>
+                                <td v-else v-cloak>{{item.depositCount}}</td>
+
+                                <td v-if="item.withdrawalCount==undefined">--</td>
+                                <td v-else v-cloak>{{item.withdrawalCount}}</td>
+
+                                <td v-if="item.depositAccount==undefined">--</td>
+                                <td v-else-if="item.depositAccount>0" style="color:#a94442;" v-cloak>
+                                    {{item.depositAccount.toFixed(2)}}
+                                </td>
+                                <td v-else-if="item.depositAccount<=0" style="color:blue;" v-cloak>
+                                    {{item.depositAccount.toFixed(2)}}
+                                </td>
+
+                                <td v-if="item.withdrawalAcount==undefined">--</td>
+                                <td v-else-if="item.withdrawalAcount>0" style="color:#a94442;" v-cloak>
+                                    {{item.withdrawalAcount.toFixed(2)}}
+                                </td>
+                                <td v-else-if="item.withdrawalAcount<=0" style="color:blue;" v-cloak>
+                                    {{item.withdrawalAcount.toFixed(2)}}
+                                </td>
+
+                                <td v-if="item.balance==undefined">--</td>
+                                <td v-else-if="item.balance>0" style="color:#a94442;" v-cloak>
+                                    {{item.balance.toFixed(2)}}
+                                </td>
+                                <td v-else-if="item.balance<=0" style="color:blue;" v-cloak>
+                                    {{item.balance.toFixed(2)}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>小计</td>
+                                <td></td>
+                                <td v-cloak>{{dp_count}}</td>
+                                <td v-cloak>{{wd_count}}</td>
+
+                                <td v-if="dp_account>0" style="color:#a94442;" v-cloak>{{dp_account}}</td>
+                                <td v-else style="color:blue;" v-cloak>{{dp_account}}</td>
+
+                                <td v-if="wd_account>0" style="color:#a94442;" v-cloak>{{wd_account}}</td>
+                                <td v-else style="color:blue;" v-cloak>{{wd_account}}</td>
+
+                                <td v-if="bl_account>0" style="color:#a94442;" v-cloak>{{bl_account}}</td>
+                                <td v-else style="color:blue;" v-cloak>{{bl_account}}</td>
+                            </tr>
+                            <tr>
+                                <td>总计</td>
+                                <td></td>
+                                <td v-cloak>{{yy_totalled.depositCount}}</td>
+                                <td v-cloak>{{yy_totalled.withdrawalCount}}</td>
+
+                                <td v-if="yy_totalled.depositAccount>0" style="color:#a94442;" v-cloak>{{parseFloat(yy_totalled.depositAccount).toFixed(2)}}</td>
+                                <td v-else style="color:blue;" v-cloak>{{parseFloat(yy_totalled.depositAccount).toFixed(2)}}</td>
+
+                                <td v-if="yy_totalled.withdrawalAcount>0" style="color:#a94442;" v-cloak>{{parseFloat(yy_totalled.withdrawalAcount).toFixed(2)}}</td>
+                                <td v-else style="color:blue;" v-cloak>{{parseFloat(yy_totalled.withdrawalAcount).toFixed(2)}}</td>
+
+                                <td v-if="yy_totalled.balance>0" style="color:#a94442;" v-cloak>{{parseFloat(yy_totalled.balance).toFixed(2)}}</td>
+                                <td v-else style="color:blue;" v-cloak>{{parseFloat(yy_totalled.balance).toFixed(2)}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- 存取款分析 -->
+                <!--<div class="layui-tab-item">
+                    <div>
+                        <table class="layui-table">
+                            <thead>
+                            <tr>
+                                <th>用户账号</th>
+                                <th>用户类型</th>
+                                <th v-if="userType=='会员'">
+                                    存款次数
+                                </th>
+                                <th>取款次数</th>
+                                <th v-if="userType=='会员'">
+                                    存款额
+                                </th>
+                                <th>取款额</th>
+                                <th>盈亏额</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr v-if="datasDeposity.length==0">
+                                <td colspan="12">暂无数据</td>
+                            </tr>
+                            <tr v-for="(item,index) in datasDeposity">
+                                <td>{{item.user_name}}</td>
+                                <td v-if="item.user_type === 1">
+                                    代理
+                                </td>
+                                <td v-else-if="item.user_type === 2">
+                                    会员
+                                </td>
+                                <td v-if="userType=='会员'">
+                                    {{item.depositCount}}
+                                </td>
+                                <td>{{item.withdrawalCount}}</td>
+                                <td v-if="userType=='会员'">
+                                    {{item.depositAccount}}
+                                </td>
+                                <td>{{item.withdrawalAcount}}</td>
+                                <td>{{item.balance}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="yema">
+                        <div class="selectYema">
+                            <p v-cloak>
+                                总共{{total2}}条记录.每页显示
+                                <select v-model="page_num2">
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                    <option value="200">200</option><option value="500">500</option>
+                                </select>
+                                条记录
+                            </p>
+                        </div>
+                        <div id="fenye2" style="text-align: right;"></div>
+                    </div>
+                </div>-->
+                <!-- 彩票分析 -->
+                <div class="layui-tab-item">
+                    <div>
+                        <table class="layui-table">
+                            <thead>
+                            <tr>
+                                <th>用户账号</th>
+                                <th>彩票投注额</th>
+                                <th>彩票中奖额</th>
+                                <th>彩票盈亏额</th>
+                                <th>彩票投注次数</th>
+                                <th>彩票中奖次数</th>
+                                <th>彩票中奖率</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr v-if="datasLottery.length==0">
+                                <td colspan="7">暂无数据</td>
+                            </tr>
+                            <tr v-else v-for="(item,index) in datasLottery">
+                                <td v-cloak>{{item.user_name}}</td>
+
+                                <td v-if="item.totalHandleAccount==undefined">--</td>
+                                <td v-else-if="item.totalHandleAccount>0" style="color:#a94442;" v-cloak>{{item.totalHandleAccount.toFixed(2)}}</td>
+                                <td v-else-if="item.totalHandleAccount<=0" style="color:blue;" v-cloak>{{item.totalHandleAccount.toFixed(2)}}</td>
+
+                                <td v-if="item.lotteryAccount==undefined">--</td>
+                                <td v-else-if="item.lotteryAccount>0" style="color:#a94442;" v-cloak>{{item.lotteryAccount.toFixed(2)}}</td>
+                                <td v-else-if="item.lotteryAccount<=0" style="color:blue;" v-cloak>{{item.lotteryAccount.toFixed(2)}}</td>
+
+                                <td v-if="item.lotteryAccount-item.totalHandleAccount>0" style="color:#a94442;" v-cloak>
+                                    {{(item.lotteryAccount-item.totalHandleAccount).toFixed(2)}}
+                                </td>
+                                <td v-else style="color:blue;" v-cloak>{{(item.lotteryAccount-item.totalHandleAccount).toFixed(2)}}</td>
+
+                                <td v-cloak>{{item.totalHandleCount}}</td>
+                                <td v-cloak>{{item.lotteryCount}}</td>
+
+                                <td v-if="item.totalHandleCount==0">0.00%</td>
+                                <td v-else v-cloak>{{((item.lotteryCount/item.totalHandleCount)*100).toFixed(2)}}%</td>
+                            </tr>
+                            <tr>
+                                <td>小计</td>
+
+                                <td v-if="tze>0" style="color:#a94442;" v-cloak>{{tze}}</td>
+                                <td v-else style="color:blue;" v-cloak>{{tze}}</td>
+
+                                <td v-if="zje>0" style="color:#a94442;" v-cloak>{{zje}}</td>
+                                <td v-else style="color:blue;" v-cloak>{{zje}}</td>
+
+                                <td v-if="yke>0" style="color:#a94442;" v-cloak>{{yke}}</td>
+                                <td v-else style="color:blue;" v-cloak>{{yke}}</td>
+
+                                <td v-cloak>{{tz_count}}</td>
+                                <td v-cloak>{{zj_count}}</td>
+                                <td v-cloak>{{zjl}}</td>
+                            </tr>
+                            <tr>
+                                <td>总计</td>
+
+                                <td v-if="cp_totalled.totalHandleAccount>0" style="color:#a94442;" v-cloak>{{parseFloat(cp_totalled.totalHandleAccount).toFixed(2)}}</td>
+                                <td v-else style="color:blue;" v-cloak>{{parseFloat(cp_totalled.totalHandleAccount).toFixed(2)}}</td>
+
+                                <td v-if="cp_totalled.lotteryAccount>0" style="color:#a94442;" v-cloak>{{parseFloat(cp_totalled.lotteryAccount).toFixed(2)}}</td>
+                                <td v-else style="color:blue;" v-cloak>{{parseFloat(cp_totalled.lotteryAccount).toFixed(2)}}</td>
+
+                                <td v-if="cp_totalled.lotteryAccount-cp_totalled.totalHandleAccount>0" style="color:#a94442;" v-cloak>{{parseFloat(cp_totalled.lotteryAccount-cp_totalled.totalHandleAccount).toFixed(2)}}</td>
+                                <td v-else style="color:blue;" v-cloak>{{parseFloat(cp_totalled.lotteryAccount-cp_totalled.totalHandleAccount).toFixed(2)}}</td>
+
+                                <td v-cloak>{{cp_totalled.totalHandleCount}}</td>
+                                <td v-cloak>{{cp_totalled.lotteryCount}}</td>
+
+                                <td v-if="cp_totalled.totalHandleCount==0" v-cloak>0.00%</td>
+                                <td v-else v-cloak>{{((cp_totalled.lotteryCount/cp_totalled.totalHandleCount)*100).toFixed(2)+'%'}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!--页码设置-->
+                <div class="yema">
+                    <!--页码左边-->
+                    <div class="selectYema">
+                        <p v-cloak>
+                            总共{{total}}条记录.每页显示
+                            <select v-model="page_num">
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                                <option value="200">200</option><option value="500">500</option>
+                            </select>
+                            条记录
+                        </p>
+                    </div>
+                    <!--右边分页-->
+                    <div id="fenye" style="text-align: right;"></div>
+                </div>
+            </div>
+        </div>
+        <div>
+        </div>
+    </fieldset>
+</div>
+
+<script type="text/javascript" src="../public/js/jquery.js"></script>
+<script type="text/javascript" src="../public/js/laydate/laydate.js"></script>
+<script type="text/javascript" src="../public/js/jqPaginator.js"></script>
+<script type="text/javascript" src="../plugins/layui/layui.js"></script>
+<script type="text/javascript" src="../public/js/vue.min.js"></script>
+<script type="text/javascript" src="../public/js/security.js"></script>
+<script type="text/javascript" src="../public/js/send_request.js"></script>
+<script type="text/javascript" src="js/systemRiskEvaluation.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+table {
+	margin-top: 10px;
+}
+
+.input {
+	min-height: 36px;
+	padding: 0 5px;
+	box-sizing: border-box;
+}

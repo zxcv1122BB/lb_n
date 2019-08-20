@@ -1,0 +1,43 @@
+/*页码设置*/
+.yema{
+    overflow: hidden;
+}
+.selectYema{
+    float: left;
+    line-height: 78px;
+}
+.selectYema>p{
+    text-indent:20px;
+}
+/*搜索日期div设置*/
+.row{
+    overflow: hidden;
+    padding: 30px 20px 15px;
+    box-sizing: border-box;
+}
+.row>button{
+    float: left;
+}
+.col_1{
+    float: left;
+    height: 40px;
+    line-height: 38px;
+    margin-right: 10px;
+    position: relative;
+}
+.date{
+    padding: 0 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 180px;
+    position: relative;
+}
+#startDate,#endDate{
+    min-height: 35px;
+    border: 0;
+}
+.date i {
+    position: absolute;
+    top: 0;
+    right: 15px;
+}

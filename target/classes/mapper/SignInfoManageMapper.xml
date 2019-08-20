@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lb.sys.dao.SignInfoManageMapper">
+  <select id="querySignInfoList" parameterType="map" resultType="map">
+  	SELECT 
+		id,
+		sign_name AS signName,
+		sign_type AS signType,
+		sign_cycle AS signCycle,
+		first_amount AS firstAmount,
+		reward_model AS rewardModel,
+		extra_reward AS extraReward,
+		start_time AS startTime,
+		end_time AS endTime,
+		create_time AS createTime,
+		create_by AS createBy,
+		update_time AS updateTime,
+		update_by AS updateBy,
+		sign_info AS signInfo,
+		`status`,
+		is_delete AS isDelete
+ 	FROM 
+ 		ls.`sign_info`
+ 		<trim prefix="WHERE" prefixOverrides="AND">
+ 			<if test="roleId != null and roleId == '' and roleId != 1">
+ 			  AND is_delete = 1
+	 		</if>
+	 		<if test="signId != null and signId != ''">
+	 		  AND id = #{signId}
+	 		</if>
+ 		</trim>
+ 	ORDER BY create_time DESC
+  </select>
+  <insert id="addSignInfo" parameterType="map">
+  	INSERT INTO ls.`sign_info`(
+		sign_name,
+		sign_type,
+		sign_cycle,
+		first_amount,
+		reward_model,
+		extra_reward,
+		start_time,
+		end_time,
+		create_time,
+		<if test="createBy != null and createBy != ''">
+			create_by,
+		</if>
+		<if test="updateTime != null and updateTime != ''">
+			update_time,
+		</if>
+		<if test="updateBy != null and updateBy != ''">
+			update_by,
+		</if>
+		<if test="status != null and status != ''">
+			`status`,
+		</if>
+		<if test="isDelete != null and isDelete != ''">
+			is_delete,
+		</if>
+		sign_info
+		)
+ 	VALUES(
+		#{signName},
+		#{signType},
+		#{signCycle},
+		#{firstAmount},
+		#{rewardModel},
+		#{extraReward},
+		#{startTime},
+		#{endTime},
+		NOW(),
+		<if test="createBy != null and createBy != ''">
+			#{createBy},
+		</if>
+		<if test="updateTime != null and updateTime != ''">
+			#{updateTime},
+		</if>
+		<if test="updateBy != null and updateBy != ''">
+			#{updateBy},
+		</if>
+		<if test="status != null and status != ''">
+			#{status},
+		</if>
+		<if test="isDelete != null and isDelete != ''">
+			#{isDelete},
+		</if>
+		#{signInfo}
+		)
+  </insert>
+  
+  <update id="updateSignInfo" parameterType="map">
+  	UPDATE 
+  		ls.`sign_info` 
+  	SET
+  		<if test="signName != null and signName != ''">
+  			sign_name = #{signName},
+  		</if>
+  		<if test="signType != null and signType != ''">
+  			sign_type = #{signType},
+  		</if>
+  		<if test="signCycle != null and signCycle != ''">
+  			sign_cycle = #{signCycle},
+  		</if>
+  		<if test="firstAmount != null and firstAmount != ''">
+  			first_amount = #{firstAmount},
+  		</if>
+  		<if test="rewardModel != null and rewardModel != ''">
+  			reward_model = #{rewardModel},
+  		</if>
+  		<if test="extraReward != null and extraReward != ''">
+  			extra_reward = #{extraReward},
+  		</if>
+  		<if test="startTime != null and startTime != ''">
+  			start_time = #{startTime},
+  		</if>
+  		<if test="endTime != null and endTime != ''">
+  			end_time = #{endTime},
+  		</if>
+		<if test="createTime != null and createTime != ''">
+			create_time = #{createTime},
+		</if>
+		<if test="createBy != null and createBy != ''">
+			create_by = #{createBy},
+		</if>
+		<if test="status != null and status != ''">
+			`status` = #{status},
+		</if>
+		<if test="isDelete != null and isDelete != ''">
+			is_delete = #{isDelete},
+		</if>
+		<if test="signInfo != null and signInfo != ''">
+			sign_info = #{signInfo},
+		</if>
+		<if test="updateBy != null and updateBy != ''">
+			update_by = #{updateBy},
+		</if>
+		update_time = NOW()
+  	WHERE 
+  		id=#{signId}
+  </update>
+  <!-- 获取已启用的签到活动 -->
+  <select id="getStartedSignCount" resultType="int" parameterType="map">
+  	SELECT COUNT(1) 
+		FROM ls.`sign_info` si2
+	LEFT JOIN ls.`sign_info` si1 ON si1.id=#{signId}
+		WHERE si2.status=1 AND 
+		((si1.start_time&gt;si2.start_time AND si1.end_time&lt;si2.end_time) 
+		OR (si1.start_time&lt;si2.start_time AND si1.end_time&gt;si2.end_time)
+		OR (si1.start_time&lt;si2.start_time AND si1.end_time&lt;si2.end_time AND si1.end_time&gt;si2.start_time)
+		OR (si1.start_time&gt;si2.start_time AND si1.end_time&gt;si2.end_time AND si1.start_time&lt;si2.end_time))
+  </select>
+  <!-- 管理员状态删除 -->
+  <update id="removeSignInfo" parameterType="map">
+  	UPDATE 
+  		ls.`sign_info` 
+  	SET 
+  		is_delete=0,
+  		<if test="updateBy != null and updateBy != ''">
+			update_by = #{updateBy},
+		</if>
+		update_time = NOW()
+  	WHERE 
+  		id=#{signId}
+  		AND `status`=0
+  </update>
+ <!--  超级管理员物理删除 -->
+  <update id="realyRemoveSignInfo" parameterType="map">
+  	DELETE FROM ls.`sign_info` WHERE id=#{signId} AND `status` = 0
+  </update>
+  <!-- 获取签到活动下的人员信息 -->
+  <select id="getUserSignList" parameterType="map" resultType="map">
+  	SELECT 
+  		`id`,
+  		`sign_id` AS signId,
+ 		`uid`,
+		`user_name` AS username,
+		`sign_time` AS signTime,
+		`last_sign_time` AS lastSignTime,
+		`sign_count` AS signCount,
+		`max_sign_count` AS maxSignCount,
+		`sign_no` AS signNo
+	FROM
+  		`ls`.`sign_record`
+  WHERE sign_id=#{signId}
+  </select>
+  <!-- 获取签到活动的人数统计 -->
+  <select id="getUserSignCount" parameterType="map" resultType="map">
+  	 SELECT (
+	  SELECT 
+		IFNULL(SUM(`sign_count`),0)
+	  FROM
+	  `ls`.`sign_record`
+	  WHERE sign_id=#{signId}
+	  ) AS signCount,
+	  (SELECT COUNT(1) FROM (SELECT 
+		id
+	  FROM
+	  `ls`.`sign_record`
+	  WHERE sign_id=#{signId}
+	  GROUP BY uid) t) userCount
+	  FROM DUAL
+  </select>
+</mapper>

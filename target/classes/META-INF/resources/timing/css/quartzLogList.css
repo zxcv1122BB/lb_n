@@ -1,0 +1,20 @@
+.date {
+	padding: 0 10px;
+	border: 1px solid #ddd;
+	border-radius: 5px;
+	width: 180px;
+	position: relative;
+	display: inline-block;
+}
+
+#startDate, #endDate {
+	min-height: 35px;
+	border: 0;
+}
+
+.date i {
+	position: absolute;
+	top: 0;
+	right: 15px;
+	padding-top: 9px
+}

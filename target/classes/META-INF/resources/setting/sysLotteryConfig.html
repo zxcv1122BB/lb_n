@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>彩种显示列表</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="../plugins/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="../public/css/fenye.css"/>
+    <link rel="stylesheet" href="css/sysLotteryConfig.css"/>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <fieldset class="layui-elem-field">
+        <legend>彩种显示</legend>
+        <div class="add_btn" style="padding: 15px;">
+            <button class="layui-btn" @click="popadd">添加</button>
+            <select v-model="status" style="width: 30%;height: 35px;">
+                <option value="1">已启用</option>
+                <option value="0">已禁用</option>
+            </select>
+        </div>
+        <div class="layui-field-box">
+            <table class="layui-table admin-table" v-cloak>
+                <thead>
+                <tr>
+                    <th style="width: 5%;">编号</th>
+                    <th style="width: 15%;">标题</th>
+                    <th style="width: 20%;">副标题</th>
+                    <th style="width: 10%;">样式</th>
+                    <th style="width: 25%;">创建时间</th>
+                    <th style="width: 10%;">状态</th>
+                    <th style="width: 15%;">操作</th>
+                </tr>
+                </thead>
+                <tbody id="content">
+                <tr v-if="datas.length==0">
+                    <td colspan="7">暂无数据</td>
+                </tr>
+                <tr v-else v-for="(item,index) in datas">
+                    <td v-cloak>{{item.id}}</td>
+                    <td v-cloak>{{item.configureName}}</td>
+                    <td v-cloak>{{item.sysConfig1}}</td>
+                    <td v-cloak>
+                    	<div class="layui-form">
+                            <div class="layui-form-item">
+                                <div class="layui-input-block" style="margin-left: 0;">
+                                    <div v-if="item.style=='nav_cyan'">
+                                        <em>绿色</em>
+                                        <i></i>
+                                    </div>
+                                    <div v-if="item.style=='nav_orange'" >
+                                        <em>橙色</em>
+                                        <i></i>
+                                    </div>
+                                    <div v-if="item.style=='nav_blush'" >
+                                        <em>红色</em>
+                                        <i></i>
+                                    </div>
+                                    <div v-if="item.style=='nav_bg_red'" >
+                                        <em>红色凸起</em>
+                                        <i></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td v-cloak>{{item.createDate}}</td>
+                    <td v-cloak>
+                        <div class="layui-form">
+                            <div class="layui-form-item">
+                                <div class="layui-input-block" style="margin-left: 0;">
+                                    <div v-if="item.status==1"
+                                         class="layui-unselect layui-form-switch layui-form-onswitch" :id="item.id" @click="changeType(item,index)">
+                                        <em>启用</em>
+                                        <i></i>
+                                    </div>
+                                    <div v-else class="layui-unselect layui-form-switch" :id="item.id" @click="changeType(item,index)">
+                                        <em>禁用</em>
+                                        <i></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td v-cloak>
+                        <a class="layui-btn layui-btn-mini" @click="popMsg(item,index)">修改信息</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <!--页码设置-->
+        <div class="yema">
+            <!--页码左边-->
+            <div class="selectYema">
+                <p>
+                    总共{{total}}条记录.每页显示
+                    <select v-model="pageNum">
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="200">200</option><option value="500">500</option>
+                    </select>
+                    条记录
+                </p>
+            </div>
+            <!--右边分页-->
+            <div id="fenye" style="text-align: right;"></div>
+        </div>
+    </fieldset>
+    <!--修改信息弹出框-默认隐藏-->
+    <div class="popPass">
+        <div class="inner">
+            <div class="layui-form-item">
+                <label class="layui-form-label">标题:</label>
+                <div class="layui-input-block" style="padding: 9px 15px;box-sizing: border-box;">
+                	<input type="text" name="configureName1" autocomplete="off" class="layui-input" v-model="configureName1"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">副标题:</label>
+                <div class="layui-input-block" style="padding: 9px 15px;box-sizing: border-box;">
+                 	<input type="text" name="sort2" autocomplete="off" class="layui-input" v-model="sysConfig11"/>
+                </div>
+            </div>
+             <div class="layui-form-item">
+                 <label class="layui-form-label">图片url:</label>
+                 <div class="layui-input-block" style="padding: 9px 15px;box-sizing: border-box;">
+                		 <input type="text" name="imgUrl1" placeholder="请输入图片url" class="layui-input" v-model="imgUrl1"/>
+                 </div>
+             </div>
+             <div class="layui-form-item">
+                 <label class="layui-form-label">内容url:</label>
+                 <div class="layui-input-block" style="padding: 9px 15px;box-sizing: border-box;">
+                		 <input type="text" name="contentUrl1" placeholder="请输入内容url" class="layui-input" v-model="contentUrl1"/>
+                 </div>
+             </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">样式:</label>
+                <div class="layui-input-block" style="padding: 9px 15px;box-sizing: border-box;">
+                	<select v-model="style1" style="height: 35px;width: 100px;">
+                        <option value="nav_cyan">绿色</option>
+                        <option value="nav_orange">橙色</option>
+                        <option value="nav_blush">红色</option>
+                        <option value="nav_bg_red">红色凸起</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">排序标记:</label>
+                <div class="layui-input-block" style="padding: 9px 15px;box-sizing: border-box;">
+                 	<input type="text" name="sort2" autocomplete="off" class="layui-input" v-model="sort2"/>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--添加-默认隐藏-->
+    <div class="popAdd">
+        <div class="inner">
+            <div class="layui-form-item">
+                <label class="layui-form-label">配置中文名:</label>
+                <div class="layui-input-block">
+                    <input type="text"  placeholder="请输入配置中文名(长度2-6字符)" class="layui-input" v-model="configureName"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">副标题:</label>
+                <div class="layui-input-block">
+                    <input type="text"  placeholder="请输入副标题" class="layui-input" v-model="sysConfig1"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">图片url:</label>
+                <div class="layui-input-block">
+                    <input type="text"  placeholder="请输入图片url" class="layui-input" v-model="imgUrl"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">内容url:</label>
+                <div class="layui-input-block">
+                    <input type="text"  placeholder="请输入内容url" class="layui-input" v-model="contentUrl"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">样式:</label>
+                <div class="layui-input-block">
+                	<select v-model="style" style="height: 35px;width: 100px;">
+                        <option value="nav_cyan">绿色</option>
+                        <option value="nav_orange">橙色</option>
+                        <option value="nav_blush">红色</option>
+                        <option value="nav_bg_red">红色凸起</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="layui-form-item">
+                <label class="layui-form-label">排序标记:</label>
+                <div class="layui-input-block">
+                    <input type="text"  placeholder="请输入排序标记"
+                    autocomplete="off" class="layui-input" v-model="sort"/>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript" src="../public/js/jquery.js"></script>
+<script type="text/javascript" src="../public/js/jqPaginator.js"></script>
+<script type="text/javascript" src="../plugins/layui/layui.js"></script>
+<script type="text/javascript" src="../public/js/vue.min.js"></script>
+<script type="text/javascript" src="../public/js/security.js"></script>
+<script type="text/javascript" src="../public/js/send_request.js"></script>
+<script type="text/javascript" src="js/sysLotteryConfig.js"></script>
+</body>
+</html>

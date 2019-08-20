@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>注册选项设置</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="../plugins/layui/css/layui.css" media="all" />
+    <link rel="stylesheet" href="../public/css/fenye.css" />
+	<style type="text/css">
+    	.layui-tab-title .layui-this {
+            background-color: antiquewhite;
+        }
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-main" id="app">
+        <fieldset class="layui-elem-field">
+            <legend>注册选项设置</legend>
+            <div class="layui-field-box">
+                <div class="layui-tab">
+                    <!--tab选项卡顶部-->
+                    <ul class="layui-tab-title">
+                        <li class="layui-this" @click="changeRegister()" id="register1">会员注册</li>
+                        <li @click="changeRegister()" id="register2">代理注册</li>
+                    </ul>
+                    <!--tab选项卡内部-->
+                    <div class="layui-tab-content">
+                        <!--会员注册-->
+                        <div class="layui-tab-item layui-show" id="registerItem1">
+                            <!-- <form class="layui-form form-list layui-form-pane" action=""> -->
+                                <table class="layui-table" v-cloak>
+                                    <thead>
+                                    <tr>
+                                        <th>属性名称</th>
+                                        <th>显示</th>
+                                        <th>必输入</th>
+                                        <th>验证</th>
+                                        <th>唯一</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody v-for="(item,index) in datas" :key="index"  v-cloak>
+                                        <tr>
+                                            <!--属性名称-->
+                                            <td v-cloak>{{item.attrName}}</td>
+                                            <td>
+                                                <!--显示td-->
+                                                <div class="layui-form">
+                                                    <div class="layui-form-item">
+                                                        <div class="layui-input-block" style="margin-left: 0;">
+                                                            <div v-if="item.isShow==1" class="layui-unselect layui-form-switch layui-form-onswitch websiteSwitch"  @click="showStop(item,item.id)" :id="item.id">
+                                                                <em>启用</em>
+                                                                <i></i>
+                                                            </div>
+                                                            <div v-else class="layui-unselect layui-form-switch websiteSwitch"  @click="showUsing(item,item.id)" :id="item.id" >
+                                                                <em>停用</em>
+                                                                <i></i>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <!--必输入td-->
+                                                <div class="layui-form">
+                                                    <div class="layui-form-item">
+                                                        <div class="layui-input-block" style="margin-left: 0;">
+                                                            <div v-if="item.isInput==1" class="layui-unselect layui-form-switch layui-form-onswitch websiteSwitch"  @click="importStop(item,item.id)" :id="item.id">
+                                                                <em>启用</em>
+                                                                <i></i>
+                                                            </div>
+                                                            <div v-else class="layui-unselect layui-form-switch websiteSwitch"  @click="importUsing(item,item.id)" :id="item.id" >
+                                                                <em>停用</em>
+                                                                <i></i>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <!--验证td-->
+                                                <div class="layui-form">
+                                                    <div class="layui-form-item">
+                                                        <div class="layui-input-block" style="margin-left: 0;">
+                                                            <div v-if="item.isCheck==1" class="layui-unselect layui-form-switch layui-form-onswitch websiteSwitch"  @click="verifyStop(item,item.id)" :id="item.id">
+                                                                <em>启用</em>
+                                                                <i></i>
+                                                            </div>
+                                                            <div v-else class="layui-unselect layui-form-switch websiteSwitch"  @click="verifyiUsing(item,item.id)" :id="item.id" >
+                                                                <em>停用</em>
+                                                                <i></i>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <!--唯一td-->
+                                                <div class="layui-form">
+                                                    <div class="layui-form-item">
+                                                        <div class="layui-input-block" style="margin-left: 0;">
+                                                            <div v-if="item.isOnly==1" class="layui-unselect layui-form-switch layui-form-onswitch websiteSwitch"  @click="onlyStop(item,item.id)" :id="item.id">
+                                                                <em>启用</em>
+                                                                <i></i>
+                                                            </div>
+                                                            <div v-else class="layui-unselect layui-form-switch websiteSwitch"  @click="onlyUsing(item,item.id)" :id="item.id" >
+                                                                <em>停用</em>
+                                                                <i></i>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            <!-- </form> -->
+                        </div>
+                        <!--会员注册-->
+                        <div class="layui-tab-item" id="registerItem2">
+                            <!-- <form class="layui-form form-list layui-form-pane"  action=""> -->
+                                <table class="layui-table">
+                                    <thead>
+                                    <tr>
+                                        <th>属性名称</th>
+                                        <th>显示</th>
+                                        <th>必输入</th>
+                                        <th>验证</th>
+                                        <th>唯一</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody v-for="item in Agencys" v-cloak>
+                                        <tr>
+                                            <!--属性名称-->
+                                            <td v-cloak>{{item.attrName}}</td>
+                                            <td>
+                                                <!--显示td-->
+                                                <div class="layui-form">
+                                                    <div class="layui-form-item">
+                                                        <div class="layui-input-block" style="margin-left: 0;">
+                                                            <div v-if="item.isShow==1" class="layui-unselect layui-form-switch layui-form-onswitch websiteSwitch"  @click="showStop(item,item.id)" :id="item.id">
+                                                                <em>启用</em>
+                                                                <i></i>
+                                                            </div>
+                                                            <div v-else class="layui-unselect layui-form-switch websiteSwitch"  @click="showUsing(item,item.id)" :id="item.id" >
+                                                                <em>停用</em>
+                                                                <i></i>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <!--必输入td-->
+                                                <div class="layui-form">
+                                                    <div class="layui-form-item">
+                                                        <div class="layui-input-block" style="margin-left: 0;">
+                                                            <div v-if="item.isInput==1" class="layui-unselect layui-form-switch layui-form-onswitch websiteSwitch"  @click="importStop(item,item.id)" :id="item.id">
+                                                                <em>启用</em>
+                                                                <i></i>
+                                                            </div>
+                                                            <div v-else class="layui-unselect layui-form-switch websiteSwitch"  @click="importUsing(item,item.id)" :id="item.id" >
+                                                                <em>停用</em>
+                                                                <i></i>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <!--验证td-->
+                                                <div class="layui-form">
+                                                    <div class="layui-form-item">
+                                                        <div class="layui-input-block" style="margin-left: 0;">
+                                                            <div v-if="item.isCheck==1" class="layui-unselect layui-form-switch layui-form-onswitch websiteSwitch"  @click="verifyStop(item,item.id)" :id="item.id">
+                                                                <em>启用</em>
+                                                                <i></i>
+                                                            </div>
+                                                            <div v-else class="layui-unselect layui-form-switch websiteSwitch"  @click="verifyiUsing(item,item.id)" :id="item.id" >
+                                                                <em>停用</em>
+                                                                <i></i>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <!--唯一td-->
+                                                <div class="layui-form">
+                                                    <div class="layui-form-item">
+                                                        <div class="layui-input-block" style="margin-left: 0;">
+                                                            <div v-if="item.isOnly==1" class="layui-unselect layui-form-switch layui-form-onswitch websiteSwitch"  @click="onlyStop(item,item.id)" :id="item.id">
+                                                                <em>启用</em>
+                                                                <i></i>
+                                                            </div>
+                                                            <div v-else class="layui-unselect layui-form-switch websiteSwitch"  @click="onlyUsing(item,item.id)" :id="item.id" >
+                                                                <em>停用</em>
+                                                                <i></i>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            <!-- </form> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+    <script type="text/javascript" src="../public/js/jquery.js"></script>
+    <script type="text/javascript" src="../public/js/jqPaginator.js"></script>
+    <script type="text/javascript" src="../plugins/layui/layui.js"></script>
+    <script type="text/javascript" src="../public/js/vue.min.js"></script>
+    <script type="text/javascript" src="../public/js/security.js"></script>
+    <script type="text/javascript" src="../public/js/send_request.js"></script>
+    <script type="text/javascript" src="js/viewEnrollmentOptions.js"></script>
+    <script>
+        layui.use(["layer","element"], function(){
+            var layer=layui.layer,
+                    element=layui.element,
+                    $=layui.jquery;
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lb.sys.dao.PayQuickMapper">
+<!-- 查询所有的快速支付信息-->
+	<select id="queryPayList" resultType="Map">
+	SELECT
+		*
+	FROM
+		`pay_quick`
+   ORDER BY pay_order+0 ASC
+	</select>
+	<delete id="delPayQuickType" parameterType="int">
+		DELETE FROM pay_quick WHERE id = #{id}
+	</delete>
+	<insert id="insertPayQuickType" parameterType="map">
+		insert into pay_quick
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="payName != null">
+				pay_name,
+			</if>
+			<if test="compName != null">
+				comp_name,
+			</if>
+			<if test="payAccount != null">
+				pay_account,
+			</if>
+			<if test="accountName != null">
+				account_name,
+			</if>
+			<if test="minMoney != null">
+				min_money,
+			</if>
+			<if test="maxMoney != null">
+				max_money,
+			</if>
+			<if test="qpcodeUrl != null">
+				QPcode_url,
+			</if>
+			<if test="payStatus != null">
+				pay_status,
+			</if>
+			<if test="payOrder != null">
+				pay_order,
+			</if>
+			<if test="qrcode != null">
+				QRcode,
+			</if>
+			<if test="showPage != null">
+				show_page,
+			</if>
+			<if test="quitLevel != null">
+				quit_level,
+			</if>
+			<if test="info != null">
+				info,
+			</if>
+			<if test="coinurl !=null and coinurl!='' ">
+				coin_url
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id},
+			</if>
+			<if test="payName != null">
+				#{payName},
+			</if>
+			<if test="compName != null">
+				#{compName},
+			</if>
+			<if test="payAccount != null">
+				#{payAccount},
+			</if>
+			<if test="accountName != null">
+				#{accountName},
+			</if>
+			<if test="minMoney != null">
+				#{minMoney},
+			</if>
+			<if test="maxMoney != null">
+				#{maxMoney},
+			</if>
+			<if test="qpcodeUrl != null">
+				#{qpcodeUrl},
+			</if>
+			<if test="payStatus != null">
+				#{payStatus},
+			</if>
+			<if test="payOrder != null">
+				#{payOrder},
+			</if>
+			<if test="qrcode != null">
+				#{qrcode},
+			</if>
+			<if test="showPage != null">
+				#{showPage},
+			</if>
+			<if test="quitLevel != null">
+				#{quitLevel},
+			</if>
+			<if test="info != null">
+				#{info},
+			</if>
+			<if test="coinurl !=null and coinurl!='' ">
+				#{coinurl}
+			</if>
+		</trim>
+	</insert>
+	<update id="updatePayQuickTypeByid" parameterType="map">
+		update pay_quick
+		<set>
+			<if test="payName != null">
+				pay_name = #{payName},
+			</if>
+			<if test="compName != null">
+				comp_name = #{compName},
+			</if>
+			<if test="payAccount != null">
+				pay_account = #{payAccount},
+			</if>
+			<if test="accountName != null">
+				account_name = #{accountName},
+			</if>
+			<if test="minMoney != null">
+				min_money = #{minMoney},
+			</if>
+			<if test="maxMoney != null">
+				max_money = #{maxMoney},
+			</if>
+			<if test="qpcodeUrl != null">
+				QPcode_url = #{qpcodeUrl},
+			</if>
+			<if test="payStatus != null">
+				pay_status = #{payStatus},
+			</if>
+			<if test="payOrder != null">
+				pay_order = #{payOrder},
+			</if>
+			<if test="qrcode != null">
+				QRcode = #{qrcode},
+			</if>
+			<if test="showPage != null">
+				show_page = #{showPage},
+			</if>
+			<if test="quitLevel != null">
+				quit_level = #{quitLevel},
+			</if>
+			<if test="info != null">
+				info = #{info},
+			</if>
+			<if test="coinurl != null and coinurl!='' ">
+				coin_url = #{coinurl}
+			</if>
+		</set>
+		where id = #{id}
+	</update>
+</mapper>

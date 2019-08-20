@@ -1,0 +1,17 @@
+.alertDiv {
+    display: none;
+}
+
+.blueSpan {
+    color: blue;
+}
+
+#startDate {
+    float: left;
+    margin-right: 15px;
+}
+
+.layui-input,
+.layui-textarea{
+	width: 20%;
+}

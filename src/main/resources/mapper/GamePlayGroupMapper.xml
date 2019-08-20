@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lb.sys.dao.GamePlayGroupMapper">
+	<resultMap id="BaseResultMap" type="com.lb.game.model.GamePlayGroup">
+		<id column="id" jdbcType="SMALLINT" property="id" />
+		<result column="type" jdbcType="TINYINT" property="type" />
+		<result column="groupName" jdbcType="VARCHAR" property="groupname" />
+		<result column="sort" jdbcType="INTEGER" property="sort" />
+		<result column="status" jdbcType="BIT" property="status" />
+		<result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+		<result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+	</resultMap>
+
+	<!-- 查询二级条件分类 -->
+	<select id="selectAllFootballGamePlayGroup" parameterType="java.lang.Integer"
+		resultMap="BaseResultMap">
+		SELECT gpg.* from game_play_group gpg, game_type gt WHERE gpg.type=gt.gameID
+		AND gt.gameID=#{gameID} ORDER BY gpg.sort ASC
+	</select>
+	
+	
+	<sql id="Example_Where_Clause">
+		<where>
+			<foreach collection="oredCriteria" item="criteria" separator="or">
+				<if test="criteria.valid">
+					<trim prefix="(" prefixOverrides="and" suffix=")">
+						<foreach collection="criteria.criteria" item="criterion">
+							<choose>
+								<when test="criterion.noValue">
+									and ${criterion.condition}
+								</when>
+								<when test="criterion.singleValue">
+									and ${criterion.condition} #{criterion.value}
+								</when>
+								<when test="criterion.betweenValue">
+									and ${criterion.condition} #{criterion.value}
+									and
+									#{criterion.secondValue}
+								</when>
+								<when test="criterion.listValue">
+									and ${criterion.condition}
+									<foreach close=")" collection="criterion.value" item="listItem"
+										open="(" separator=",">
+										#{listItem}
+									</foreach>
+								</when>
+							</choose>
+						</foreach>
+					</trim>
+				</if>
+			</foreach>
+		</where>
+	</sql>
+	<sql id="Update_By_Example_Where_Clause">
+		<where>
+			<foreach collection="example.oredCriteria" item="criteria"
+				separator="or">
+				<if test="criteria.valid">
+					<trim prefix="(" prefixOverrides="and" suffix=")">
+						<foreach collection="criteria.criteria" item="criterion">
+							<choose>
+								<when test="criterion.noValue">
+									and ${criterion.condition}
+								</when>
+								<when test="criterion.singleValue">
+									and ${criterion.condition} #{criterion.value}
+								</when>
+								<when test="criterion.betweenValue">
+									and ${criterion.condition} #{criterion.value}
+									and
+									#{criterion.secondValue}
+								</when>
+								<when test="criterion.listValue">
+									and ${criterion.condition}
+									<foreach close=")" collection="criterion.value" item="listItem"
+										open="(" separator=",">
+										#{listItem}
+									</foreach>
+								</when>
+							</choose>
+						</foreach>
+					</trim>
+				</if>
+			</foreach>
+		</where>
+	</sql>
+	<sql id="Base_Column_List">
+		id, type, groupName, sort, status, create_date, update_date
+	</sql>
+	<select id="selectByExample" parameterType="com.lb.game.model.GamePlayGroupExample"
+		resultMap="BaseResultMap">
+		select
+		<if test="distinct">
+			distinct
+		</if>
+		<include refid="Base_Column_List" />
+		from game_play_group
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
+		<if test="orderByClause != null">
+			order by ${orderByClause}
+		</if>
+	</select>
+	<select id="selectByPrimaryKey" parameterType="java.lang.Short"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from game_play_group
+		where id = #{id,jdbcType=SMALLINT}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Short">
+		delete from
+		game_play_group
+		where id = #{id,jdbcType=SMALLINT}
+	</delete>
+	<delete id="deleteByExample" parameterType="com.lb.game.model.GamePlayGroupExample">
+		delete from game_play_group
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
+	</delete>
+	<insert id="insert" parameterType="com.lb.game.model.GamePlayGroup">
+		insert into game_play_group
+		(id, type, groupName,
+		sort, status, create_date,
+		update_date)
+		values
+		(#{id,jdbcType=SMALLINT}, #{type,jdbcType=TINYINT},
+		#{groupname,jdbcType=VARCHAR},
+		#{sort,jdbcType=INTEGER},
+		#{status,jdbcType=BIT}, #{createDate,jdbcType=TIMESTAMP},
+		#{updateDate,jdbcType=TIMESTAMP})
+	</insert>
+	<insert id="insertSelective" parameterType="com.lb.game.model.GamePlayGroup">
+		insert into game_play_group
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="type != null">
+				type,
+			</if>
+			<if test="groupname != null">
+				groupName,
+			</if>
+			<if test="sort != null">
+				sort,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="createDate != null">
+				create_date,
+			</if>
+			<if test="updateDate != null">
+				update_date,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=SMALLINT},
+			</if>
+			<if test="type != null">
+				#{type,jdbcType=TINYINT},
+			</if>
+			<if test="groupname != null">
+				#{groupname,jdbcType=VARCHAR},
+			</if>
+			<if test="sort != null">
+				#{sort,jdbcType=INTEGER},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=BIT},
+			</if>
+			<if test="createDate != null">
+				#{createDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateDate != null">
+				#{updateDate,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+	<select id="countByExample" parameterType="com.lb.game.model.GamePlayGroupExample"
+		resultType="java.lang.Long">
+		select count(*) from game_play_group
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
+	</select>
+	<update id="updateByExampleSelective" parameterType="map">
+		update game_play_group
+		<set>
+			<if test="record.id != null">
+				id = #{record.id,jdbcType=SMALLINT},
+			</if>
+			<if test="record.type != null">
+				type = #{record.type,jdbcType=TINYINT},
+			</if>
+			<if test="record.groupname != null">
+				groupName = #{record.groupname,jdbcType=VARCHAR},
+			</if>
+			<if test="record.sort != null">
+				sort = #{record.sort,jdbcType=INTEGER},
+			</if>
+			<if test="record.status != null">
+				status = #{record.status,jdbcType=BIT},
+			</if>
+			<if test="record.createDate != null">
+				create_date = #{record.createDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="record.updateDate != null">
+				update_date = #{record.updateDate,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		<if test="_parameter != null">
+			<include refid="Update_By_Example_Where_Clause" />
+		</if>
+	</update>
+	<update id="updateByExample" parameterType="map">
+		update game_play_group
+		set id = #{record.id,jdbcType=SMALLINT},
+		type =
+		#{record.type,jdbcType=TINYINT},
+		groupName =
+		#{record.groupname,jdbcType=VARCHAR},
+		sort =
+		#{record.sort,jdbcType=INTEGER},
+		status =
+		#{record.status,jdbcType=BIT},
+		create_date =
+		#{record.createDate,jdbcType=TIMESTAMP},
+		update_date =
+		#{record.updateDate,jdbcType=TIMESTAMP}
+		<if test="_parameter != null">
+			<include refid="Update_By_Example_Where_Clause" />
+		</if>
+	</update>
+	<update id="updateByPrimaryKeySelective" parameterType="com.lb.game.model.GamePlayGroup">
+		update game_play_group
+		<set>
+			<if test="type != null">
+				type = #{type,jdbcType=TINYINT},
+			</if>
+			<if test="groupname != null">
+				groupName = #{groupname,jdbcType=VARCHAR},
+			</if>
+			<if test="sort != null">
+				sort = #{sort,jdbcType=INTEGER},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=BIT},
+			</if>
+			<if test="createDate != null">
+				create_date = #{createDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateDate != null">
+				update_date = #{updateDate,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where id = #{id,jdbcType=SMALLINT}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.lb.game.model.GamePlayGroup">
+		update
+		game_play_group
+		set type = #{type,jdbcType=TINYINT},
+		groupName =
+		#{groupname,jdbcType=VARCHAR},
+		sort = #{sort,jdbcType=INTEGER},
+		status =
+		#{status,jdbcType=BIT},
+		create_date = #{createDate,jdbcType=TIMESTAMP},
+		update_date = #{updateDate,jdbcType=TIMESTAMP}
+		where id =
+		#{id,jdbcType=SMALLINT}
+	</update>
+</mapper>

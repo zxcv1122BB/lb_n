@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" href="../plugins/layui/css/layui.css" media="all" />
+		<link rel="stylesheet" href="../public/css/fenye.css" />
+		<link href="css/footLive.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../openReport/css/openRecord.css" />
+		<style>
+			[v-cloak] {
+				display: none;
+			}
+			
+			input::-webkit-input-placeholder {
+				color: #ddd; 
+			}
+			/* input.littleInput {
+				width: 30px !important;
+			} */
+			th {
+				white-space: normal;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="main">
+			<fieldset class="layui-elem-field">
+				<legend>系统彩管理列表</legend>
+				<div class="search">
+					<!-- <form :action="exportUser+'/download/exportUserList'" method="post" id="form_"> -->
+					<form action="">
+						<p>查询条件中的日期只针对开奖时间进行查询</p>
+						<div class="col_1 ">
+							<div>
+								<div class="date">
+									<input id="startDate" name="startTime" placeholder="开始时间" readonly />
+									<!--导出用-->
+									<i class="layui-icon icon">&#xe637;</i>
+								</div>
+							</div>
+							<div class="btns">
+								<a id="now" @click="now">今日</a>
+								<a id="yes" @click="yes">昨日</a>
+								<a id="week" @click="week">本周</a>
+							</div>
+							<div>
+								 期号：
+								<input type="number" id="dateSelect" style="width: 25%;" />
+								彩种：
+								<select id="typelist" v-cloak v-model="ischeck">
+									<option value="">彩种/全部</option>
+									<option v-for="(item,index) in typelist" :value="item.gameID">{{item.gameName}}</option>
+								</select>
+								开奖状态：
+								<select id="status" style="border-radius: 5px;height: 35px;">
+									<option value="">全部</option>
+									<option value="1">正常</option>
+									<option value="0">无效</option>
+								</select>
+							</div>
+						
+						</div>
+						<div class="col_2">
+							<div>
+								<div class="date">
+									<input id="endDate" name="endTime" placeholder="结束时间" readonly />
+									<!--导出用-->
+									<i class="layui-icon icon">&#xe637;</i>
+								</div>
+							</div>
+							<div class="btns">
+								<a id="lastWeek" @click="lastWeek">上周</a>
+								<a id="month" @click="month">本月</a>
+								<a id="lastMonth" @click="lastMonth">上月</a>
+							</div>
+							<div>
+								<a class="layui-btn" @click="search">查询</a>
+								<a class="layui-btn" @click="insert">开奖预设</a>
+							</div>
+						</div>
+					</form>
+				</div>
+
+				<table class="layui-table" v-cloak>
+					<thead>
+						<tr>
+							<th>玩法名称</th>
+							<th>期号</th>
+							<th>开奖号码</th>
+							<th>开奖状态</th>
+							<th>开奖时间</th>
+							<th>创建时间</th>
+							<th>修改时间</th>
+							<th>操作</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr v-if="datas.length==0">
+							<td colspan="8">暂无数据</td>
+						</tr>
+						<tr v-else v-for="(item,index) in datas">
+							<td v-cloak :title="item.typeName">{{item.typeName}}</td>
+							<td v-cloak :title="item.actionIssue">{{item.actionIssue}}</td>
+							<td v-cloak :title="item">{{item.luckNumber}}</td>
+							<td v-cloak :title="item.status==1?'正常':'无效'">{{item.status==1?"正常":"无效"}}</td>
+							<td v-cloak :title="item.openTime">{{item.openTime}}</td>
+							<td v-cloak :title="item.createTime">{{item.createTime}}</td>
+							<td v-cloak :title="item.updateTime">{{item.updateTime}}</td>
+							<td>
+								<button class="layui-btn layui-btn-mini" @click="getBetting(item.typeId,item.actionIssue,item.luckNumber);">投注记录</button>
+								<button class="layui-btn layui-btn-mini" @click="update(item.typeId,item.actionIssue,item.luckNumber);">修改</button>
+							</td>
+						</tr>
+					</tbody>
+
+				</table>
+
+				<div class="betting" style="display: none;">
+					<div class="footTitle">
+						<button class="layui-btn layui-btn" @click="manualWorkBtn();">手动开奖</button>
+						<button class="layui-btn layui-btn" @click="rollBackBtn();">开奖回滚</button>
+
+					</div>
+
+					<table class="layui-table main" v-cloak>
+						<thead class="thead">
+							<tr>
+								<th width="10%">订单号</th>
+								<th width="8%">用户名</th>
+								<th width="6%">彩种种类</th>
+								<th width="10%">玩法类型</th>
+								<th width="6%">状态</th>
+								<th width="4%">倍数</th>
+								<th width="6%">投注金额</th>
+								<th width="6%">中奖金额</th>
+								<th width="8%">开奖状态</th>
+								<th width="12%">开奖时间</th>
+								<th width="12%">投注时间</th>
+							</tr>
+						</thead>
+						<tbody class="tbody">
+							<tr v-if="bet_datas.length==0">
+								<td colspan="11">暂无数据</td>
+							</tr>
+							<tr v-for="(item,index) in bet_datas" v-else>
+								<td v-cloak>
+									<!--订单id-->
+									<a href="javascript:;" @click="orders(item.orderId,item.id,index)" :title="item.orderId">{{item.orderId}}</a>
+								</td>
+								<td v-cloak>
+									<!--用户名-->
+									<a href="javascript:;" @click="biddingUser(item.userName)" :title="item.userName">{{item.userName}}</a>
+								</td>
+								<td v-cloak>{{item.typeName}}</td>
+								<!--投注彩种类型-->
+								<td v-cloak>{{item.playedGroupName}}</td>
+								<!--玩法类型-->
+								<td v-cloak>{{item.status==0?"未中奖":(item.status==1?"已中奖":(item.status==2?"撤单":"成功"))}}</td>
+								<!--状态-->
+								<td v-cloak>{{item.times}}</td>
+								<!--倍数-->
+								<td v-cloak>{{item.amount}}</td>
+								<!--投注金额-->
+								<td v-cloak>
+									<span v-if="item.status!=1">--</span>
+									<font color="red" v-else>{{item.bonus}}</font>
+								</td>
+								<!--中奖金额-->
+								<td v-cloak>{{item.isCal==0?"未开奖":(item.isCal==1?"已开奖":"开奖失败")}}</td>
+								<!--是否开奖-->
+								<td v-cloak :title="item.calTime">{{item.calTime}}</td>
+								<!--开奖时间-->
+								<td v-cloak :title="item.actionTime">{{item.actionTime}}</td>
+							</tr>
+						</tbody>
+					</table>
+					<!--页码设置-->
+					<div class="yema">
+						<!--页码左边-->
+						<div class="selectYema">
+							<p v-cloak>
+								总共{{bet_total}}条记录.每页显示
+								<select v-model="pageNum">
+									<option value="10">10</option>
+									<option value="20">20</option>
+									<option value="50">50</option><option value="100">100</option>
+								</select>
+								条记录
+							</p>
+						</div>
+						<!--右边分页-->
+						<div id="fenye1" style="text-align: right;"></div>
+					</div>
+
+				</div>
+
+				<!--页码设置-->
+				<div class="yema">
+					<!--页码左边-->
+					<div class="selectYema">
+						<p v-cloak>
+							总共{{total}}条记录.每页显示
+							<select v-model="pageNum">
+								<option value="10">10</option>
+								<option value="20">20</option>
+								<option value="50">50</option><option value="100">100</option>
+							</select>
+							条记录
+						</p>
+					</div>
+					<!--右边分页-->
+					<div id="fenye" style="text-align: right;"></div>
+				</div>
+			</fieldset>
+
+			<!--新增-->
+			<table class="addColor layui-table" v-cloak>
+				<tr>
+					<td>玩法名称</td>
+					<td>
+						<select id="typelist1" v-model="ischeck1" disabled="disabled" class="addText">
+							<option v-for="(item,index) in typelist" :value="item.gameID" v-cloak>{{item.gameName}}</option>
+						</select>
+					</td>
+				</tr>
+				<tr style="position: relative;overflow: inherit;">
+					<td>期号</td>
+					<td style="position: relative;overflow: inherit;"><input type="text" @focus="showIssue(1)"  style="text-align: left" v-model='issue' class="addText"  />
+						<span v-cloak style="display: block;line-height: 20px;color: #999">{{'例:'+selectTypelist.issue}}</span>
+						
+					<ul v-if="isShowIssue" @mouseover="showIssue(1)"  @mouseleave="showIssue('')" class="issue" style="position: absolute;bottom: -155%;left: 10%;width: 80%;height: 100px;overflow-y: scroll;background: #fff">
+						<li v-for="item in newIssueList" @click="setShowIssue(item)" style="cursor: pointer;">{{item}}</li>
+					</ul>	
+					</td>
+					
+				</tr>
+				<tr style="white-space: pre-wrap;">
+					<td>开奖号码</td>
+					<!-- <td v-if="selectTypelist.luck_number?selectTypelist.luck_number.indexOf('+')!==-1:''">
+						<template v-for="(item,index) in selectNumlist" >
+							<span v-if="index!=0">{{(index==selectNumlist.length-1?'+':',')}}</span>
+							<input type="number" v-model="selectNumlist[index]" class="littleInput" />
+						</template>
+					</td>
+					<td style="white-space: pre-wrap;" v-else>
+						<template v-for="(item,index) in selectNumlist">
+							<span  v-if="index!=0">,</span><input type="number" v-model="selectNumlist[index]" class="littleInput"/>
+						</template>
+						
+					</td> -->
+					<td  :style="!isShowIssue?'overflow: inherit;':'position: initial;overflow: inherit;'">
+							<input type="test" v-model="szcNumber" @focus="showSzcNumber(1)" class="littleInput" :placeholder="szcNumber_tips"/>
+							<span v-cloak style="display: block;line-height: 20px;color: #999">{{szcNumber_tips}}</span>
+							
+							<ul v-if="isShowSzcNumber" @mouseover="showSzcNumber(1)"  @mouseleave="showSzcNumber('')" class="issue" style="position: absolute;top: 35px;left: 10%;width: 80%;;height: 100px;overflow-y: scroll;background: #fff">
+								<li v-for="item in ranSzcList" style="cursor: pointer;" @click="setSzcNumber(item)">{{item}}</li>
+							</ul>	
+						</td>
+					<!-- <td style="white-space: pre-wrap;" v-if="isUpDataSelectNumList==1">
+						<!--<template v-for="(item,index) in selectNumlist">-->
+							<!--<input type="number" v-model="selectNumlist[index]" class="littleInput"-->
+								   <!--:placeholder="isUpDataSelectNumList==1?luckNum[index]:''"/>-->
+						<!--</template>-->
+						<!-- <input type="text" placeholder="开奖号码请以逗号隔开" v-model="selectNumlist"/>
+					</td> -->
+					<!-- <td style="white-space: pre-wrap;" v-else> -->
+						<!--<template v-for="(item,index) in selectNumlist">-->
+							<!--<input type="number" v-model="selectNumlist[index]" class="littleInput"-->
+								   <!--:placeholder="isUpDataSelectNumList==1?selectNumlist[index]:''"/>-->
+						<!--</template>-->
+						<!-- <input type="text" placeholder="开奖号码请以逗号隔开" v-model="selectNumlist" /> -->
+					<!-- </td>  -->
+				</tr>
+			</table>
+		</div>
+
+		<script type="text/javascript" src="../public/js/jquery.js"></script>
+		<script type="text/javascript" src="../public/js/laydate/laydate.js"></script>
+		<script type="text/javascript" src="../public/js/jqPaginator.js"></script>
+		<script type="text/javascript" src="../plugins/layui/layui.js"></script>
+		<script type="text/javascript" src="../public/js/vue.min.js"></script>
+		<!-- 用作参数的加密 -->
+		<script type="text/javascript" src="../public/js/security.js"></script>
+		<script type="text/javascript" src="../public/js/send_request.js"></script>
+		<script type="text/javascript" src="js/systemColor.js"></script>
+
+	</body>
+
+</html>

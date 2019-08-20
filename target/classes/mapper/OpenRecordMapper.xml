@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lb.sys.dao.OpenRecordMapper">
+	<!-- 查询数字彩开奖记录 -->
+	<select id="selectDigitRecord" resultType="map" parameterType="map">
+		SELECT 
+		    otd.issue, 
+			otd.type, 
+			gt.gameName,
+		    otd.luck_number as luckNumber,
+      		otd.open_time as openTime,
+		    otd.deal_num as dealNum, 
+			otd.deal_error_num as dealErrorNum,
+		    otd.open_state as openState, 
+			otd.deal_msg as dealMsg, 
+			otd.deal_time as dealTime
+		FROM open_task_digit otd  LEFT JOIN game_type gt ON otd.type = gt.gameID
+		<where>
+			<if test="type != null and type != '' ">
+				and otd.type = #{type}
+			</if>
+			<if test="issue != null and issue != ''">
+				and otd.issue like CONCAT(CONCAT('%',#{issue}),'%')
+			</if>
+			<if test="openState != null and openState != ''">
+				and otd.open_state = #{openState,jdbcType=VARCHAR}
+			</if>
+			<if test="startTime != null and startTime != ''">
+				and otd.open_time <![CDATA[>=]]> #{startTime}
+		    </if>
+	        <if test="endTime != null and endTime != ''">
+		       	and otd.open_time <![CDATA[<=]]> #{endTime}
+	        </if>
+		</where>
+		ORDER BY otd.type, otd.issue DESC,otd.open_time DESC
+	</select>
+	
+	<!-- 查询开奖记录 -->
+	<select id="selectOpenRecord" resultType="map" parameterType="map">
+		SELECT 
+		  match_type, match_id,
+		  dealNum, dealErrorNum,
+		  dealTime, dealMsg,
+		  open_state, update_time, create_time
+		FROM open_task_log
+		<where>
+			<if test="matchType != null and matchType != '' ">
+				and match_type = #{matchType}
+			</if>
+			<if test="matchId != null and matchId != ''">
+				and match_id like CONCAT(CONCAT('%',#{matchId}),'%')
+			</if>
+			<if test="openState != null and openState != ''">
+				and open_state = #{openState,jdbcType=VARCHAR}
+			</if>
+			<if test="startTime != null and startTime != ''">
+				and create_time <![CDATA[>=]]> #{startTime}
+		    </if>
+	        <if test="endTime != null and endTime != ''">
+		       	and create_time <![CDATA[<=]]> #{endTime}
+	        </if>
+		</where>
+		ORDER BY create_time DESC
+	</select>
+	
+	<select id="selectMatchType" resultType="map">
+		SELECT DISTINCT cl.itemName ,cl.codeID   
+			FROM code_library cl
+			JOIN open_task_log otl
+			ON cl.codeID = otl.match_type
+	</select>
+	
+	<select id="selectDigitType" resultType="map">
+		SELECT gameID, gameName   
+			FROM game_type 
+		WHERE game_type <![CDATA[<>]]> 0
+			AND `status` = 1
+	</select>
+	
+	
+	
+</mapper>

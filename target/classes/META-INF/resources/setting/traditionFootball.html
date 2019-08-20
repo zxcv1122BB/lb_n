@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="../plugins/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="../public/css/fenye.css"/>
+    <link href="css/footLive.css" rel="stylesheet"/>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+
+        body {
+            min-width: 650px;
+        }
+
+        input[type=text] {
+            width: auto;
+            text-align: center;
+            border: 1px solid #E3E3E3;
+            outline: none;
+        }
+
+        input[type=text]:focus {
+            border: 1px solid gray;
+            padding: 0px;
+        }
+        .footTitle .col {
+            margin-right: 5px;
+            display: inline-block;
+        }
+    </style>
+</head>
+
+<body>
+<div class="main" id="main">
+    <div class="footTitle">
+        <div class="col">
+
+        
+        彩种：
+        <select v-model="playTypeNum" style="padding: 5px;">
+            <option value="">全部</option>
+            <option value="14">胜负彩</option>
+            <option value="15">任选9场</option>
+            <option value="17">6场半全场</option>
+            <option value="16">4场进球</option>
+        </select>
+        </div>
+        <div class="col">
+        期号：
+        <select id="dateSelect"v-cloak>
+
+            <!-- <option v-for="(item,index) in games" v-cloak>{{item.mod}}</option> -->
+
+            <option v-for="(item,index) in banner_store" v-cloak>{{item}}</option>
+
+        </select>
+        </div>
+        <button class="layui-btn" @click="getBonusData">查询</button>
+    </div>
+    <table class="layui-table main" v-cloak>
+        <thead>
+        <tr>
+            <th>彩种</th>
+            <th>期数</th>
+            <th>一等奖金额</th>
+            <th>一等奖注数</th>
+            <th>二等奖金额</th>
+            <th>二等奖注数</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- <tr v-if="datas.length==0">
+            <td colspan="13">暂无数据</td>
+        </tr> -->
+        <tr v-for="(item,index) in tradData">
+            <td v-cloak>{{item.name}}</td>
+            <td v-cloak>{{item.mod}}</td>
+            <td>
+                <input type="text" v-model="item.firstPrizeBonus" name="fp_m" id="fpm" placeholder="-"
+                       pattern="^\d+:+\d$" required="required"
+                       onKeypress="keyUp()"/>
+            </td>
+            <td>
+                <input type="text" v-model="item.firstPrizeNumber" name="fp_t" id="fpt" placeholder="-"
+                       pattern="^\d+:+\d$" required="required"
+                       onKeypress="keyUp()"/>
+            </td>
+            <td>
+                <span v-if="item.playTypeId!='14'" style="background:#E3E3E3"></span>
+                <input v-else type="text" v-model="item.secondPrizeBonus" name="sp_m" id="spm" placeholder="-"
+                       pattern="^\d+:+\d$" required="required"
+                       onKeypress="keyUp()"/>
+            </td>
+            <td>
+                <span v-if="item.playTypeId!='14'" style="background:#E3E3E3"></span>
+                <input v-else type="text" v-model="item.secondPrizeNumber" name="sp_t" id="spt" placeholder="-"
+                       pattern="^\d+:+\d$" required="required"
+                       onKeypress="keyUp()"/>
+            </td>
+            <td>
+                <button class="layui-btn layui-btn-mini" lay-submit="" lay-filter="formDemo" @click="changeData({mod:item.mod,firstPrizeBonus:item.firstPrizeBonus,firstPrizeNumber:item.firstPrizeNumber,secondPrizeBonus:item.secondPrizeBonus,secondPrizeNumber:item.secondPrizeNumber,
+                        playTypeId:item.playTypeId,id:item.id})">
+                    确认修改
+                </button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<script type="text/javascript" src="../public/js/jquery.js"></script>
+<script type="text/javascript" src="../public/js/jqPaginator.js"></script>
+<script type="text/javascript" src="../plugins/layui/layui.js"></script>
+<script type="text/javascript" src="../public/js/vue.min.js"></script>
+
+<!-- 用作参数的加密 -->
+<script type="text/javascript" src="../public/js/security.js"></script>
+<script type="text/javascript" src="../public/js/send_request.js"></script>
+<script type="text/javascript" src="js/traditionFootball.js"></script>
+</body>
+
+</html>

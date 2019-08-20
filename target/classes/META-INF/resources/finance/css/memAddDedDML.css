@@ -1,0 +1,131 @@
+/*公用样式*/
+.clearfix {
+    zoom: 1;
+}
+.clearfix:after {
+    content: '\20 ';
+    display: block;
+    height: 0;
+    clear: both;
+}
+.hide{
+	display: none;
+}
+.btn{
+	display: inline-block;
+	padding:0 10px;
+	cursor: pointer;
+}
+.tr{
+	text-align: right;
+}
+.c_red{color:red}
+.c_blue{color:#01AAED}
+.b_green{color:#fff;background-color: #008000;}
+.b_red{color:#fff;background-color: #FF0000;}
+#container{
+	min-width: 1280px;
+}
+/*页面头部*/
+#header{
+	line-height: 20px;
+	padding:0 5px;
+	margin:20px 0;
+	background-color: #f0f0f0;
+	height:30px;
+	line-height: 30px;
+}
+#header a{
+	font-size: 12px;
+}
+.c_grey{
+	color:#D2D2D2;
+}
+.c_grey a{
+ 	color:#D2D2D2;
+ }
+.col{
+ 	float: left;
+    height: 35px;
+    line-height: 35px;
+    position: relative;
+    margin: 0 2%;
+ }
+ .col span {
+    border-radius: 5px;
+}
+.labelList input{
+	height:30px;
+	width:200px;
+	padding-left:5px;
+	box-shadow: 2px 2px 5px #ddd;
+	border:1px solid #ddd;
+}
+.news_table{
+	width:100%;
+	margin:2%;
+}
+.news_table>table{
+	width:96%;
+	border:1px solid #ddd;
+	border-right-width:0;
+	line-height:20px;
+}
+.news_table tr{
+	border-bottom:1px solid #ddd;
+}
+.news_table td{
+	padding-left:2%;
+	line-height: 40px;
+	border-right:1px solid #ddd;
+}
+.confirm{
+	box-sizing: border-box;
+	float:none;
+	padding:0;
+	margin:0;
+	width:96%;
+	text-align: center;
+	border:1px solid #ddd;
+	border-top-width:0;
+	min-height: 50px;
+}
+.confirm>span{
+	margin-top:5px;
+}
+.addDed select{
+	margin:1% 2%;
+	margin-left:0;
+	width:96%;
+	height:30px;
+	padding-left:10px;
+}
+.num input{
+	display: inline-block;
+	margin:1% 2%;
+	margin-left:0;
+	width:94%;
+	height:30px;
+	padding-left:10px;
+}
+.result{
+	border:1px solid #ddd;
+	width:96%;
+	min-height:50px;
+	margin:1% 0%;
+}
+#checkConfirmContent{
+	min-height: 60px;
+	line-height: 30px;
+	padding:0 10px;
+}
+.layui-layer .layui-layer-btn .layui-layer-btn0{
+	border: 1px solid #C9C9C9;
+    background-color: #fff;
+    color: #555;
+}
+.layui-layer .layui-layer-btn a{
+	border-color: #009688;
+    background-color: #009688;
+    color: #fff;
+}

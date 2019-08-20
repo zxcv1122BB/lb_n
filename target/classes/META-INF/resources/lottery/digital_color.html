@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="format-detection" content="telephone=no">
+		<link rel="stylesheet" href="../plugins/layui/css/layui.css" media="all" />
+		<link rel="stylesheet" href="../public/css/fenye.css" />
+		<link rel="stylesheet" href="css/digital_color.css" />
+		<title>数字彩设置</title>
+		<style>
+			[v-cloak] {
+				display: none;
+			}
+			/*.layui-layer-shade{
+        	display: none;
+        }*/
+		</style>
+	</head>
+
+	<body>
+		<div id="app">
+			<fieldset class="layui-elem-field">
+				<legend>数字彩设置</legend>
+				<!--<div class="add_btn" style="padding: 15px;">
+            <button class="layui-btn">添加</button>
+            <input type="text" placeholder="请输入" class="layui-input" />
+            <i class="layui-icon">&#xe615;</i>
+            <select v-model="sel">
+                <option value="0" @click="getdatas(0)">全部</option>
+                <option :value="item.gameID" v-for="(item,index) in selectAll" @click="getdatas(item.gameID)" v-cloak>{{item.gameName}}</option>
+            </select>
+        </div>-->
+				<div class="layui-field-box">
+					<table class="layui-table admin-table">
+						<thead>
+							<tr>
+								<th width="3%">id</th>
+								<th width="7%">中文名</th>
+								<th width="7%">页面显示名称</th>
+								<!--<th width="12%">跳转到开奖url</th>
+								<th width="12%">跳转到投注url</th>-->
+								<!--<th width="8%">支持周几</th>
+                    <th width="6%">彩种分类</th>
+                    <th width="7%">彩种名</th>-->
+								<!--<th width="16%">图片url</th>-->
+								<!-- <th width="4%">热门</th>-->
+								<th width="7%">状态</th>
+								<th width="18%">操作</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr v-if="datas.length==0">
+								<td colspan="4">暂无数据</td>
+							</tr>
+							<tr v-else v-for="(item,index) in datas">
+								<td v-cloak>{{item.gameID}}</td>
+								<td v-cloak>{{item.gameName}}</td>
+								<td v-cloak>{{item.show_name}}</td>
+								<!--<td v-cloak>{{item.forward_url}}</td>
+								<td v-cloak>{{item.bet_url}}</td>-->
+								<!--<td v-cloak>{{item.day_weak}}</td>
+                    <td v-cloak>{{item.game_type}}</td>
+                    <td v-cloak>{{item.kind_name}}</td>-->
+								<!--<td v-cloak>{{item.pic_url}}</td>-->
+								<!--<td v-cloak>{{item.is_hot==1?'是':'否'}}</td>-->
+								<td v-cloak>
+									<div class="layui-form-item">
+										<div class="layui-input-block" style="margin-left: 0;">
+											<div v-if="item.status==1" class="layui-unselect layui-form-switch layui-form-onswitch" @click="changeStatus(0,item,index)">
+												<em>启用</em>
+												<i></i>
+											</div>
+											<div v-else class="layui-unselect layui-form-switch" @click="changeStatus(1,item,index)">
+												<em>停用</em>
+												<i></i>
+											</div>
+										</div>
+									</div>
+								</td>
+								<td>
+									<a class="layui-btn layui-btn-mini" @click="edit(item,index,0)">编辑</a>
+									<a class="layui-btn layui-btn-mini" @click="set_big(item.gameID)" v-if="item.game_type!=0">玩法启停</a>
+									<a class="layui-btn layui-btn-mini" @click="set_small(item.gameID,index)" v-if="item.game_type!=0">赔率设置</a>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<!--分页页码设置-->
+				<!--分页页码设置-->
+				<div class="yema">
+					<!--页码左边-->
+					<div class="selectYema" v-cloak>
+						显示第1到第{{page_num}}条记录，总共{{total}}条记录.每页显示
+						<select v-model="page_num">
+							<option value="5">5</option>
+							<option value="10">10</option>
+							<option value="20">20</option>
+						</select>
+						条记录
+					</div>
+					<!--右边分页-->
+					<div id="fenye" align="center"></div>
+				</div>
+			</fieldset>
+			<!--一级玩法编辑框-->
+			<div class="pop_edit">
+				<div>
+					<span v-for="(item,index) in show_name" :class="{active:index==showIndex}" @click="edit(0,-1,index)">{{item}}</span>
+				</div>
+				<table class="layui-table">
+					<tbody>
+						<tr>
+							<td width="30%">页面显示名称:</td>
+							<td>
+								<input type="text" class="layui-input" v-model="showName" />
+							</td>
+						</tr>
+						<!--<tr>
+							<td>跳转开奖url</td>
+							<td><input type="text" class="layui-input" v-model="hrefUrl" /></td>
+						</tr>
+						<tr>
+							<td>跳转投注url</td>
+							<td><input type="text" class="layui-input" v-model="hrefUrl2" /></td>
+						</tr>-->
+						<!--<tr>
+							<td>样式</td>
+							<td><input type="text" class="layui-input" v-model="showStyle" /></td>
+						</tr>-->
+						<!--<tr>
+                <td>支持周几:</td>
+                <td>
+                    1<input type="checkbox" value="1" v-model="support_week" />
+                    2<input type="checkbox" value="2" v-model="support_week" />
+                    3<input type="checkbox" value="3" v-model="support_week" />
+                    4<input type="checkbox" value="4" v-model="support_week" />
+                    5<input type="checkbox" value="5" v-model="support_week" />
+                    6<input type="checkbox" value="6" v-model="support_week" />
+                    7<input type="checkbox" value="7" v-model="support_week" />
+                </td>
+            </tr>-->
+						<!--<tr>
+							<td>图片url:</td>
+							<td><input type="text" class="layui-input" v-model="picUrl" /></td>
+						</tr>-->
+						<tr>
+							<td>是否热门:</td>
+							<td>
+								<select v-model="isHot" style="width: 150px;height: 27px;border-radius: 5px;">
+									<option value="1">是</option>
+									<option value="0">否</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td>配置信息1</td>
+							<td>
+								<input type="text" class="layui-input" v-model="sysConfig1" />
+							</td>
+						</tr>
+						<!--<tr>
+							<td>配置信息2</td>
+							<td><input type="text" class="layui-input" v-model="sysConfig2" /></td>
+						</tr>-->
+						<tr>
+							<td>排序</td>
+							<td><input type="text" class="layui-input" v-model="sort" /></td>
+						</tr>
+						<tr v-show="showOtherPrams==true">
+							<td>开始时间</td>
+							<td>
+								<div class="date">
+									<input id="startDate" class="layui-input" style="display:inline-block;width:90%" name="startTime" placeholder="结束时间" v-model="startTime" readonly /><!--导出用-->
+									<i class="layui-icon icon">&#xe637;</i>
+								</div>
+						</tr>
+						<tr v-show="showOtherPrams==true">
+							<td>结束时间</td>
+							<td>
+								<div class="date">
+									<input id="endDate" class="layui-input" style="display:inline-block;width:90%" name="endTime" placeholder="结束时间" v-model="endTime" readonly /><!--导出用-->
+									<i class="layui-icon icon">&#xe637;</i>
+								</div>
+						</tr>
+						<tr v-show="showOtherPrams==true">
+							<td>当前期号</td>
+							<td><input type="number" class="layui-input"  v-model="currentIssue" /></td>
+						</tr>
+						<tr>
+							<td>支持方式</td>
+							<td>
+								<input type="checkbox" id="show_0" @click="chanShow(0)" />WAP
+								<input type="checkbox" id="show_1" @click="chanShow(1)" />APP
+								<input type="checkbox" id="show_2" @click="chanShow(2)" />PC
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<!--大类弹出框-->
+			<div class="pop_big">
+				<table class="layui-table">
+					<thead>
+						<tr>
+							<th>玩法分组名称</th>
+							<th>排序</th>
+							<th>状态</th>
+							<!--<th>操作</th>-->
+						</tr>
+					</thead>
+					<tbody>
+						<tr v-if="big_datas.length==0">
+							<td colspan="3">暂无数据</td>
+						</tr>
+						<tr v-else v-for="(item,index) in big_datas">
+							<td v-cloak>{{item.groupName}}</td>
+							<td v-cloak>{{item.sort}}</td>
+							<td>
+								<div class="layui-form-item">
+									<div class="layui-input-block" style="margin-left: 0;">
+										<div v-if="item.status==1" class="layui-unselect layui-form-switch layui-form-onswitch" @click="change(item,index)">
+											<em>启用</em>
+											<i></i>
+										</div>
+										<div v-else class="layui-unselect layui-form-switch" @click="change(item,index)">
+											<em>停用</em>
+											<i></i>
+										</div>
+									</div>
+								</div>
+							</td>
+							<!--<td>
+                    <a class="layui-btn layui-btn-mini" @click="edit_big(item,index)">编辑</a>
+                </td>-->
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<!--大类编辑弹出框-->
+			<div class="pop_bigSet">
+				<table class="layui-table">
+					<tbody>
+						<tr>
+							<td>玩法分组名称:</td>
+							<td><input class="layui-input" type="text" v-model="big_editName" /></td>
+						</tr>
+						<tr>
+							<td>排序:</td>
+							<td><input class="layui-input" type="number" v-model="big_editSort" /></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<!--小类弹出框-->
+			<div class="pop_small">
+				<!--大类tab选项-->
+				<p>
+					<a href="javascript:void (0)" :class="{active:index==abc}" v-for="(item,index) in arr" :id="item.id" @click="get_threeDatas(item.id,index)" v-cloak>{{item.groupName}}</a>
+				</p>
+				<!--玩法小类设置-->
+				<table class="layui-table" style="width: 150%;">
+					<thead>
+						<tr>
+							<th>玩法小类名称</th>
+							<th>最小赔率</th>
+							<th>最大赔率</th>
+							<!--<th>最大返利</th>-->
+							<th>最大投注金额</th>
+							<th>最小投注金额</th>
+							<!--<th>玩法说明</th>
+                <th>中奖说明</th>
+				<th>中奖案例</th>-->
+				
+							<th>排序</th>
+							<th>状态</th>
+							<th>操作</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr v-if="small_datas.length==0">
+							<td colspan="9">暂无数据</td>
+						</tr>
+						<tr v-else v-for="(item,index) in small_datas">
+							<td v-cloak>{{item.name}}</td>
+							<td><span style="float: right;width: 30px;line-height: 38px;height: 38px;">{{"("+item.o_min_prize+")"}}</span><input style="width: calc(100% - 30px);" class="layui-input"  type="number" :step="item.o_min_prize<10?'0.1':item.o_min_prize>100?'10':1" v-model="item.min_prize" @click="prizeKey(index)" /></td>
+							<td><span style="float: right;width: 30px;line-height: 38px;height: 38px;">{{"("+item.o_max_prize+")"}}</span><input style="width: calc(100% - 30px);" class="layui-input"  type="number" :step="item.o_max_prize<10?'0.1':item.o_max_prize>100?'10':1" v-model="item.max_prize" @click="prizeKey(index)" /></td>
+							<!--<td><input class="layui-input" type="number" v-model="item.max_reward" /></td>-->
+							<td><input class="layui-input" type="number" v-model="item.maxAmount" /></td>
+							<td><input class="layui-input" type="number" v-model="item.minAmount" /></td>
+							<!--<td><input class="layui-input" type="number" v-model="item.game_tips" /></td>
+                <td><input class="layui-input" type="number" v-model="item.win_explain" /></td>
+                <td><input class="layui-input" type="number" v-model="item.win_example" /></td>-->
+							<td><input class="layui-input" type="number" v-model="item.sort" /></td>
+							<td>
+								<div class="layui-form-item">
+									<div class="layui-input-block" style="margin-left: 0;">
+										<div v-if="item.status==1" class="layui-unselect layui-form-switch layui-form-onswitch" @click="change2(item,index)">
+											<em>启用</em>
+											<i></i>
+										</div>
+										<div v-else class="layui-unselect layui-form-switch" @click="change2(item,index)">
+											<em>停用</em>
+											<i></i>
+										</div>
+									</div>
+								</div>
+							</td>
+							<td>
+								<a class="layui-btn layui-btn-mini" @click="keep(item,index)">保存</a>
+								<a class="layui-btn layui-btn-mini" @click="popSmallEdit(item,index)">编辑</a>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<!--小类编辑弹出框-->
+			<div class="pop_smallSet">
+				<table class="layui-table">
+					<tbody>
+						<tr>
+							<td width="30%">玩法提示:</td>
+							<td width="70%"><input class="layui-input" type="text" v-model="cue" /></td>
+						</tr>
+						<tr>
+							<td>中奖说明:</td>
+							<td><input class="layui-input" type="text" v-model="winningNote" /></td>
+						</tr>
+						<tr>
+							<td>中奖案例:</td>
+							<td><input class="layui-input" type="text" v-model="winningCase" /></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<!--小类编辑多赔率-->
+			<div class="prize_key">
+				<table class="layui-table">
+					<thead>
+						<th></th>
+						<th>最小赔率:</th>
+						<th>最大赔率:</th>
+					</thead>
+					<tbody>
+						<tr v-for="(item,index) in more_prize">
+							<td>{{item}}</td>
+							<td><input class="layui-input" type="number" v-model="min_prize[index]" required="" min="1.000" step="0.001"/></td>
+							<td><input class="layui-input" type="number"  v-model="max_prize[index]" required="" min="1.000" step="0.001"/></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<script type="text/javascript" src="../public/js/jquery.js"></script>
+		<script type="text/javascript" src="../public/js/laydate/laydate.js"></script>
+		<script type="text/javascript" src="../public/js/jqPaginator.js"></script>
+		<script type="text/javascript" src="../plugins/layui/layui.js"></script>
+		<script type="text/javascript" src="../public/js/security.js"></script>
+		<script type="text/javascript" src="../public/js/vue.min.js"></script>
+		<script type="text/javascript" src="../public/js/send_request.js"></script>
+		<script type="text/javascript" src="js/digital_color.js"></script>
+	</body>
+
+</html>

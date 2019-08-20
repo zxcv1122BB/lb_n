@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" href="../plugins/layui/css/layui.css" />
+		<link rel="stylesheet" href="css/friRec.css" />
+	</head>
+	<body>
+		<section>
+			<div id="nav" class="clearfix"><span>推荐记录</span></div>
+			<div class="main">
+				<table class="layui-table">
+					<colgroup>
+						<col width="10%"/>
+						<col width="10%"/>
+						<col width="15%"/>
+						<col width="30%"/>
+						<col width="25%"/>
+						<col width="10%"/>
+					</colgroup>
+					<thead>
+						<tr>
+							<th>用户名</th>
+							<th>推荐人</th>
+							<th>奖励金额</th>
+							<th>创建时间</th>
+							<th>IP</th>
+						</tr>
+					</thead>
+					<tbody id="friRec_recordList">
+						<tr>
+							<td>Test</td>
+							<td>Test1</td>
+							<td>18</td>
+							<td>20170101 12:12:12</td>
+							<td>127.0.0.1</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div id="paging_record" class="clearfix">
+				<div class="left">
+					总共<span class="sumRecord"></span>数据
+					每页显示
+					<select name="" class="pageNum">
+						<option value="50">50</option>
+						<option value="100">100</option>
+						<option value="200">200</option><option value="500">500</option>
+					</select>条数据
+				</div>
+				
+			</div>
+			<div id="page">
+				
+			</div>
+		</section>
+		<script src="../public/js/security.js"></script>
+		<script src="../public/js/send_request.js"></script>
+		<script src="../public/js/jquery.js"></script>
+		<script type="text/javascript" src="../public/js/jqPaginator.js"></script>
+		<script src="../plugins/layui/layui.js"></script>
+		<script src="js/friRec.js"></script>
+	</body>
+</html>

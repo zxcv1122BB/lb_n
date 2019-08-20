@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>优惠活动</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="../plugins/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="../public/css/fenye.css"/>
+    <link rel="stylesheet" href="css/communal.css">
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <div class="admin-main" id="app">
+        <!--优惠列表内容展示-->
+        <fieldset class="layui-elem-field">
+            <legend>优惠活动管理</legend>
+            <div class="add_btn layui-inline">
+                <button class="layui-btn" @click="popup">添加</button>
+            </div>
+            <div class="layui-field-box ">
+                <table class="layui-table">
+                    <thead>
+                    <tr>
+                        <th width="5%">编号</th>
+                        <th width="13%">标题</th>
+                        <th width="26%">图片链接</th>
+                        <th width="26%">内容链接</th>
+                        <th width="18%">有效期</th>
+                        <th width="12%">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody id="content">
+                    <tr v-if="datas.length==0">
+                        <td colspan="10">暂无数据</td>
+                    </tr>
+                    <tr v-else v-for="(item,index) in datas">
+                        <td v-cloak>{{item.id}}</td>
+                        <td v-cloak :title="item.title">{{item.title}}</td>
+                        <td v-cloak :title="item.titleUrl">{{item.titleUrl}}</td>
+                        <td v-cloak :title="item.contentUrl">{{item.contentUrl}}</td>
+                        <td v-cloak>{{item.startTime.substr(0,10)}} 至 {{item.endTime.substr(0,10)}}</td>
+                        <td v-cloak>
+                            <a href="javascript:void (0);" class="layui-btn layui-btn-mini"
+                               @click="changeButton(item.id,item.title,item.titleUrl,item.contentUrl,item.startTime,item.endTime)">
+                                更改
+                            </a>
+                            <a href="javascript:void (0);" class="layui-btn layui-btn-mini layui-btn-danger"
+                               @click="deleteList(item.id,index)" v-cloak>
+                                {{item.delStatus==1?'删除':''}}
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!--页码设置-->
+            <div class="yema">
+                <!--页码左边-->
+                <div class="selectYema">
+                    <p v-cloak>
+                        总共{{total}}条记录.每页显示
+                        <select v-model="page_num">
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                            <option value="200">200</option><option value="500">500</option>
+                        </select>
+                        条记录
+                    </p>
+                </div>
+                <!--右边分页-->
+                <div id="fenye" style="text-align: right;"></div>
+            </div>
+        </fieldset>
+        <!--添加弹出层 默认隐藏-->
+        <div class="popAdd">
+            <div class="layui-form-item">
+                <label class="layui-form-label">标题</label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" placeholder="请输入标题" v-model="title" style="width: 80%;">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">图片链接</label>
+                <div class="layui-input-block">
+                	<!--<input type="text" class="layui-input" @change="checkUrl" placeholder="请输入标题图片url(最长250个字母)" v-model="title_pic" style="width: 80%;">-->
+                    <input type="text" class="layui-input" placeholder="请输入标题图片url(最长250个字母)" v-model="title_pic" style="width: 80%;">
+                </div>
+            </div>
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">内容链接</label>
+                <div class="layui-input-block">
+                	<!--<input type="text" class="layui-input" @change="checkUrl_2" placeholder="请输入内容链接url(最长250个字母)" v-model="content_pic" style="width: 80%;">-->
+                    <input type="text" class="layui-input" placeholder="请输入内容链接url(最长250个字母)" v-model="content_pic" style="width: 80%;">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">有效期</label>
+                <div class="layui-input-block">
+                    <div class="col_1">
+                        <div class="date">
+                            <input id="startDate" placeholder="开始时间" readonly/>
+                            <i class="layui-icon icon">&#xe637;</i>
+                        </div>
+                        <div class="date">
+                            <input id="endDate" placeholder="结束时间" readonly/>
+                            <i class="layui-icon icon">&#xe637;</i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--更改弹出层 默认隐藏-->
+        <div class="popEdit">
+            <div class="layui-form-item">
+                <label class="layui-form-label">标题</label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" v-model="changeTitle" style="width: 80%;">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">图片链接</label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" @change="checkUrl_3" placeholder="请输入标题图片url(最长250个字母)" v-model="changeTitle_pic" style="width: 80%;">
+                </div>
+            </div>
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">内容链接</label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" @change="checkUrl_4" placeholder="请输入内容链接url(最长250个字母)" v-model="changeContent" style="width: 80%;">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">有效期</label>
+                <div class="layui-input-block">
+                    <div class="col_1">
+                        <div class="date">
+                            <input id="startDate_edit" placeholder="开始时间" readonly/>
+                            <i class="layui-icon icon">&#xe637;</i>
+                        </div>
+                        <div class="date">
+                            <input id="endDate_edit" placeholder="结束时间" readonly/>
+                            <i class="layui-icon icon">&#xe637;</i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--删除提示框-->
+        <div class="popDel">
+            <div>
+                <i class="layui-layer-ico layui-layer-ico3"></i>确定删除此信息？
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="../public/js/jquery.js"></script>
+<script type="text/javascript" src="../public/js/jqPaginator.js"></script>
+<script type="text/javascript" src="../public/js/laydate/laydate.js"></script>
+<script type="text/javascript" src="../plugins/layui/layui.js"></script>
+<script type="text/javascript" src="../public/js/vue.min.js"></script>
+<script type="text/javascript" src="../public/js/security.js"></script>
+<script type="text/javascript" src="../public/js/send_request.js"></script>
+<script src="js/discountsActivity.js"></script>
+<script>
+    layui.use("layer", function () {
+        var layer = layui.layer;
+    });
+</script>
+</body>
+</html>

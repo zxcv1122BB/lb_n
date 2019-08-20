@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lb.sys.dao.DigitalOpenMapper">
+	<update id="updateOpenData" parameterType="string">
+		update open_data set is_preinstall = 1 where id = #{openDataId} 
+	</update>
+	<!-- 批量插入或更新数字彩开奖信息 -->
+	<insert id="insertDigitalOpenData" parameterType="map">
+		REPLACE INTO open_data
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="issue != null">
+				issue,
+			</if>
+			<if test="luck_number != null">
+				luck_number,
+			</if>
+			<if test="one_type_id != null">
+				one_type_id,
+			</if>
+			<if test="type_name_CN != null">
+				type_name_CN,
+			</if>
+			<if test="data_str != null">
+				data_str,
+			</if>
+			<if test="open_time != null ">
+				open_time,
+			</if>
+			<if test="is_preinstall != null ">
+				is_preinstall,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id},
+			</if>
+			<if test="issue != null">
+				#{issue},
+			</if>
+			<if test="luck_number != null">
+				#{luck_number},
+			</if>
+			<if test="one_type_id != null">
+				#{one_type_id},
+			</if>
+			<if test="type_name_CN != null">
+				#{type_name_CN},
+			</if>
+			<if test="data_str != null">
+				'${data_str}',
+			</if>
+			<if test="open_time != null ">
+				#{open_time},
+			</if>
+			<if test="is_preinstall != null ">
+				#{is_preinstall},
+			</if>
+		</trim>
+		<!-- ON DUPLICATE KEY UPDATE
+		<trim prefix="" suffix="" suffixOverrides=",">
+			<if test="issue != null">
+				issue=values(issue),
+			</if>
+			<if test="luck_number != null">
+				luck_number=values(luck_number),
+			</if>
+			<if test="one_type_id != null">
+				one_type_id=values(one_type_id),
+			</if>
+			<if test="type_name_CN != null">
+				type_name_CN=values(type_name_CN),
+			</if>
+			<if test="data_str != null">
+				data_str=values(data_str),
+			</if>
+			<if test="open_time != null ">
+				open_time=values(open_time),
+			</if>
+			<if test="is_preinstall != null ">
+				is_preinstall=values(is_preinstall),
+			</if>
+		</trim> -->
+	</insert>
+
+	<!-- 查询对应玩法最近一期开奖的数据 -->
+	<select id="qryLastIssueData" parameterType="map" resultType="map">
+		SELECT
+		oo.*,
+		(SELECT
+		FIND_IN_SET(#{issue},(SELECT GROUP_CONCAT(issue)
+		FROM open_data
+		WHERE one_type_id = #{one_type_id}))
+		AS is_exist) as
+		is_exist
+		FROM open_data oo ORDER BY issue desc LIMIT 1;
+	</select>
+
+	<!-- 查询开奖信息 -->
+	<select id="selectLotteryData" parameterType="map" resultType="map">
+		SELECT
+		open_data.id,
+		open_data.one_type_id,
+		open_data.type_name_CN,
+		open_data.issue,
+		open_data.luck_number,
+		open_data.data_str,
+		open_data.`status`,
+		open_data.open_time
+		FROM open_data
+		WHERE open_data.one_type_id=#{one_type_id}
+		<if test="issue !=null and issue !='' ">
+		   and data.issue=#{issue}
+		</if>
+		<if test="desc == 0 or desc == null ">  <!-- 为0代表默认降序 -->
+		   ORDER BY open_data.issue DESC
+		</if>
+		<if test="desc == 1 ">  <!-- 为0代表默认降序 -->
+		   ORDER BY open_data.issue asc
+		</if>
+		<if test="limit != null and climit != '' ">
+		   LIMIT #{limit}
+		</if>
+		<if test="limit == null or climit != '' ">
+		   LIMIT 10
+		</if>
+
+	</select>
+
+
+</mapper>

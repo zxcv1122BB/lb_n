@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>充值赠送策略</title>
+		<link rel="stylesheet" href="../plugins/layui/css/layui.css" />
+		<link rel="stylesheet" type="text/css" href="css/depPreStrategy.css" />
+	</head>
+
+	<body>
+		<section id="container">
+			
+		
+		<section class="content">
+			<div class="top clearfix">
+				<span id="add" class="btn btn_add layui-btn">新增</span>
+				<div class="right">
+					<span id="refrech" class="refrech"><img class="img-responsive" src="img/refrech.png" alt="" /></span><span class="date"><i class='hide' id="selectDate" ></i><img class="img-responsive" src="img/date.png" alt="" /></span>
+				</div>
+			</div>
+			<div class="container">
+				<table class="layui-table">
+					<colgroup>
+						<col width='7%' />
+						<col width='7%' />
+						<col width='7%' />
+						<col width='7%' />
+						<col width='7%' />
+						<col width='6%' />
+						<col width='6%' />
+						<col width='10%' />
+						<col width='10%' />
+						<col width='7%' />
+						<col width='8%' />
+						<col width='8%' />
+					</colgroup>
+					<thead>
+						<tr>
+							<th><strong>赠送方式</strong></th>
+							<th><strong>存款次数</strong></th>
+							<th><strong>赠送额度</strong></th>
+							<th><strong>赠送比例(%)</strong></th>
+							<th><strong>赠送上限</strong></th>				
+							<th><strong>金额下限</strong></th>
+							<th><strong>金额上限</strong></th>
+							<th><strong>开始时间</strong></th>
+							<th><strong>结束时间</strong></th>
+							<th><strong>状态</strong></th>
+							<th><strong>备注</strong></th>
+							<th><strong>操作</strong></th>
+						</tr>
+					</thead>
+
+					<tbody id="dataList">
+						<template v-if="showDatalist.length==0">
+							<tr><td colspan="12"><span>暂无数据</span></td></tr>
+						</template>
+						<template v-else>
+							<tr v-for="obj in showDatalist">  
+								<td>{{obj.givingWayName ? obj.givingWayName : "-"}}</td>
+								<td>{{obj.rechargeFq ? obj.rechargeFq==1?'首次充值':'第'+obj.rechargeFq+"次充值" :"每次充值"}}</td>
+								<td>{{obj.givingWayName=="固定数额"?obj.givingCredits ? obj.givingCredits : "0":'-'}}</td>
+								<td>{{obj.givingWayName!="固定数额"?obj.givingProportion ? obj.givingProportion : "0":'-'}}</td>
+								<td>{{obj.givingWayName!="固定数额"?obj.GivingCeiling ? obj.GivingCeiling : "0":'-'}}</td>
+								<td>{{obj.amountDown ? obj.amountDown : "0"}}</td>
+								<td>{{obj.amountUp ? obj.amountUp : "0"}}</td>
+								<td>{{obj.startTime ? obj.startTime : "-"}}</td>
+								<td>{{obj.endTime ? obj.endTime : "-"}}</td>
+								<td>
+									<div class="layui-form">
+										<div class="layui-form-item">
+											<div class="layui-input-block state" :data-index="obj.id" style="margin-left: 0;">
+												<div data-index="1":class="obj.state == 1 ? 'layui-unselect layui-form-switch layui-form-onswitch able' : 'layui-unselect layui-form-switch layui-form-onswitch able hide'">
+													<em>启动</em>
+													<i></i>
+												</div>
+												<div  data-index="0" :class="obj.state == 0 ? 'layui-unselect layui-form-switch disabled' : 'layui-unselect layui-form-switch disabled hide'">
+													<em>禁用</em>
+													<i></i>
+												</div>
+											</div>
+										</div>
+									</div>
+								</td>
+								<td>{{obj.info ? obj.info : "-"}}</td>
+								<td>
+									<a href="javascript:;" class="amend layui-btn layui-btn-mini" :data-index="obj.id">修改</a>
+									<a href="javarscript:;" class="delete layui-btn layui-btn-mini layui-btn-danger" :data-index="obj.id">删除</a>
+								</td>
+							</tr>
+						</template>
+					</tbody>
+				</table>
+			</div>
+		</section>
+		<div class="hide" id="dealApplication">
+			<div class="dealApplication">
+				<div>提示: <span style="color: red">存款频率(0表示每次，1表示首充，N表示第n次)</span></div>
+				<table class="layui-table">
+					<colgroup>
+						<col width="20%" />
+						<col width="30%" />
+						<col width="20%" />
+						<col width="30%" />
+					</colgroup>
+					<tbody>
+						<tr>
+							<td class="tr">赠送方式：</td>
+							<td>
+								<select name="" id="amount" @change="changeAmount(1)">
+									<option value="1">固定数额</option>
+									<option value="2">浮动比例</option>
+								</select>
+							</td>
+							<td class="tr">存款频率：</td>
+							<td>
+								<label id="frequency">
+								<input type="number" name="rechargeFq"/>
+							</label>
+							<!-- <span class="tips">(0每次,1首充,n第n次充)</span> -->
+							</td>
+						</tr>
+						<tr>
+							<td class="tr">{{amount_add==1?'赠送额度(元)：':'赠送比例(%)：'}}</td>
+							<td class="">
+								<label id="presentAmount">
+									<input v-if="amount_add==1" name="givingCredits" type="number"/>
+									<input v-if="amount_add==2" name="givingCredits" v-model="givingProportion_add" type="number" placeholder="0%~100%"/>
+								</label>
+							</td>
+							<td class="tr" v-if="amount_add==2">赠送上限：</td>
+							<td class="" v-if="amount_add==2">
+								<label>
+									<input name="givingCeiling" v-model="givingCeiling_add" type="number"/>
+								</label>
+							</td>
+						</tr>
+						<tr>
+							<td class="tr">充值金额下限：</td>
+							<td>
+								<input type="number" v-model="amountDown_add"/>
+							</td>
+							<td class="tr">充值金额上限：</td>
+							<td>
+								<input type="number" v-model="amountUp_add"/>
+							</td>
+						</tr>
+						<tr>
+							<td class="tr">开始时间：</td>
+							<td>
+								<div class="date">
+									<input type="text" id="startDate" placeholder="开始日期" readonly/>
+									<i class="layui-icon icon">&#xe637;</i>
+								</div>
+							</td>
+							<td class="tr">结束时间：</td>
+							<td>
+								<div class="date">
+									<input type="text" id="endDate" placeholder="结束日期" readonly/>
+									<i class="layui-icon icon">&#xe637;</i>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td class="tr">备注：</td>
+							<td colspan="3" class="lon">
+								<label id="remarks">
+								<input name="info" type="text"/>
+							</label>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div class="hide" id="amendData">
+			<div class="dealApplication">
+					<div>提示: <span style="color: red">存款频率(0表示每次，1表示首充，N表示第n次)</span></div>
+				<table class="layui-table">
+					<colgroup>
+						<col width="20%" />
+						<col width="30%" />
+						<col width="20%" />
+						<col width="30%" />
+					</colgroup>
+					<tbody>
+						<tr>
+							<td class="tr">赠送方式：</td>
+							<td>
+								<select name="" class="amount" @change="changeAmount(2)">
+									<option value="1">固定数额</option>
+									<option value="2">浮动比例</option>
+								</select>
+							</td>
+							<td class="tr">存款频率：</td>
+							<td>
+								<label class="frequency">
+								<input type="number" name="rechargeFq"/>
+							</label>
+							</td>
+						</tr>
+						<tr>
+							<td class="tr">{{amount_amend==1?'赠送额度(元)：':'赠送比例(%)：'}}</td>
+							<td class="">
+								<label class="presentAmount" >
+									<input v-if="amount_amend==1" name="givingCredits" type="number" v-model="givingCredits_amend"/>
+									<input v-if="amount_amend==2" name="givingCredits" v-model="givingProportion_amend" type="number" placeholder="0%~100%"/>
+								</label>
+							</td>
+							<td class="tr" v-if="amount_amend==2">赠送上限：</td>
+							<td class="" v-if="amount_amend==2">
+								<label>
+									<input name="givingCeiling" v-model="givingCeiling_amend" type="number"/>
+								</label>
+							</td>
+						</tr>
+						<tr>
+							
+							<td class="tr">充值金额下限：</td>
+							<td>
+								<input type="number" v-model="amountDown_amend"/>
+							</label>
+							</td>
+							<td class="tr">充值金额上限：</td>
+							<td>
+								<input type="number" v-model="amountUp_amend"/>
+							</td>
+						</tr>
+						<tr>
+							<td class="tr">开始时间：</td>
+							<td>
+								<div class="date">
+									<input type="text" class="startDate" placeholder="开始日期" readonly/>
+									<i class="layui-icon icon">&#xe637;</i>
+								</div>
+							</td>
+							<td class="tr">结束时间：</td>
+							<td>
+								<div class="date">
+									<input type="text" class="endDate" placeholder="结束日期" readonly/>
+									<i class="layui-icon icon">&#xe637;</i>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td class="tr">备注：</td>
+							<td colspan="3" class="lon">
+								<label class="remarks">
+								<input name="info" type="text"/>
+							</label>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div id="paging_record" class="clearfix">
+			<div class="left">
+				总共<span class="sumRecord"></span>数据 每页显示
+				<select name="" class="pageNum">
+					<option value="50">50</option>
+					<option value="100">100</option>
+					<option value="200">200</option>
+					<option value="500">500</option>
+				</select>条数据
+			</div>
+
+		</div>
+		</section>
+		<div id="page">
+
+		</div>
+		<script src="../public/js/security.js"></script>
+		<script src="../public/js/send_request.js"></script>
+		<script src="../public/js/jquery.js"></script>
+		<script src="../public/js/vue.min.js"></script>
+		<script type="text/javascript" src="../public/js/jqPaginator.js"></script>
+		<script src="../public/js/laydate/laydate.js"></script>
+		<script src="../plugins/layui/layui.js"></script>
+		<script src="js/depPreStrategy.js"></script>
+	</body>
+
+</html>

@@ -1,0 +1,43 @@
+/*搜索框*/
+.add_btn{
+    padding: 15px;
+}
+.popAuthority{
+    display: none;
+    position: absolute;
+    width: 270px;
+    height: 450px;
+    /*top: 50%;*/
+    top: 50px;
+    left: 50%;
+    margin-left: -135px;
+    z-index: 14;
+}
+.popAuthority>.title{
+    font-size: 18px;
+    background-color: #eae7e7;
+    line-height: 40px;
+    border-bottom: 1px solid #ccc;
+    text-indent: 10px;
+}
+.ztree *{
+    font-size: 17px;
+}
+.ztree li{
+    line-height: 20px;
+}
+.ztree li span.button.ico_docu {
+    vertical-align: middle;
+}
+.layui-table th {
+    text-align: center;
+}
+.ztree{
+    margin: 0;
+    /*padding: 30px 30px 30px 130px;*/
+    color: #333;
+    /*box-sizing: border-box;*/
+}
+td {
+    text-align: center;
+}

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>注册选项设置</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="../plugins/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="../public/css/fenye.css"/>
+    <link rel="stylesheet" href="css/agentRebateList.css"/>
+</head>
+
+<body>
+<div class="admin-main" id="app">
+    <fieldset class="layui-elem-field">
+        <legend>多级代理返点记录</legend>
+        <div class="layui-tab">
+            <div class="layui-tab-content">
+                <!--时间头 start-->
+                <div class="row clearfix">
+                    <div class="col">
+                        <span style="border: 0">查询范围:</span>
+                        <select name="city" class="select" v-model="outOfThrity" style="height: 38px;">
+                            <option value="0">7天之内</option>
+                            <option value="1">7天之外</option>
+                        </select>
+                        <!--<span id="now">今天</span><span id="yes">昨天</span><span id="week">本周</span>-->
+                    </div>
+                    <div class="col" style="margin-left: 5px;">
+                        <input placeholder="代理账号" name="loginAccount" v-model="proxyName" type="text" onkeyup="this.value=this.value.replace(/\s+/g,'')"/><!--查询用-->
+                        <span id="btn_select_byDate" class="layui-btn" @click="getOperation(1)">查询</span>
+                        <!--  <span class="layui-btn" @click="getDeposit(1)" v-if="type==2">查询</span>
+                         <span class="layui-btn" @click="getLottery(1)" v-if="type==3">查询</span> -->
+                    </div>
+                    <!--<div class="col">-->
+                        <!--<div class="date">-->
+                            <!--<input id="startDate" name="startTime"  class="layui-input td" placeholder="开始时间" readonly v-model="startDate"/>-->
+                            <!--<i class="layui-icon icon">&#xe637;</i>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                    <!--<div class="col">-->
+                        <!--<div class="date">-->
+                            <!--<input id="endDate" name="endTime" v-model="endDate"  class="layui-input td" placeholder="结束时间" readonly/>-->
+                            <!--<i class="layui-icon icon">&#xe637;</i>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                </div>
+                <div class="row clearfix">
+
+
+                    <!--<div class="col">-->
+                        <!--<span id="lastWeek">上周</span><span id="month">本月</span><span id="lastMonth">上月</span>-->
+                    <!--</div>-->
+                </div>
+                <!--时间头 end-->
+                <!--数据内容 start-->
+                <div class="layui-tab-item layui-show">
+                    <div>
+                        <table class="layui-table" v-cloak>
+                            <thead>
+                            <tr>
+                                <th>当前代理账户</th>
+                                <th>下级账户</th>
+                                <th>投注金额</th>
+                                <th>自身返点数</th>
+                                <th>返点金额</th>
+                                <th>返点时间</th>
+                                <th>操作记录</th>
+                            </tr>
+                            </thead>
+                            <!--运营内容-->
+                            <tbody>
+                            <tr v-if="datas.length==0">
+                                <td colspan="7">暂无数据</td>
+                            </tr>
+                            <tr v-else v-for="(item,index) in datas" v-cloak>
+                                <td v-cloak>{{item.proxyName}}</td>
+                                <td v-cloak>{{item.userName}}</td>
+                                <td v-cloak>{{item.betCoin?item.betCoin:0}}</td>
+                                <td v-cloak><a href="javascript:;" @click="proxy_rebate(item.rebateData)">点击查看返点数</a></td>
+                                <td v-cloak>{{item.coin?item.coin:0}}</td>
+                                <td v-cloak>{{item.returnTime?item.returnTime:'-'}}</td>
+                                <!-- <td>{{item.status}}</td>-->
+                                <td v-cloak>{{item.info}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+			        <div id="fenye" style="text-align: right;"></div>
+                </div>
+                <!--数据内容 end-->
+            </div>
+        </div>
+        <div>
+        </div>
+        <!--查看返点数-->
+        <div class="rebackRebeta" style="display: none">
+            <table width="100%">
+                <tr><th width="50%"  style="font-weight: 400;">彩种名称</th><th width="50%" style="font-weight: 400;">返点数</th></tr>
+                <tr v-for="item in Rebackdata">
+                    <td style="text-align: center" v-cloak>{{item.split("#")[0]}}</td>
+                    <td style="text-align: center" v-cloak>{{item.split("#")[1]}}</td>
+                </tr>
+            </table>
+
+        </div>
+    </fieldset>
+</div>
+<script type="text/javascript" src="../public/js/jquery.js"></script>
+<script type="text/javascript" src="../plugins/laydate/laydate.js"></script>
+<script type="text/javascript" src="../public/js/jqPaginator.js"></script>
+<script type="text/javascript" src="../plugins/layui/layui.js"></script>
+<script type="text/javascript" src="../public/js/vue.min.js"></script>
+<script type="text/javascript" src="../public/js/security.js"></script>
+<script type="text/javascript" src="../public/js/send_request.js"></script>
+<script type="text/javascript" src="js/agentRebateList.js"></script>
+</body>
+
+</html>

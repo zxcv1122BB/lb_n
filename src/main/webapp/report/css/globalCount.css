@@ -1,0 +1,193 @@
+/*椤电爜璁剧疆*/
+.yema{
+    overflow: hidden;
+}
+.selectYema{
+    float: left;
+    line-height: 78px;
+}
+.selectYema>p{
+    text-indent:20px;
+}
+/*鎼滅储妗嗚缃�*/
+.b_red{
+    color: #fff!important;
+    background-color: #009688!important;
+}
+
+.search{
+ margin-top: 15px;
+}
+
+.search select{
+    min-height: 35px;
+    border-radius: 5px;
+}
+.search a{
+    display: inline-block;
+    height: 36px;
+    line-height: 36px;
+    padding: 0 18px;
+    border-radius: 2px;
+    cursor: pointer;
+    border: 1px solid #cccccc;
+}
+.col_1{
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+.col_1>div{
+    float: left;
+    height: 40px;
+    line-height: 35px;
+    margin-left: 10px;
+    position: relative;
+}
+.col_1>div>input{
+    min-height: 36px;
+    padding: 0 5px;
+    box-sizing: border-box;
+}
+.date{
+    padding: 0 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 180px;
+    position: relative
+}
+.date i{
+    position: absolute;
+    top: 0;
+    right: 15px;
+}
+.col_2{
+    overflow: hidden;
+    margin-bottom: 10px;
+    margin-left: 18px;
+}
+.col_2>div{
+    float: left;
+    height: 40px;
+    line-height: 35px;
+    margin-left: 10px;
+    position: relative;
+}
+.col_2>div>input{
+    min-height: 36px;
+    padding: 0 5px;
+    box-sizing: border-box;
+}
+#startDate,#endDate{
+    min-height: 35px;
+    border: 0;
+}
+/*寮瑰嚭妗嗚缃�*/
+.detail{
+    display: none;
+}
+.detail table{
+    width: 96%;
+    margin: 10px auto;
+}
+.odd_row{
+    background-color: #f9f9f9;
+}
+.detail td{
+    padding: 5px 10px;
+    box-sizing: border-box;
+}
+/*寮瑰嚭妗嗚缃�*/
+.associator_msg{
+    display: none;
+}
+.associator_msg table{
+    width: 96%;
+    margin: 10px auto;
+}
+.associator_msg td{
+    padding: 5px 10px;
+    box-sizing: border-box;
+}
+.associator_msg input{
+    display: inline-block;
+    border-radius: 5px;
+}
+.associator_msg select{
+    width: 100%;
+    height: 30px;
+    border-radius: 5px;
+}
+/*淇敼浼氬憳瀵嗙爜妗�*/
+.editRebateRatio{
+    display: none;
+}
+.editRebateRatio table{
+    width: 96%;
+    margin: 10px auto;
+}
+.editRebateRatio td{
+    padding: 5px 10px;
+    box-sizing: border-box;
+}
+.editRebateRatio input{
+    display: inline-block;
+    border-radius: 5px;
+}
+/*娣诲姞浼氬憳璁剧疆*/
+.add{
+    display: none;
+}
+.add table{
+    width: 96%;
+    margin: 10px auto;
+}
+.add td{
+    padding: 5px 10px;
+    box-sizing: border-box;
+}
+.add input{
+    display: inline-block;
+    border-radius: 5px;
+}
+.add select{
+    width: 100%;
+    height: 30px;
+    border-radius: 5px;
+}
+.check{
+    display: none;
+    position: absolute;
+    z-index: 9;
+    background-color: white;
+    width: 90%;
+    border: 1px solid #ccc;
+}
+.check>li{
+    padding: 2px 8px;
+    box-sizing: border-box;
+    text-align: left;
+}
+.check>li:hover{
+    background-color: #f0f0f0;
+}
+.bitian{
+    color: red;
+    font-size: 18px;
+}
+/*璁剧疆寮瑰嚭灞傛寜閽鑹�*/
+.layui-layer-btn0{
+    background-color: #009688!important;
+    border-color:#009688!important ;
+}
+.layui-table{
+	border-bottom:2px solid #ddd;
+	text-align:center;
+}
+.layui-table th {
+    text-align:center;
+}
+
+.btns a.active{
+	background: #009688;
+	color:#fff;
+}

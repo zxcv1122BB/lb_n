@@ -1,0 +1,79 @@
+/*页码设置*/
+.yema{
+    overflow: hidden;
+}
+.selectYema{
+    float: left;
+    line-height: 78px;
+}
+.selectYema>p{
+    text-indent:20px;
+}
+/*搜索框设置*/
+.b_red{
+    color: #fff!important;
+    background-color: #009688!important;
+}
+.btns>button{
+    display: inline-block;
+    width: 60px;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: white;
+    line-height: 35px;
+    padding: 0 10px;
+}
+.search select{
+    min-height: 35px;
+    border-radius: 5px;
+}
+.col_1{
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+.col_1>div{
+    float: left;
+    height: 40px;
+    line-height: 35px;
+    margin-left: 10px;
+    position: relative;
+}
+.col_1>div>input{
+    min-height: 36px;
+    padding: 0 5px;
+    box-sizing: border-box;
+}
+.date{
+    padding: 0 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 180px;
+    position: relative
+}
+.date i{
+    position: absolute;
+    top: 0;
+    right: 15px;
+}
+.col_2{
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+.col_2>div{
+    float: left;
+    height: 40px;
+    line-height: 35px;
+    margin-left: 10px;
+    position: relative;
+}
+.col_2>div>input{
+    min-height: 36px;
+    padding: 0 5px;
+    box-sizing: border-box;
+}
+#startDate,#endDate{
+    min-height: 35px;
+    border: 0;
+}

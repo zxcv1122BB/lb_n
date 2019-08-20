@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lb.sys.dao.SysRegisterOptionPojoMapper">
+  <resultMap id="BaseResultMap" type="com.lb.sys.pojo.SysRegisterOptionPojo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="register_type" jdbcType="TINYINT" property="register_type" />
+    <result column="attr_name_en" jdbcType="VARCHAR" property="attr_name_en" />
+    <result column="attr_name" jdbcType="VARCHAR" property="attr_name" />
+    <result column="is_show" jdbcType="BIT" property="is_show" />
+    <result column="is_input" jdbcType="BIT" property="is_input" />
+    <result column="is_check" jdbcType="BIT" property="is_check" />
+    <result column="is_only" jdbcType="BIT" property="is_only" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="intro_info" jdbcType="VARCHAR" property="intro_info" />
+  </resultMap>
+	<sql id="Base_Column_List">
+    id, register_type, attr_name_en, attr_name, is_show, is_input, is_check, is_only, 
+    status, intro_info
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from sys_register_option
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+ 
+  
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.lb.sys.pojo.SysRegisterOptionPojo">
+    update sys_register_option
+    <set>
+      <if test="register_type != null">
+        register_type = #{register_type,jdbcType=TINYINT},
+      </if>
+      <if test="attr_name_en != null">
+        attr_name_en = #{attr_name_en,jdbcType=VARCHAR},
+      </if>
+      <if test="attr_name != null">
+        attr_name = #{attr_name,jdbcType=VARCHAR},
+      </if>
+      <if test="is_show != null">
+        is_show = #{is_show,jdbcType=BIT},
+      </if>
+      <if test="is_input != null">
+        is_input = #{is_input,jdbcType=BIT},
+      </if>
+      <if test="is_check != null">
+        is_check = #{is_check,jdbcType=BIT},
+      </if>
+      <if test="is_only != null">
+        is_only = #{is_only,jdbcType=BIT},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="intro_info != null">
+        intro_info = #{intro_info,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lb.sys.pojo.SysRegisterOptionPojo">
+    update sys_register_option
+    set register_type = #{register_type,jdbcType=TINYINT},
+      attr_name_en = #{attr_name_en,jdbcType=VARCHAR},
+      attr_name = #{attr_name,jdbcType=VARCHAR},
+      is_show = #{is_show,jdbcType=BIT},
+      is_input = #{is_input,jdbcType=BIT},
+      is_check = #{is_check,jdbcType=BIT},
+      is_only = #{is_only,jdbcType=BIT},
+      status = #{status,jdbcType=TINYINT},
+      intro_info = #{intro_info,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  
+  <select id="querySysRegisterOptionByTypeId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from sys_register_option
+    where register_type = #{register_type,jdbcType=TINYINT} order by sort asc
+  </select>
+  <select id="isOnlyValidate" resultType="java.lang.Integer">
+	select
+		<choose>
+			<when test="type == 'nickName'">COUNT(NICK_NAME)</when>
+			<when test="type == 'realName'">COUNT(NAME)</when>
+			<when test="type == 'phoneNumber'">COUNT(PHONE_NUMBER)</when>
+			<when test="type == 'WeChat'">COUNT(WEIXIN)</when>
+			<otherwise>COUNT(QQ)</otherwise>		
+		</choose> 	
+	from user_info
+	where
+		<choose>
+			<when test="type == 'nickName'">NICK_NAME</when>
+			<when test="type == 'realName'">NAME</when>
+			<when test="type == 'phoneNumber'">PHONE_NUMBER</when>
+			<when test="type == 'WeChat'">WEIXIN</when>
+			<otherwise>QQ</otherwise>		
+		</choose>		
+	=  #{value,jdbcType=VARCHAR}  	
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from sys_register_option
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.lb.sys.pojo.SysRegisterOptionPojo">
+    insert into sys_register_option (id, register_type, attr_name, 
+      intro_info, is_show, is_input, 
+      is_check, is_only, status
+      )
+    values (#{id,jdbcType=INTEGER}, #{register_type,jdbcType=TINYINT}, #{attr_name,jdbcType=VARCHAR}, 
+      #{intro_info,jdbcType=VARCHAR}, #{is_show,jdbcType=TINYINT}, #{is_input,jdbcType=TINYINT}, 
+      #{is_check,jdbcType=TINYINT}, #{is_only,jdbcType=TINYINT}, #{status,jdbcType=TINYINT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.lb.sys.pojo.SysRegisterOptionPojo">
+    insert into sys_register_option
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="register_type != null">
+        register_type,
+      </if>
+      <if test="attr_name != null">
+        attr_name,
+      </if>
+      <if test="intro_info != null">
+        intro_info,
+      </if>
+      <if test="is_show != null">
+        is_show,
+      </if>
+      <if test="is_input != null">
+        is_input,
+      </if>
+      <if test="is_check != null">
+        is_check,
+      </if>
+      <if test="is_only != null">
+        is_only,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="register_type != null">
+        #{register_type,jdbcType=TINYINT},
+      </if>
+      <if test="attr_name != null">
+        #{attr_name,jdbcType=VARCHAR},
+      </if>
+      <if test="intro_info != null">
+        #{intro_info,jdbcType=VARCHAR},
+      </if>
+      <if test="is_show != null">
+        #{is_show,jdbcType=TINYINT},
+      </if>
+      <if test="is_input != null">
+        #{is_input,jdbcType=TINYINT},
+      </if>
+      <if test="is_check != null">
+        #{is_check,jdbcType=TINYINT},
+      </if>
+      <if test="is_only != null">
+        #{is_only,jdbcType=TINYINT},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=TINYINT},
+      </if>
+    </trim>
+  </insert>
+
+  
+ 
+
+  
+</mapper>

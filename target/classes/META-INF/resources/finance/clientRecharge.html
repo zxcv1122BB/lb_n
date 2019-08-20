@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<title>会员充值记录</title>
+		<link rel="stylesheet" href="../plugins/layui/css/layui.css" media="all" />
+		<link rel="stylesheet" href="css/clientRecharge.css" />
+		<style>
+			.labelList input{
+				width: 80px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<section id="container">
+			<fieldset class="layui-elem-field">
+		<div class="container crl clearfix" id="app">
+			<form :action="exportUser+'/download/exportDepositRecord'" method="post" id="export_form">
+			<div class="row clearfix">
+				<div class="col">
+					<div class="date">
+						<input id="startDate" name="startTime" placeholder="开始时间" readonly />
+						<i class="layui-icon icon">&#xe637;</i>
+					</div>
+				</div>
+				<div class="col">
+					<span id="now" @click="btn_date_click($event,1)">今天</span><span id="yes" @click="btn_date_click($event,2)">昨天</span><span id="week" @click="btn_date_click($event,3)">本周</span>
+				</div>
+				<div class="col">
+					<select name="payType" id="payType">
+						<option value="">支付种类</option>
+						<option value="0">微信</option>
+						<option value="1">支付宝</option>
+						<option value="2">QQ</option>
+						<option value="3">银行卡</option>
+					</select>
+					<select name="state" id="stateType" v-if="orderState==1">
+						<option value="">全部状态</option>
+						<option class="c_deal" value="1">待处理</option>
+						<option class="c_deal" value="2">处理中</option>
+					</select>
+					<select name="state" id="stateType" v-else>
+						<option value="">全部状态</option>
+						<option class="c_deal" value="1">待处理</option>
+						<option class="c_deal" value="2">处理中</option>
+						<option class="c_success" value="3">充值成功</option>
+						<option class="c_failure" value="4">充值失败</option>
+					</select>
+					<select name="depositOperateType" id="dealWay">
+						<option value="">全部方式</option>
+						<option class="c_success" value="1">系统处理</option>
+						<option class="c_failure" value="2">手动处理</option>
+						<option class="c_failure" value="3">人工加款</option>
+					</select>
+					<select name="depositOperateType" id="dealWay">
+						<option value="">所有等级</option>
+						<option v-for="(item,index) in vipList"  :value="index+1">{{item.vipName}}</option>
+						
+					</select>
+					<!-- <select name="outOfThrity" v-model="outOfThrity">
+						<option value="0">7天之内</option>
+						<option value="1">7天之外</option>
+					</select> -->
+					
+				</div>
+				<div>
+						<span id="btn_select_byDate" class="layui-btn" @click="btn_select_click">查询</span>
+						<span id="btn_export" class="layui-btn" @click="btn_export_click">导出</span>
+					</div>
+			</div>
+			<div class="row clearfix">
+				<div class="col">
+					<div class="date">
+						<input id="endDate" name="endTime" placeholder="结束时间" readonly />
+						<i class="layui-icon icon">&#xe637;</i>
+					</div>
+				</div>
+				<div class="col">
+					<span id="now" @click="btn_date_click($event,4)">上周</span><span id="yes" @click="btn_date_click($event,5)">本月</span><span id="week" @click="btn_date_click($event,6)">上月</span>
+				</div>
+				<!-- <div class="col">
+					<span id="lastWeek" @click="btn_date_click($event,4)">上周</span><span id="month" @click="btn_date_click($event,5)">本月</span><span id="lastMonth" @click="btn_date_click($event,6)">上月</span>
+				</div> -->
+				<div class="col labelList" id="label_list">
+					
+					<label><input type="text" placeholder="会员名称" name="userName" onkeyup="this.value=this.value.replace(/\s+/g,'')"/></label>
+					<label><input type="text" placeholder="充值订单号" name="rechargeId" onkeyup="this.value=this.value.replace(/\s+/g,'')"/></label>
+					<label><input type="text" placeholder="所属代理" name="agentCount" onkeyup="this.value=this.value.replace(/\s+/g,'')"/></label>
+					<label><input type="text" v-model="operate_user" placeholder="操作员" name="operate_user" onkeyup="this.value=this.value.replace(/\s+/g,'')"/></label>
+					<label>范围:<input type="number" v-model="min_coin" placeholder="最小金额" name="min_coin" onkeyup="this.value=this.value.replace(/\s+/g,'')"/> 至 <input type="number" v-model="max_coin" placeholder="最大金额" name="max_coin" onkeyup="this.value=this.value.replace(/\s+/g,'')"/></label>
+				</div>
+				<input type="hidden" name="X-Authorization" id="Authorization" /><!--导出用-->
+				
+			</div>
+			</form>
+			<div class="titleMsg" v-cloak v-if="titleMsg.length!==0"> 
+				<span>今日充值: {{titleMsg.todaysDepositSum?titleMsg.todaysDepositSum:'0.00'}}</span>
+				<span>今日有效: {{titleMsg.todaysValidDepositSum?titleMsg.todaysValidDepositSum:'0.00'}}</span>
+				<span>昨日有效: {{titleMsg.yesterdayValidDepositSum?titleMsg.yesterdayValidDepositSum:'0.00'}}</span>
+				<span>7日内有效: {{titleMsg.sevenValidDepositSum?titleMsg.sevenValidDepositSum:'0.00'}}</span>
+
+			</div>
+			<div class="recordList">
+				<table id="recordList_table" class="layui-table">
+					<thead>
+						<tr>
+							<th width="8%">会员/单号</th>
+							<th width="6%">支付类型</th>
+							<th width="6%">支付平台</th>
+							<th width="6%">付款金额(元)</th>
+							<th width="8%">存款人姓名</th>
+							<th width="10%">存款银行账号</th>
+							<th width="10%">支付账号</th>
+							<th width="10%">申请时间</th>
+							<th width="10%">处理时间</th>
+							<th width="8%">类型</th>
+							<th width="8%">状态</th>
+							<th width="8%">操作</th>
+							<th width="8%">操作员</th>
+							<th width="8%">备注</th>    
+						</tr>
+					</thead>
+					<tbody id="recordList"></tbody>
+				</table>
+			</div>
+		</div>
+		<div id="paging_record" class="clearfix">
+			<div class="left">
+				总共<span class="sumRecord"></span>数据 每页显示
+				<select name="" v-model="pageNum">
+					<option value="50">50</option>
+					<option value="100">100</option>
+					<option value="200">200</option><option value="500">500</option>
+				</select>条数据
+			</div>
+
+		</div>
+		
+		<div id="personDetail" class="hide detail"></div>
+		<div id="dealApplication" class="hide"></div>
+		</fieldset>
+		</section>
+		<div id="page">
+
+		</div>
+		<script type="text/javascript" src="../public/js/jquery.js"></script>
+		<script src="../public/js/laydate/laydate.js"></script>
+		<script src='../plugins/layui/layui.js'></script>
+		<script type="text/javascript" src="../public/js/jqPaginator.js"></script>
+		<script type="text/javascript" src="../public/js/vue.min.js"></script>
+		<script src="../public/js/security.js"></script>
+		<script src="../public/js/send_request.js"></script>
+		<script src="../public/js/clipboard.js"></script>
+		<script src="js/clientRecharge.js"></script>
+	</body>
+
+</html>

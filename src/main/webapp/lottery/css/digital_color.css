@@ -1,0 +1,89 @@
+/*搜索框和添加按钮样式*/
+.add_btn>input {
+    display: inline-block;
+    width: 30%;
+}
+
+.add_btn>i {
+    font-size: 25px;
+    color: #ccc;
+    position: relative;
+    left: -40px;
+    top: 5px;
+    cursor: pointer;
+}
+.add_btn>select{
+    min-height: 35px;
+    border-radius: 5px;
+    width: 200px;
+}
+
+/*一级玩法编辑框*/
+.pop_edit{
+    display: none;
+    width: 90%;
+    margin: 10px auto;
+}
+.pop_edit td{
+    padding: 5px;
+    box-sizing: border-box;
+}
+.pop_edit input[type=checkbox]{
+    margin-right: 15px;
+}
+
+/*大类弹出框*/
+.pop_big{
+    display: none;
+}
+/*大类编辑弹出框*/
+.pop_bigSet{
+    display: none;
+    width: 90%;
+    margin: 10px auto;
+}
+.pop_bigSet td{
+    padding: 5px;
+    box-sizing: border-box;
+}
+/*小类弹出框*/
+.pop_small{
+    display: none;
+}
+/*tab选项设置*/
+.pop_small>p{
+    line-height: 43px;
+    padding: 0 15px;
+    box-sizing: border-box;
+}
+.pop_small>p>a{
+    color: #5FB878;
+    margin-right: 15px;
+    font-size: 17px;
+    padding: 5px;
+    box-sizing: border-box;
+    border-radius: 5px;
+}
+.pop_small td{
+    padding: 5px;
+    box-sizing: border-box;
+}
+.active{
+    color: #ffffff!important;
+    background-color: #5FB878;
+}
+/*小类编辑弹出框*/
+.pop_smallSet,.prize_key{
+    display: none;
+    width: 90%;
+    margin: 10px auto;
+}
+.pop_smallSet td{
+    padding: 5px;
+    box-sizing: border-box;
+}
+.pop_edit div span{
+	display: inline-block;
+	cursor: pointer;
+	padding: 2px 5px;
+}

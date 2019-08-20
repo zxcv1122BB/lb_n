@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<title>Title</title>
+		<link rel="stylesheet" href="../plugins/layui/css/layui.css" media="all" />
+		<link rel="stylesheet" href="css/memAccCha.css" />
+	</head>
+
+	<body>
+		<section id="container">
+			
+		
+		<div class="container wdl clearfix">
+			<div class="col">
+				<div class="date">
+					<input id="startDate" placeholder="开始时间" readonly />
+					<i class="layui-icon icon">&#xe637;</i>
+				</div>
+			</div>
+			<div class="row clearfix">
+				<div class="col">
+					<span id="now" @click="btn_date_click($event,1)">今天</span><span id="yes" @click="btn_date_click($event,2)">昨天</span><span id="week" @click="btn_date_click($event,3)">本周</span>
+				</div>
+				<div class="col">
+					<select name="outOfThrity" v-model="outOfThrity">
+						<option value="0">7天之内</option>
+						<option value="1">7天之外</option>
+					</select>
+					<select name="" id="allType">
+						<option value="0">全部类型</option>
+						<option value="1">充值</option>
+						<option value="2">提现</option>
+						<option value="4">注册赠送</option>
+						<option value="5">抢红包</option>
+						<option value="6">人工增加</option>
+						<option value="21">人工赠送</option>
+						<option value="7">人工扣除</option>
+						<option value="8">反水</option>
+						<option value="9">派奖</option>
+						<option value="10">充值赠送</option>
+						<option value="11">返点</option>
+						<option value="12">投注撤单</option>
+						<option value="13">提现撤单</option>
+						<option value="14">大转盘奖励</option>
+						<option value="15">充值撤单</option>
+						<option value="16">返点回滚</option>
+						<option value="17">推荐赠送</option>
+						<option value="18">代理加款</option>
+						<option value="19">代理减款</option>
+						<option value="20">开奖回滚</option>
+						<option value="22">优惠卡兑换</option>
+					</select>
+				</div>
+			</div>
+			<div class="row clearfix">
+				<div class="col">
+					<div class="date">
+						<input id="endDate" placeholder="结束时间" readonly />
+						<i class="layui-icon icon">&#xe637;</i>
+					</div>
+				</div>
+				<!-- <div class="col">
+					<span id="lastWeek" @click="btn_date_click($event,4)">上周</span><span id="month" @click="btn_date_click($event,5)">本月</span><span id="lastMonth" @click="btn_date_click($event,6)">上月</span>
+				</div> -->
+				<div class="col labelList" id="label_list">
+					<label><input type="text" placeholder="代理下线查询" name="accountName" onkeyup="this.value=this.value.replace(/\s+/g,'')"/></label>
+					<label><input type="text" placeholder="代理账号" name="userName" onkeyup="this.value=this.value.replace(/\s+/g,'')"/></label>
+					<label><input type="text" placeholder="订单号" name="orderId" onkeyup="this.value=this.value.replace(/\s+/g,'')"/></label>
+				</div>
+				<div class="">
+					<span id="btn_select_byDate" class="layui-btn" @click="btn_select_click">查询</span>
+				</div>
+			</div>
+			<!--列表显示-->
+			<div class="recordList">
+				<table id="recordList_table"  class="layui-table">
+					<colgroup>
+						<col width="4%">
+						<col width="4%">
+						<col width="4%">
+						<col width="6%">
+						<col width="6%">
+						<col width="6%">
+						<col width="7%">
+						<col width="7%">
+						<col width="4%">
+						<col width="10%">
+					</colgroup>
+					<thead>
+						<tr>
+							<th><strong>编号</strong></th>
+							<th><strong>会员账号</strong></th>
+							<th><strong>变动类型</strong></th>
+							<th><strong>变动前金额</strong></th>
+							<th><strong>变动金额</strong></th>
+							<th><strong>变动后金额</strong></th>
+							<th><strong>变动时间(系统)</strong></th>
+							<th><strong>订单号</strong></th>
+							<th><strong>操作员</strong></th>
+							<th><strong>备注</strong></th>
+						</tr>
+					</thead>
+					<tbody id="recordList">
+
+					</tbody>
+				</table>
+			</div>
+
+		</div>
+		<div class="hide" id="dealApplication">
+			<div class="dealApplication">
+				<table border="1px" bordercolor="#ddd">
+					<colgroup>
+						<col width="23%" />
+						<col width="27%" />
+						<col width="23%" />
+						<col width="27%" />
+					</colgroup>
+					<tbody>
+						<tr>
+							<td colspan="4" style="text-align: center;">订单号:L17090819162</td>
+						</tr>
+						<tr>
+							<td>账号：</td>
+							<td>hxx123456</td>
+							<td>开盘时间：</td>
+							<td>2017-09-08 18:18:30</td>
+						</tr>
+						<tr>
+							<td>下注时间：</td>
+							<td>2017-09-08 18:18:30</td>
+							<td>封盘时间：</td>
+							<td>2017-09-08 18:18:30</td>
+						</tr>
+						<tr>
+							<td>单注金额：</td>
+							<td>120.00</td>
+							<td>投注注数：</td>
+							<td>5</td>
+						</tr>
+						<tr>
+							<td>彩种：</td>
+							<td>重庆时时彩</td>
+							<td>倍数：</td>
+							<td>60</td>
+						</tr>
+						<tr>
+							<td>期号：</td>
+							<td>20170908075</td>
+							<td>投注总额：</td>
+							<td>600.00</td>
+						</tr>
+						<tr>
+							<td>玩法：</td>
+							<td>定位胆</td>
+							<td>：</td>
+							<td>19.800</td>
+						</tr>
+						<tr>
+							<td>开奖号码：</td>
+							<td></td>
+							<td>中奖注数：</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>状态：</td>
+							<td><span class="c_wait">等待开奖</span></td>
+							<td>中奖金额：</td>
+							<td>0.00</td>
+						</tr>
+						<tr>
+							<td>盈亏：</td>
+							<td colspan="3">
+								0.00
+							</td>
+						</tr>
+						<tr rowspan="2">
+							<td>下注内容：</td>
+							<td colspan="3">
+								<div class="xz_content">
+									-,-,-,-,34567
+								</div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="bottom">
+				<div class="btn_list">
+					<span class="btn">关闭</span>
+				</div>
+			</div>
+		</div>
+		<div id="paging_record" class="clearfix">
+			<div class="left">
+				总共<span class="sumRecord"></span>数据 每页显示
+				<select name="" v-model="pageNum">
+					<option value="50">50</option>
+					<option value="100">100</option>
+					<option value="200">200</option><option value="500">500</option>
+				</select>条数据
+			</div>
+		</div>
+		<div id="page">
+
+		</div>
+		</section>
+		<script type="text/javascript" src="../public/js/jquery.js"></script>
+		<script type="text/javascript" src="../public/js/jqPaginator.js"></script>
+		<script src="../public/js/laydate/laydate.js"></script>
+		<script src='../plugins/layui/layui.js'></script>
+		<script src="../public/js/security.js"></script>
+		<script src="../public/js/send_request.js"></script>
+		<script src="../public/js/vue.min.js"></script>
+		<script src="js/agency_AccCha.js"></script>
+	</body>
+
+</html>

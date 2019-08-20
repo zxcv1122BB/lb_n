@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+		<title>后台管理</title>
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="format-detection" content="telephone=no">
+
+		<link rel="stylesheet" href="../plugins/layui/css/layui.css" media="all" />
+		<link rel="stylesheet" href="../public/css/fenye.css" />
+		<link rel="stylesheet" href="css/MemberLevel_permission.css" />
+		<style>
+			[v-cloak] {
+				display: none;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="app">
+			<fieldset class="layui-elem-field">
+				<legend>会员等级权限</legend>
+				<div class="add_btn" style="padding: 15px;">
+					<button class="layui-btn" @click="popAdd">新增</button>
+					<button class="layui-btn" @click="choColor()">选择返利彩种</button>
+				</div>
+				<div class="layui-field-box">
+					<table class="layui-table admin-table">
+						<thead>
+							<tr>
+								<th style="width: 10%;">等级名称</th>
+								<th style="width: 10%;">存款金额</th>
+								<th style="width: 10%;">成员数量</th>
+								<th style="width: 10%">唯一标识</th>
+								<th style="width: 15%;">创建时间</th>
+								<th style="width: 7%;">用户返利(%)</th>
+								<th style="width: 10%;">状态</th>
+								<th style="width: 12%;">备注</th>
+								<th style="width: 22%;">操作</th>
+							</tr>
+						</thead>
+						<tbody id="content">
+							<tr v-if="datas.length==0">
+								<td colspan="9">暂无数据</td>
+							</tr>
+							<tr v-else v-for="(item,index) in datas">
+								<td v-cloak :title="item.vipName">{{item.vipName}}</td>
+								<td v-cloak :title="item.depositAmount">{{item.depositAmount}}</td>
+								<td v-cloak :title="item.userCount">{{item.userCount}}</td>
+								<td v-cloak :title="item.group">{{item.group}}</td>
+								<td v-cloak :title="item.inputTime">{{item.inputTime}}</td>
+								<td v-cloak :title="item.percent">{{item.percent}}%</td>
+								<td v-cloak>
+									<div class="layui-form">
+										<div class="layui-form-item">
+											<div class="layui-input-block" style="margin-left: 0;">
+												<div v-if="item.vipId==0">启用</div>
+												<div v-else-if="item.status==1&&item.vipId!=0" class="layui-unselect layui-form-switch layui-form-onswitch" :id="item.vipId" @click="changeType(item.vipId,item.status,index)">
+													<em>启用</em>
+													<i></i>
+												</div>
+												<div v-else class="layui-unselect layui-form-switch" :id="item.vipId" @click="changeType(item.vipId,item.status,index)">
+													<em>停用</em>
+													<i></i>
+												</div>
+											</div>
+										</div>
+									</div>
+								</td>
+								<td v-cloak :title="item.remark">{{item.remark}}</td>
+								<td v-cloak>
+									<a class="layui-btn layui-btn-mini" @click="popedit(item.vipId)">修改</a>
+									<a class="layui-btn layui-btn-mini" @click="memberChange(item.vipId)">成员转移</a>
+									<a v-if="item.vipId==0"></a>
+									<!--  <a v-else class="layui-btn layui-btn-mini layui-btn-danger" @click="del(item.vipid)">删除</a>   -->
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</fieldset>
+			<!--遮罩层-->
+			<div class="zhezhao"></div>
+			<div class="color" style="padding: 2px;display: none;">
+				<span style="margin-left: 5px;">用户返利:</span>
+				<div class="layui-form" style="display: inline-block;">
+					<div class="layui-form-item">
+						<div class="layui-input-block" style="margin-left: 0;">
+							<div v-if="percentId.on_off==1" class="layui-unselect layui-form-switch layui-form-onswitch" @click="upPercent()">
+								<em>启用</em>
+								<i></i>
+							</div>
+							<div v-else class="layui-unselect layui-form-switch" @click="upPercent()">
+								<em>停用</em>
+								<i></i>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div style="display: inline-block;margin-left: 50px;">{{percentId.configure_explain}}：<input v-model="sys_config1" style="width: 100px;" /></div>
+				<div style="margin-left: 5px;"><input type='checkbox' class='input-checkbox' v-model='checked' v-on:click='checkedAll'>全选</div>
+				<ul class="allType">
+					<li v-for="item in gameType">
+						<label for="item.gameID">
+							<input type="checkbox" :id="item.gameID" :value="item.gameID" v-model="sys_config2">
+							<label>{{item.gameName}}</label>
+						</label>
+					</li>
+				</ul>
+			</div>
+			<!--修改信息弹出层-->
+			<div class="popEdit">
+				<div class="edit-inner">
+					<p>
+						会员名称:
+						<input type="text" class="layui-input" v-model="name" />
+					</p>
+					<p>
+						充值金额:
+						<input type="number" class="layui-input" v-model="rmb" />
+					</p>
+					<p>
+						用户返利:
+						<input type="number" class="layui-input" v-model="percent" />%
+					</p>
+					<p>
+						图标地址:
+						<input type="text" class="layui-input" v-model="url" disabled />
+					</p>
+					<p>
+						备注信息:
+						<input type="text" class="layui-input" v-model="remark" />
+					</p>
+				</div>
+			</div>
+			<!--添加信息弹出层-->
+			<div class="popAdd">
+				<div class="add-inner">
+					<p>
+						等级名称:
+						<input type="text" class="layui-input" v-model="addname" placeholder="请输入(超过10个字符)" />
+					</p>
+					<p>
+						存款金额:
+						<input type="number" class="layui-input" v-model="addrmb" placeholder="请输入金额" />
+					</p>
+					<p>
+						用户返利:
+						<input type="number" class="layui-input" v-model="percent" />%
+					</p>
+					<p>
+						唯一标识:
+						<input type="text" class="layui-input" v-model="addgroup" placeholder="请输入等级唯一标识" />
+					</p>
+					<p>
+						等级图标:
+						<input type="text" class="layui-input" v-model="addurl" placeholder="请输入图标url" />
+					</p>
+					<p>
+						备注内容:
+						<input type="text" class="layui-input" v-model="addremark" placeholder="请输入备注内容" />
+					</p>
+				</div>
+			</div>
+			<!--删除提示框-->
+			<div class="popDel">
+				<div>
+					<i class="layui-layer-ico layui-layer-ico3"></i>确定删除此信息？
+				</div>
+			</div>
+			<!--成员转移弹出层-->
+			<div class="allMember" style="overflow: auto;max-height:90%;">
+				<p class="title">
+					成员列表
+					<button class="layui-btn-mini layui-btn" @click="close">关闭</button>
+				</p>
+				<!--搜索设置-->
+				<div class="search">
+					<div class="search-left">
+						<input type="text" placeholder="请输入会员名搜索..." class="layui-input" v-model="store_search" @keyup="store_search=store_search.replace(/\s+/g,'')" />
+						<i class="layui-icon" @click="search">&#xe615;</i>
+						<span id="prompt3" v-cloak>{{prompt3}}</span>
+					</div>
+					<div class="search-right">
+						<span>请选择移动到:</span>
+						<select v-model="select_">
+							<option value="">请选择</option>
+							<option v-for="item in selectVip" :value="item.vipid" v-cloak>{{item.vipname}}</option>
+						</select>
+						<button class="layui-btn layui-btn-small" @click="edit">修改</button>
+						<span id="prompt4" v-cloak>{{prompt4}}</span>
+					</div>
+				</div>
+				<!--列表信息-->
+				<div class="layui-field-box">
+					<table class="layui-table admin-table" v-cloak>
+						<thead>
+							<tr>
+								<th width="4%"><input type="checkbox" v-model="flag" @click="seleceAll" /></th>
+								<th width="7%">会员id</th>
+								<th width="9%">名称</th>
+								<th width="10%">真实姓名</th>
+								<th width="17%">注册时间</th>
+								<th width="10%">手机号码</th>
+								<th width="5%">积分</th>
+								<th width="8%">累积积分</th>
+								<th width="10%">会员类型</th>
+								<th width="10%">状态</th>
+								<th width="10%">组别名称</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr v-if="members.length==0">
+								<td colspan="11">暂无数据</td>
+							</tr>
+							<tr v-else v-for="item in members">
+								<td><input type="checkbox" :value="item.uid" v-model="member" /></td>
+								<td v-cloak :title="item.uid">{{item.uid}}</td>
+								<td v-cloak :title="item.userName">{{item.userName}}</td>
+								<td v-cloak :title="item.name">{{item.name}}</td>
+								<td v-cloak :title="item.regTime">{{item.regTime}}</td>
+								<td v-cloak :title="item.phoneNumber">{{item.phoneNumber}}</td>
+								<td v-cloak :title="item.score">{{item.score}}</td>
+								<td v-cloak :title="item.scoreTotal">{{item.scoreTotal}}</td>
+								<td v-cloak :title="item.usertype">{{item.usertype}}</td>
+								<td v-cloak :title="item.status==1?'正常':'冻结'">{{item.status==1?'正常':'冻结'}}</td>
+								<td v-cloak :title="item.vipName">{{item.vipName}}</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<!--页码设置-->
+				<div class="yema">
+					<!--页码左边-->
+					<div class="selectYema">
+						<p>
+							总共{{total}}条记录.每页显示
+							<select v-model="page_num">
+								<option value="50">50</option>
+								<option value="100">100</option>
+								<option value="200">200</option>
+								<option value="500">500</option>
+							</select>
+							条记录
+						</p>
+					</div>
+					<!--右边分页-->
+					<div id="fenye" style="text-align: right;"></div>
+				</div>
+			</div>
+		</div>
+
+		<script type="text/javascript" src="../public/js/jquery.js"></script>
+		<!--引入JQ脚本-->
+		<script type="text/javascript" src="../public/js/jqPaginator.js"></script>
+		<!--引入分页脚本-->
+		<script type="text/javascript" src="../plugins/layui/layui.js"></script>
+		<!--引入layui脚本-->
+		<script type="text/javascript" src="../public/js/security.js"></script>
+		<!--引入加密脚本-->
+		<script type="text/javascript" src="../public/js/vue.min.js"></script>
+		<!--引入vue脚本-->
+		<script type="text/javascript" src="../public/js/send_request.js"></script>
+		<!--引入二次封装ajax脚本-->
+		<script type="text/javascript" src="js/MemberLevel_permission.js"></script>
+	</body>
+
+</html>

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>后台管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+
+    <link rel="stylesheet" href="plugins/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="public/css/animate.css" media="all"/>
+    <link rel="stylesheet" href="css/welcome.css"/>
+    <style type="text/css">
+    	[v-clock]{
+    		display: none;
+    	}
+    	.reportManage{
+    		margin-top:30px;
+    		width: 100%
+    		margin:0 auto;
+    	}
+    	.reportManage .content{
+    		border: 1px solid #ddd;
+    		padding: 10px;
+    		position: inherit;
+    		color: #000;
+    		width: 80%;
+    		margin: 0 auto;
+
+    	}
+    	.reportManage>div.title{
+    		margin-left: 20px;
+	    	padding: 0 10px;
+		    font-size: 20px;
+		    font-weight: 300;
+		    line-height: 30px;
+		    text-align:center;
+    	}
+    	.reportManage table{
+    		width: 100%;
+		    border: 1px solid #ddd;
+		    margin-bottom: 30px;
+    	}
+    	.reportManage tr{
+    		height: 30px;
+    		line-height: 30px;
+    		text-align: center;
+    	}
+    	.reportManage tr.odd{
+    		
+    		background: #eee;
+    	}
+    </style>
+</head>
+<body>
+	
+<div id="app">
+	<fieldset class="layui-elem-field">
+    <div class="head">
+        <!--<p class="title">欢迎登录后台管理系统</p>-->
+        <p class="date">
+            <span id="date"></span>
+            <span id="prompt"></span>
+            <transition name="bounce">
+                <span v-if="show" id="userChName"></span>
+            </transition>
+        </p>
+        <div class="reportManage" style="">
+        	<div class="title">运营明细</div>
+        	<div class="content">
+        		<table border="" cellspacing="" cellpadding="" style="width: 100%">
+        		<tbody>
+        			<tr class="odd">
+        				<td>网站总会员数</td><td>网站有效会员</td><td>今日注册人数</td><td>今日代理注册</td>
+        			</tr>
+        			<tr class="even" v-if="!reportsObj">
+        				<td>--</td><td>--</td><td>--</td><td>--</td>
+        			</tr>
+        			<tr class="even" v-clock v-else>
+        				<td>{{reportsObj.totalTimes+"个"}}</td><td>{{reportsObj.effectiveTimes+"个"}}</td><td>{{reportsObj.registerTimes+"个"}}</td><td>{{reportsObj.registerProxyTimes+"个"}}</td>
+        			</tr>
+        		</tbody>
+        	</table>
+        	<table border="" cellspacing="" cellpadding="" style="width: 100%">
+        		<tbody>
+        			<tr class="odd">
+        				<td>今日注册首存</td><td>今日注册二存</td><td>今日存款次数</td><td>今日取款次数</td>
+        			</tr>
+        			<tr class="even" v-if="!reportsObj">
+        				<td>--</td><td>--</td><td>--</td><td>--</td>
+        			</tr>
+        			<tr class="even" v-clock v-else>
+        				<td>{{reportsObj.firstRechargeTimes+"个"}}</td><td>{{reportsObj.secondRechargeTimes+"个"}}</td><td>{{reportsObj.todayDepositTimes+"个"}}</td><td>{{reportsObj.todayWithdrawTimes+"个"}}</td>
+        			</tr>
+        		</tbody>
+        	</table>
+        	<table border="" cellspacing="" cellpadding="" style="width: 100%">
+        		<tbody>
+        			<tr class="odd">
+        				<td>今日存款赠送</td><td>今日代理返点</td><td>昨日会员反水</td>
+        			</tr>
+        			<tr class="even" v-if="!reportsObj">
+        				<td>--</td><td>--</td><td>--</td>
+        			</tr>
+        			<tr class="even" v-clock v-else>
+        				<td>{{reportsObj.pushRechargeCoin+"元"}}</td><td>{{reportsObj.proxyRebateCoin+"元"}}</td><td>{{reportsObj.totalUserRebateAmount+"元"}}</td>
+        			</tr>
+        		</tbody>
+        	</table>
+        	<!-- <table border="" cellspacing="" cellpadding="" style="width: 100%">
+        		<tbody>
+        			<tr class="odd">
+        				<td>棋牌代理余额</td><td>今日棋牌下注总额</td><td>昨日棋牌下注总额</td>
+        			</tr>
+        			<tr class="even" v-if="!reportsObj">
+        				<td>--</td><td>--</td><td>--</td>
+        			</tr>
+        			<tr class="even" v-clock v-else>
+        				<td>{{reportsObj.agentChessCardMoney+"元"}}</td>
+        				<td>{{reportsObj.todayChessCardAmount+"元"}}</td>
+        				<td>{{reportsObj.yesterDayChessCardAmount+"元"}}</td>
+        			</tr>
+        		</tbody>
+        	</table> -->
+        	<table border="" cellspacing="" cellpadding="" style="width: 100%;margin-bottom: 0;">
+        		<tbody>
+        			<tr class="odd">
+        				<td>系统彩总下注</td><td>数字彩总下注</td>
+        			</tr>
+        			<tr class="even" v-if="!reportsObj">
+        				<td>--</td><td>--</td>
+        			</tr>
+        			<tr class="even" v-clock v-else>
+        				<td>{{reportsObj.systemColorAmount+"元"}}</td><td>{{reportsObj.digitalColorAmount+"元"}}</td>
+        			</tr>
+        		</tbody>
+        	</table>
+        
+			</div>
+			<div>温馨提示：该运营报表统计存在10分钟的延迟</div>
+        </div>
+        <!--<p class="content">新的一周开始了，为梦想去奋斗吧！耶~</p>-->
+    </div>
+    </fieldset>
+</div>
+<script type="text/javascript" src="public/js/jquery.js"></script>
+<script type="text/javascript" src="public/js/security.js"></script>
+<script type="text/javascript" src="plugins/layui/layui.js"></script>
+<script type="text/javascript" src="public/js/send_request.js"></script>
+<script type='text/javascript' src='js/md5.js'></script>
+
+<script type="text/javascript" src="public/js/vue.min.js"></script>
+<script type="text/javascript">
+    let app = new Vue({
+        el:'#app',
+        data(){
+            return{
+                show:false,
+                reportsObj:"",
+            }
+        },
+        created(){
+            this.setDate_();
+            setTimeout(function () {
+                app.change();
+            },500)
+            
+            this.getData();
+        },
+        methods:{
+            setDate_(){
+                $('#userChName').html(localStorage.userChName + '!');
+                var str;
+                var date = new Date();
+                var year = date.getFullYear();
+                var month = date.getMonth() + 1;
+                var day = date.getDate();
+                var hours = date.getHours();
+                var min = date.getMinutes();
+                var second = date.getSeconds();
+                if (month < 10) {
+                    month = '0' + month;
+                }
+                if (day < 10) {
+                    day = '0' + day;
+                }
+                if (hours > 7 && hours < 12) {
+                    str = '上午好！';
+                } else if (hours >= 12 && hours < 18) {
+                    str = '下午好！';
+                } else if (hours >= 18 && hours < 23) {
+                    str = '晚上好！';
+                } else {
+                    str = '你是个加班狂';
+                }
+                var time = year + '-' + month + '-' + day;
+                $('#prompt').html(str);
+                $('#date').html(time);
+            },
+            changeFn(){
+                $('.content').css('left',0);
+            },
+            change(){
+                this.show = true;
+            },
+//          totalTimes：总会员数 
+//          effectiveTimes：有效会员数 
+//          registerTimes：今日注册人数 
+//          registerProxyTimes：今日代理注册人数 
+//          firstRechargeTimes：今日注册首存  
+//          secondRechargeTimes：今日注册二存 
+//          systemColorAmount：今日系统彩下注金额 
+//          digitalColorAmount：今日数字彩下注金额  
+//          todayDepositTimes：今日存款次数 
+//          todayWithdrawTimes：今日取款次数 
+//          pushRechargeCoin：今日存款赠送 
+//          proxyRebateCoin：今日代理返点 
+//          totalUserRebateAmount：昨日会员反水
+            getData:function(){//  get请求 
+            	let _this = this;
+				let data = {};
+				let obj_ = {
+					type: 'get',
+					data: data,
+					dataType: 'json',
+					url: '/reportManage/getHomeTodayReports',
+					success: function(data) {
+						console.log(data)
+						if(data.code == 200) {
+							_this.reportsObj = data.body;
+						} else {
+						}
+					},
+					error: function(msg) {
+						//console.log(msg);
+					}
+				};
+				base.sendRequest(obj_);
+            },
+        }
+    });
+</script>
+</body>
+</html>

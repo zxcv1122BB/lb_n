@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lb.sys.dao.PreferentialCardMapper">
+  <resultMap id="BaseResultMap" type="com.lb.activity.model.PreferentialCard">
+    <result column="batch" jdbcType="VARCHAR" property="batch" />
+    <result column="order_number" jdbcType="INTEGER" property="orderNumber" />
+    <result column="device" jdbcType="VARCHAR" property="device" />
+    <result column="vips" jdbcType="VARCHAR" property="vips" />
+    <result column="account" jdbcType="VARCHAR" property="account" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="money" jdbcType="INTEGER" property="money" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+    <result column="start_time" jdbcType="TIMESTAMP" property="startTime" />
+    <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="uid" jdbcType="INTEGER" property="uid" />
+  </resultMap>
+  <select id="queryPreferentialCard" parameterType="map" resultType="map">
+   SELECT
+		p.id,
+		p.batch,
+		p.order_number as orderNumber,
+		p.device,
+		p.vips,
+		p.account,
+		p.`password`,
+		p.money,
+		p.flag,
+		p.`status`,
+		p.start_time as startTime,
+		p.end_time as endTime,
+		p.update_time as updateTime,
+		p.create_time as createTime,
+		u.USER_NAME as userName
+	FROM
+		preferential_card AS p 
+	LEFT JOIN user_info u on u.UID=p.uid
+	where 1=1
+	  <if test="batch != null and batch!=''">
+        and  p.batch = #{batch}
+      </if>
+	  <if test="account != null and account !=''">
+        and  p.account = #{account}
+      </if>
+	  <if test="startTime != null and startTime !=''">
+        and  p.startTime <![CDATA[>=]]> #{startTime}
+      </if>
+	  <if test="endTime != null and endTime !=''">
+        and  p.endTime <![CDATA[<=]]> #{endTime}
+      </if>
+	  <if test="flag != null and flag !=''">
+        and  p.flag = #{flag}
+      </if>
+	  <if test="status != null and status !=''">
+        and  p.status = #{status}
+      </if>
+      ORDER BY create_time DESC
+  </select>
+  <select id="exportPreferentialCard" parameterType="map" resultType="com.lb.download.model.PreferentialCardRecord">
+   SELECT
+		p.batch,
+		p.order_number as orderNumber,
+		p.device,
+		p.vips,
+		p.account,
+		p.password,
+		p.money,
+		p.flag,
+		p.status,
+		p.start_time as startTime,
+		p.end_time as endTime,
+		p.update_time as updateTime,
+		p.create_time as createTime,
+		u.USER_NAME as userName
+	FROM
+		preferential_card AS p 
+	LEFT JOIN user_info u on u.UID=p.uid
+	where 1=1
+	  <if test="batch != null and batch!=''">
+        and  p.batch = #{batch}
+      </if>
+	  <if test="account != null and account !=''">
+        and  p.account = #{account}
+      </if>
+       <if test="startTime != null and startTime !=''">
+        and  p.startTime <![CDATA[>=]]> #{startTime}
+      </if>
+	  <if test="endTime != null and endTime !=''">
+        and  p.endTime <![CDATA[<=]]> #{endTime}
+      </if>
+	  <if test="flag != null and flag !=''">
+        and  p.flag = #{flag}
+      </if>
+	  <if test="status != null and status !=''">
+        and  p.status = #{status}
+      </if>
+      ORDER BY create_time DESC
+  </select>
+  <delete id="deletePreferentialCard" parameterType="int">
+    delete from preferential_card where id=#{id}
+  </delete>
+  <insert id="addPreferentialCard" parameterType="map" >
+    insert into preferential_card 
+    (
+	    batch, order_number,  
+      <if test="device != null and device != ''">
+        device,
+      </if>
+      <if test="vips != null and vips != ''">
+        vips,
+      </if>
+	    account,password,money,start_time,end_time, create_time
+     )
+    values
+    <foreach collection="passwordList"  separator=","  item="passwordMap" >
+	  (
+	     #{batch}, #{passwordMap.orderNumber},
+	      <if test="device != null and device != ''">
+	        #{device},
+	      </if>
+	      <if test="vips != null and vips != ''">
+	        #{vips},
+	      </if>
+	     #{passwordMap.account}, #{passwordMap.password}, 
+	     #{money},#{startTime},#{endTime}, now()
+      )
+	</foreach>
+  </insert>
+  <update id="updatePreferentialCard" parameterType="map">
+    update preferential_card
+    <set>
+      <if test="batch != null">
+        batch = #{batch},
+      </if>
+      <if test="orderNumber != null">
+        order_number = #{orderNumber},
+      </if>
+      <if test="device != null">
+        device = #{device},
+      </if>
+      <if test="vips != null">
+        vips = #{vips},
+      </if>
+      <if test="account != null">
+        account = #{account},
+      </if>
+      <if test="password != null">
+        password = #{password},
+      </if>
+      <if test="money != null">
+        money = #{money},
+      </if>
+      <if test="status != null">
+        status = #{status},
+      </if>
+      <if test="flag != null">
+        flag = #{flag},
+      </if>
+      <if test="startTime != null">
+        start_time = #{startTime},
+      </if>
+      <if test="endTime != null">
+        end_time = #{endTime},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime},
+      </if>
+        update_time = now(),
+      <if test="uid != null">
+        uid = #{uid},
+      </if>
+    </set>
+    where id=#{id}
+  </update>
+  <insert id="insert" parameterType="map">
+    insert into preferential_card
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="batch != null">
+        batch,
+      </if>
+      <if test="orderNumber != null">
+        order_number,
+      </if>
+      <if test="device != null">
+        device,
+      </if>
+      <if test="vips != null">
+        vips,
+      </if>
+      <if test="account != null">
+        account,
+      </if>
+      <if test="password != null">
+        password,
+      </if>
+      <if test="money != null">
+        money,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="startTime != null">
+        start_time,
+      </if>
+      <if test="endTime != null">
+        end_time,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="uid != null">
+        uid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="batch != null">
+        #{batch},
+      </if>
+      <if test="orderNumber != null">
+        #{orderNumber},
+      </if>
+      <if test="device != null">
+        #{device},
+      </if>
+      <if test="vips != null">
+        #{vips},
+      </if>
+      <if test="account != null">
+        #{account},
+      </if>
+      <if test="password != null">
+        #{password},
+      </if>
+      <if test="money != null">
+        #{money},
+      </if>
+      <if test="status != null">
+        #{status},
+      </if>
+      <if test="startTime != null">
+        #{startTime},
+      </if>
+      <if test="endTime != null">
+        #{endTime},
+      </if>
+      <if test="createTime != null">
+        #{createTime},
+      </if>
+      <if test="uid != null">
+        #{uid},
+      </if>
+    </trim>
+  </insert>
+  
+</mapper>

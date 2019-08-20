@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lb.sys.dao.PropertiesMapper" >
+  <select id="selectAll" resultType="map">
+   	select 
+   		`keys` as parent_key,
+   		child_node_keys as child_key,
+   		`values` as child_value
+   	from properties
+   	where status = 0 and find_in_set(`keys`,"payCompany,URL,fileupload,rsaConfig,DigitalRedisKey")
+   	order by `keys` asc
+  </select>
+</mapper>

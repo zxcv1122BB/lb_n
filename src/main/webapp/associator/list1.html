@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="../plugins/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="../public/css/fenye.css"/>
+    <link rel="stylesheet" href="css/list1.css"/>
+    <title>会员管理</title>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+        .layui-table-sort .layui-edge{
+            border-width: 7px;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <fieldset class="layui-elem-field">
+        <legend>会员列表</legend>
+        <!--搜索条件-->
+        <div class="search">
+            <form :action="exportUser+'/download/exportUserList'" method="post" id="form_">
+                <p>查询条件中的日期只针对会员注册日期进行查询</p>
+                <div class="col_1 ">
+                    <div>
+                        <div class="date">
+                            <input id="startDate" name="startTime" placeholder="开始时间" readonly /><!--导出用-->
+                            <i class="layui-icon icon">&#xe637;</i>
+                        </div>
+                    </div>
+                    <div class="btns">
+                        <a id="now" @click="now">今日</a>
+                        <a id="yes" @click="yes">昨日</a>
+                        <a id="week" @click="week">本周</a>
+                    </div>
+                    <div v-cloak>
+                        <input placeholder="会员帐号" name="username" type="text" v-model="store_username" @keyup="store_username=store_username.replace(/\s+/g,'')"/><!--导出用-->
+                        <select v-model="store_vipName" name="vipName"><!--导出用-->
+                            <option value="">所有等级</option>
+                            <option v-for="item in grade" :value="item.name" v-cloak>{{item.name}}</option>
+                        </select>
+                        <select v-model="store_keywordOption" name="keywordOption"><!--导出用-->
+                            <option v-for="item in names" :value="item.id" v-cloak>{{item.name}}</option>
+                        </select>
+                        <input placeholder="关键字" @keyup="store_keywordValue=store_keywordValue.replace(/\s+/g,'')" name="keywordValue" v-model="store_keywordValue" /><!--导出用-->
+                    </div>
+                    <div>
+                        <a class="layui-btn" @click="search">查询</a>
+                        <a class="layui-btn" @click="add">新增</a>
+                        <button class="layui-btn" @click="export1">导出</button>
+                    </div>
+                </div>
+                <div class="col_2">
+                    <div>
+                        <div class="date">
+                            <input id="endDate" name="endTime" placeholder="结束时间" readonly /><!--导出用-->
+                            <i class="layui-icon icon">&#xe637;</i>
+                        </div>
+                    </div>
+                    <div class="btns">
+                        <a id="lastWeek" @click="lastWeek">上周</a>
+                        <a id="month" @click="month">本月</a>
+                        <a id="lastMonth" @click="lastMonth">上月</a>
+                    </div>
+                    <div>
+                        <input placeholder="所属上级" name="parentName" type="text" @keyup="store_parentName=store_parentName.replace(/\s+/g,'')" v-model="store_parentName" /><!--导出用-->
+                        <!--<input placeholder="推荐人" type="text" v-model="store_referee" />&lt;!&ndash;导出用&ndash;&gt;-->
+                        <select v-model="store_rechargeSituation" name="rechargeSituation"><!--导出用-->
+                            <option value="">充值情况</option>
+                            <option value="1">有充值过</option>
+                            <option value="0">从未充值</option>
+                        </select>
+                        <input placeholder="帐户余额大于" name="coin" type="number" v-model="store_coin" /><!--导出用-->
+                        <input placeholder="最近多少天没登录" name="loginDays" type="number" v-model="store_loginDays" /><!--导出用-->
+
+                        <input type="hidden" name="X-Authorization" v-model="Authorization" /><!--导出用-->
+                    </div>
+                </div>
+            </form>
+        </div>
+        <!--列表内容-->
+        <div class="layui-field-box">
+            <table class="layui-table admin-table" v-cloak>
+                <thead>
+                <tr>
+                    <th style="width: 6%;">帐号</th>
+                    <th style="width: 5%;">代理</th>
+                    <!--<th style="width: 4%;">推荐人</th>-->
+                    <th style="width: 9%;">
+                        <div class="layui-table-cell">
+                            <span>余额</span>
+                            <span class="layui-table-sort layui-inline" style="height: 28px;">
+                                <i class="layui-edge layui-table-sort-asc changecolor" id="coin_sort0" @click="coin_sort0"></i>
+                                <i class="layui-edge layui-table-sort-desc changecolor" id="coin_sort1" @click="coin_sort1"></i>
+                            </span>
+                        </div>
+                    </th>
+                    <!--<th style="width: 4%">返点余额</th>-->
+                    <th style="width: 5%;">姓名</th>
+                    <th style="width: 4%;">等级</th>
+                    <th style="width: 11%;">
+                        <div class="layui-table-cell">
+                            <span>注册时间</span>
+                            <span class="layui-table-sort layui-inline" style="height: 28px;">
+                                <i class="layui-edge layui-table-sort-asc changecolor" id="time_sort0" @click="time_sort0"></i>
+                                <i class="layui-edge layui-table-sort-desc changecolor" id="time_sort1" @click="time_sort1"></i>
+                            </span>
+                        </div>
+                    </th>
+                    <th style="width: 9%;">最后登录ip</th>
+                    <th style="width: 11%;">最后登录时间</th>
+                    <th style="width: 7%;">最后登录地址</th>
+                    <!-- <th style="width: 6%;">
+                        <div class="layui-table-cell">
+                            <span>在线</span>
+                            <span class="layui-table-sort layui-inline" style="height: 28px;">
+                                <i class="layui-edge layui-table-sort-asc changecolor" id="online_sort0" @click="online_sort0"></i>
+                                <i class="layui-edge layui-table-sort-desc changecolor" id="online_sort1" @click="online_sort1"></i>
+                            </span>
+                        </div>
+                    </th> -->
+                    <th style="width: 6%;">
+                        <div class="layui-table-cell">
+                            <span>状态</span>
+                            <span class="layui-table-sort layui-inline" style="height: 28px;">
+                                <i class="layui-edge layui-table-sort-asc changecolor" id="state_sort0" @click="state_sort0"></i>
+                                <i class="layui-edge layui-table-sort-desc changecolor" id="state_sort1" @click="state_sort1"></i>
+                            </span>
+                        </div>
+                    </th>
+                    <th style="width: 6%;">
+                        <div class="layui-table-cell">
+                            <span>管理员</span>
+                        </div>
+                    </th>
+                    <th style="width: 6%;">查看</th>
+                    <th style="width: 7%;">操作</th>
+                    <th style="width: 3%;">备注</th>
+                </tr>
+                </thead>
+                <tbody id="content">
+                <tr v-if="datas.length==0">
+                    <td colspan="16">暂无数据</td>
+                </tr>
+                <tr v-else v-for="(item,index) in datas" v-cloak>
+                    <td :title="item.username" @click="detail(item.username,index)" 
+                    	style="cursor: pointer;color: blue;text-decoration: underline;
+                    	overflow:inherit;word-wrap:break-word;white-space:initial;" 
+                    	v-cloak >{{item.username}}</td>
+                    <td v-cloak :title="item.proxyName" style="overflow:inherit;word-wrap:break-word;white-space:initial;">
+                    	{{item.proxyName}}
+                    </td>
+                    <!--<td v-cloak :title="item.parentName">{{item.parentName}}</td>-->
+                    <td v-cloak :title="item.coin">{{item.coin}}</td>
+                    <!--<td v-cloak :title="item.agentCoin">{{item.agentCoin}}</td>-->
+                    <td v-cloak :title="item.fullName">{{item.fullName}}</td>
+                    <td v-cloak :title="item.vipName">{{item.vipName}}</td>
+                    <td v-cloak :title="item.regTime">{{item.regTime}}</td>
+                    <td>
+                        <p v-cloak :title="item.loginIp">{{item.loginIp}}</p>
+                    </td>
+                    <td>
+                        <p v-cloak :title="item.loginTime">{{item.loginTime}}</p>
+                    </td>
+                    <td v-cloak :title="item.loginAddress">{{item.loginAddress}}</td>
+                   <!--  <td v-if="item.onlineStatus==1">
+                        <span style="background-color: blue;color:white;padding: 4px;box-sizing: border-box;border-radius: 4px;">在线</span>
+                    </td>
+                    <td v-else>
+                        <span style="background-color: #ccc;padding: 4px;box-sizing: border-box;border-radius: 4px;">离线</span>
+                    </td> -->
+                    <td>
+                        <div class="layui-form">
+                            <div class="layui-form-item">
+                                <div class="layui-input-block" style="margin-left: 0;">
+                                    <div v-if="item.status==1" class="layui-unselect layui-form-switch layui-form-onswitch" :id="item.uid" @click="changeType(item.uid,item.status,item.username,item.onlineStatus,index)">
+                                        <em>正常</em>
+                                        <i></i>
+                                    </div>
+                                    <div v-else class="layui-unselect layui-form-switch" :id="item.uid" @click="changeType(item.uid,item.status,item.username,item.onlineStatus,index)">
+                                        <em>冻结</em>
+                                        <i></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="layui-form">
+                            <div class="layui-form-item">
+                                <div class="layui-input-block" style="margin-left: 0;">
+                                    <div v-if="item.chat_ADMIN==1" class="layui-unselect layui-form-switch layui-form-onswitch" :id="item.uid" @click="changeAdmin(item.uid,item.chat_ADMIN,item.username,item.onlineStatus,index)">
+                                        <em>是</em>
+                                        <i></i>
+                                    </div>
+                                    <div v-else class="layui-unselect layui-form-switch" :id="item.uid" @click="changeAdmin(item.uid,item.chat_ADMIN,item.username,item.onlineStatus,index)">
+                                        <em>否</em>
+                                        <i></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <a href="javascript:void (0)" id="zhangbian" style="color: blue;" @click="href1(item.username)">帐变</a>
+                        <a href="javascript:void (0)" style="color: blue;" @click="href2(item.username)">报表</a>
+                        <br />
+                        <a href="javascript:void (0)" style="color: blue;" @click="href3(item.username)">财务</a>
+                        <a href="javascript:void (0)" style="color: blue;" @click="href4(item.username)">概况</a>
+                    </td>
+                    <td>
+                        <button class="layui-btn layui-btn-mini" @click="edit(item)">修改信息</button>
+                        <button class="layui-btn layui-btn-mini" @click="editPass(item)">修改登录密码</button>
+                        <button class="layui-btn layui-btn-mini" @click="editMoney_Pass(item)">修改资金密码</button>
+                        <button class="layui-btn layui-btn-mini" @click="unlocked(item.username)" v-if="item.isLocking==1">解锁</button>
+                        <button class="layui-btn layui-btn-mini" @click="InviteCode(item)" v-if="item.agentGrade==1&&item.userType==1">邀请码管理</button>
+                    </td>
+                    <td v-cloak :title="item.remark" style="overflow:inherit;word-wrap:break-word;white-space:initial;">{{item.remark}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <!--页码设置-->
+        <div class="yema">
+            <!--页码左边-->
+            <div class="selectYema">
+                <p v-cloak>
+                    总共{{total}}条记录.每页显示
+                    <select v-model="pageNum">
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="200">200</option><option value="500">500</option>
+                    </select>
+                    条记录
+                </p>
+            </div>
+            <!--右边分页-->
+            <div id="fenye" style="text-align: right;"></div>
+        </div>
+    </fieldset>
+    <!--弹出会员信息详情框-->
+    <div id="personDetail" class="hide detail"></div>
+    <!--修改会员信息框-->
+    <div class="associator_msg">
+        <div>
+            <table class="layui-table">
+                <tr class="odd_row">
+                    <td style="text-align: right;" width="15%">登录帐号:</td>
+                    <td width="35%"><input class="layui-input" type="text" placeholder="帐号5-11位" v-model="zhanghao" readonly /></td>
+                    <td style="text-align: right;"  width="15%">指定代理:</td>
+                    <td style="position: relative;"  width="35%">
+                        <input class="layui-input" type="text" v-model="daili" @keyup="check_proxy" @blur="hide_" placeholder="不填则为原代理" readonly/>
+                        <ul class="check_2">
+                            <li v-for="item in dailis_" @click="select_proxy(item.id,item.name)" v-cloak>{{item.name}}</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td style="text-align: right;"  width="15%">会员姓名:</td>
+                    <td  width="35%"><input class="layui-input" type="text" v-model="name" placeholder="请输入会员姓名" /></td>
+                    <td  width="15%" style="text-align: right;">会员等级:</td>
+                    <td  width="35%">
+                        <select v-model="vip">
+                            <option :value="item.id" v-for="item in grade" v-cloak>{{item.name}}</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr class="odd_row">
+                    <td style="text-align: right;">手机号:</td>
+                    <td><input class="layui-input" type="text" v-model="iphone"   maxlength="11" placeholder="手机号号码" /></td>
+                    <td style="text-align: right;">微信号:</td>
+                    <td>
+                        <input class="layui-input" type="text" v-model="weixin" placeholder="微信号" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">邮箱:</td>
+                    <td><input class="layui-input" type="text" v-model="email" placeholder="邮箱" /></td>
+                    <td style="text-align: right;">LINE:</td>
+                    <td>
+                        <input class="layui-input" type="text" v-model="line" placeholder="line" />
+                    </td>
+                </tr>
+                <tr class="odd_row">
+                    <td style="text-align: right;">银行名称:</td>
+                    <td><input class="layui-input" type="text" v-model="rank" placeholder="请输入银行名称" /></td>
+                    <td style="text-align: right;">银行帐号:</td>
+                    <td>
+                        <input class="layui-input" type="text"  maxlength="26" v-model="rank_hao" placeholder="请输入银行帐号" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">开户分行:</td>
+                    <td><input class="layui-input" type="text" v-model="rank_address" placeholder="开户分行" /></td>
+                    <td style="text-align: right;">银行卡黑名单:</td>
+                    <td>
+                        <select v-model="rank_black">
+                            <option value="1">启用</option>
+                            <option value="2">停用</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr class="odd_row">
+                    <td style="text-align: right;">会员状态:</td>
+                    <td v-cloak style="text-align: left;">{{state==1?'启用':'停用'}}</td>
+                    <td style="text-align: right;">注册IP:</td>
+                    <td style="text-align: left;" v-cloak>{{reg_ip}}</td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">注册来源:</td>
+                    <td style="text-align: left;" v-cloak>{{channel==1?'PC':(channel==2?'WAP':(channel==3?'APP':(channel==4?'管理员添加':'其他')))}}</td>
+                    <td style="text-align: right;">注册系统:</td>
+                    <td style="text-align: left;" v-cloak>{{system}}</td>
+                </tr>
+                <tr class="odd_row">
+                    <td style="text-align: right;">所属上级:</td>
+                    <td colspan="3" style="text-align: left;" v-cloak>{{parents}}</td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">备注内容:</td>
+                    <td colspan="3">
+                        <textarea class="layui-textarea" style="min-height: 40px;" v-model="remark"></textarea>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <!--修改会员登录密码框-->
+    <div class="edit_pass">
+        <div>
+            <table class="layui-table">
+                <tr>
+                    <td style="text-align: right;" width="30%">登录帐号:</td>
+                    <td width="70%"><input class="layui-input" type="text" v-model="zhanghao1" readonly /></td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">新密码:</td>
+                    <td><input class="layui-input" type="password" v-model="pssword" /></td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">确认密码:</td>
+                    <td><input class="layui-input" type="password" v-model="rePssword" /></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <!--修改会员资金密码框-->
+    <div class="edit_Money_pass">
+        <div>
+            <table class="layui-table">
+                <tr>
+                    <td style="text-align: right;" width="30%">登录帐号:</td>
+                    <td width="70%"><input class="layui-input" type="text" v-model="zhanghao3" readonly /></td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">新密码:</td>
+                    <td><input class="layui-input" type="password" v-model="pssword3" /></td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">确认密码:</td>
+                    <td><input class="layui-input" type="password" v-model="rePssword3" /></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <!--新增会员弹出框-->
+    <div class="add">
+        <div>
+            <table class="layui-table">
+                <tr class="odd_row">
+                    <td style="text-align: right;" ><span class="bitian">*</span>登录帐号:</td>
+                    <td><input class="layui-input" type="text" placeholder="帐号5-11位,字母数字组合" v-model="zhanghao2" @change="check_username" /></td>
+                    <td style="text-align: right;">指定代理:</td>
+                    <td style="position: relative;">
+                        <input class="layui-input" type="text" v-model="daili2" @keyup="check_daili" @blur="hide" placeholder="不填默认系统代理" />
+                        <ul class="check">
+                            <li v-for="(item,index) in dailis" :id="item.id" @click="select_daili(item.id,item.name,index)" v-cloak>{{item.name}}</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr class="odd_row">
+                    <td style="text-align: right;">用户类型:</td>
+                    <td>
+                        <select v-model="userType">
+                            <option value="0" v-cloak>代理</option>
+                            <option value="1" v-cloak>会员</option>
+                            <option value="5" v-cloak>测试</option>
+                        </select>
+                    </td>
+                    <td style="text-align: right;">返点设置:</td>
+                    <td style="color: #999;overflow: hidden;">(代理返点在下方设置)</td>
+                </tr>
+                <tr class="odd_row">
+                    <td colspan="4">
+                        <div class="rebateList" v-for="(item,index) in rebateConfigList">
+                            <div class="titleName">{{item.codeName+":"}}</div>
+                            <div>
+                                <input @blur="check_rebate(index)"  type="number" :placeholder="'最大为'+item.rebate" v-model="rebateGameList[index]">
+                            </div>
+                        </div>
+                    </td>
+                    
+                </tr>
+                
+                <tr>
+                    <td style="text-align: right;"><span class="bitian">*</span>密码:</td>
+                    <td><input class="layui-input" type="password" v-model="password2" placeholder="密码6-16位" /></td>
+                    <td style="text-align: right;"><span class="bitian">*</span>确认密码:</td>
+                    <td><input class="layui-input" type="password" v-model="password2_" placeholder="再次输入新密码" /></td>
+                </tr>
+                <tr class="odd_row">
+                    <td style="text-align: right;"><span class="bitian">*</span>会员姓名:</td>
+                    <td><input class="layui-input" type="text" v-model="name2" placeholder="请输入会员姓名(2-10位)" /></td>
+                    <td style="text-align: right;"><span class="bitian">*</span>手机号:</td>
+                    <td><input class="layui-input" type="text" @change="check_iphone2" v-model="iphone2"  maxlength="11" placeholder="手机号号码" /></td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">邮箱:</td>
+                    <td><input class="layui-input" type="text" v-model="email2" placeholder="邮箱" /></td>
+                    <td style="text-align: right;">LINE:</td>
+                    <td><input class="layui-input" type="number" v-model="line2" placeholder="line" /></td>
+                </tr>
+                <tr class="odd_row">
+                    <td style="text-align: right;">微信号:</td>
+                    <td><input class="layui-input" type="text" v-model="weixin2" placeholder="微信号" /></td>
+                    <td style="text-align: right;">银行名称:</td>
+                    <td><input class="layui-input" type="text" v-model="rank2" placeholder="请输入银行名称" /></td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">银行帐号:</td>
+                    <td><input class="layui-input" type="text" v-model="rank_hao2"  maxlength="26" placeholder="请输入银行帐号" /></td>
+                    <td style="text-align: right;">开户分行:</td>
+                    <td><input class="layui-input" type="text" v-model="rank_address2" placeholder="开户分行" /></td>
+                </tr>
+                <tr class="odd_row">
+                    <td style="text-align: right;">会员等级:</td>
+                    <td>
+                        <select v-model="vip_">
+                            <option :value="item.id" v-for="item in grade" v-cloak>{{item.name}}</option>
+                        </select>
+                    </td>
+                    <td style="text-align: right;">会员状态:</td>
+                    <td>
+                        <select v-model="state_">
+                            <option value="1">启用</option>
+                            <option value="2">停用</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="inviteCode" style="display: none">
+        <div class="Type newTab">
+            <a :class="topStatus==0?'curr':''" @click="topStatus=0">邀请码添加</a>
+            <a :class="topStatus==1?'curr':''" @click="topStatus=1" >邀请码列表</a>
+        </div>
+        <div class="TabLi" v-if="topStatus==0">
+            <div>
+                <span>开户类型:</span>
+                <a href="javascript:;" :class="['khType',userType==0?'active':'']" @click="userType=0">代理</a>
+                <a href="javascript:;" :class="['khType',userType==1?'active':'']" @click="userType=1">玩家</a>
+            </div>
+            <div>
+                <ul class="edit">
+                    <li v-for="(item,index) in rebateConfigList">
+                        <span style="width:28%;">{{item.codeName+":"}}</span>
+                        <input style="width: 70%;" type="number"  min="0.0" step="0.1" :max="item.rebate" @blur="check_rebate(index)" :placeholder="'最大为'+item.rebate"  v-model="rebateGameList[index]" />
+                        <!--<span>(最高返奖率0.1~0.9)</span>-->
+                    </li>
+                </ul>
+            </div>
+            <a style="float:right;margin-right: 5%;" class="submitBtn" @click="creadtedCode">生成邀请码</a>
+        </div>
+        <div class="TabLi" v-show="topStatus==1">
+            <div style="padding-left: 30px;">
+                <a href="javascript:;" :class="['khType',userType==0?'active':'']" @click="userType=0">代理</a>
+                <a href="javascript:;" :class="['khType',userType==1?'active':'']" @click="userType=1">玩家</a>
+            </div>
+            <div>
+                <table width="100%" cellspacing="0" cellpadding="0" border="0" class="manageInvite" v-cloak>
+                    <tr>
+                        <th width="15%">邀请码</th>
+                        <th width="25%">注册链接</th>
+                        <th width="20%">短链接</th>
+                        <th width="20%">生成时间</th>
+                        <th width="10%">状态</th>
+                        <th width="10%">操作</th>
+                    </tr>
+                    <tr v-for="(item,index) in downList">
+                        <td>{{item.invitateCode}}</td>
+                        <td>{{item.invitateUrl}}</td>
+                        <td>{{item.shortUrl}}</td>
+                        <td>{{item.createDate}}</td>
+                        <td>{{"注册("+item.regNum+")"}}</td>
+                        <td>
+                            <a href="javascript:;" @click="showPopover(index)">详情</a>|
+                            <a href="javascript:;" @click="delItemRebate(item.invitateId,index)">删除</a>
+                        </td>
+                    </tr>
+                    <tr v-if="!downList||downList.length==0" v-cloak><td colspan="6">暂无数据</td></tr>
+                </table>
+            </div>
+            <div id="pages" style="text-align: right;"></div>
+        </div>
+    </div>
+
+
+
+    <div id="popover" style="display: none">
+        <div class="pro_content" >
+            <ul>
+                <li v-for="item in itemRebateList">
+                    <span class="gameName">{{item[0]}}</span>
+                    <input class="rebate" type="button" readonly :value="item[1]">
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/javascript" src="../public/js/jquery.js"></script>
+<script type="text/javascript" src="../public/js/laydate/laydate.js"></script>
+<script type="text/javascript" src="../public/js/jqPaginator.js"></script>
+<script type="text/javascript" src="../public/js/vue.min.js"></script>
+<script type="text/javascript" src="../public/js/send_request.js"></script>
+<script type="text/javascript" src="../public/js/security.js"></script>
+<script type="text/javascript" src="../public/js/mobile-detect.min.js"></script>
+<script type="text/javascript" src="../plugins/layui/layui.js"></script>
+<script type="text/javascript" src="js/md5.js"></script>
+<script type="text/javascript" src="js/list1.js"></script>
+</body>
+</html>

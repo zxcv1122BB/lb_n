@@ -1,0 +1,256 @@
+a{
+	text-decoration: underline;
+	cursor: pointer;
+}
+.tr{
+    display: flex;
+    flex-wrap:wrap;
+}
+/* .tr td{
+    flex: 20%;
+    padding:9px 15px;
+    border-bottom: transparent;
+} */
+.tr td {
+    /* flex: 20%; */
+    padding: 9px 15px;
+    border-bottom: transparent;
+    width: 25%;
+    float: left;
+    box-sizing: border-box;
+}
+.txt-nor td{
+    overflow: inherit;
+    word-break: normal;
+    text-overflow: inherit;
+}
+.select{
+    display: inline-block;
+    width: 75%;
+    padding-left: 10px;
+    height: 38px;
+    line-height: 38px;
+    border: 1px solid #e6e6e6;
+    border-radius: 2px;
+    color: #757575;
+}
+.select + div{
+    display: inline-block;
+    width: 75%;
+    right: 0;
+}
+.tr .td{
+    position: relative;
+    display: inline-block;
+    width: 75%;
+    right: 0;
+}
+.layui-layer-title+.table{
+    margin: 0;
+}
+.tr td span{
+    display: inline-block;
+    width: 20%;
+    height: 100%;
+    text-align: center;
+}
+.tr .kk{
+    /*flex: 1 1 45%;*/
+}
+
+.tbody a:link {
+    color:#000;text-decoration:underline;
+}
+.tbody a:visited {
+    color:#C10066;text-decoration:underline;
+}
+.buttonBox{
+    box-sizing: border-box;
+    text-align: right;
+}
+
+.tbody tr td:last-child{
+    border-right: transparent;
+}
+.isDan{
+	border: 1px solid #ba142b;
+	color: #ba142b;
+	line-height: 20px;
+	position: absolute;
+	left: 12px;
+	margin-top: 4px;
+}
+/*************************************************************/
+/*方案页面*/
+.schemeBox{
+    display: flex;
+    justify-content:center;
+    align-items:center;
+    text-align: center;
+}
+.schemeBox .ul-left{
+    flex: 1 1 20%;
+    border: 1px solid #e2e2e2;
+}
+.schemeBox .ul-left li{
+    border-bottom: 1px solid #e2e2e2;
+    height: 30px;
+    line-height: 30px;
+}
+
+.schemeBox .ul-left li:last-child {
+	border-bottom: 0
+}
+
+.schemeBox .ul-right {
+	flex: 1 1 80%;
+	border: 1px solid #e2e2e2;
+}
+
+.schemeBox .ul-right li {
+	border-bottom: 1px solid #e2e2e2;
+	height: 30px;
+	line-height: 30px;
+	text-align: left;
+	padding-left: 10px;
+}
+
+.schemeBox .ul-right li:last-child {
+	border-bottom: 0
+}
+
+.numberP {
+	box-sizing: border-box;
+	line-height: 25px;
+}
+
+/*寮瑰嚭灞傞��鍑烘寜閽�*/
+.popupsQuit {
+	position: absolute;
+	left: 100px;
+	top: 10px;
+}
+/*鐢ㄦ埛璇︽儏闈㈡澘*/
+.concealDiv {
+	display: none;
+}
+
+.concealDiv table {
+	width: 100%;
+	margin: 10px auto;
+}
+
+.odd_row {
+	background-color: #f9f9f9;
+}
+
+.concealDiv td {
+	padding: 5px 10px;
+	box-sizing: border-box;
+}
+
+.record-title {
+	height: 20px;
+	line-height: 20px;
+}
+/*璁㈠崟璇︽儏闈㈡澘*/
+.concealDivOrders {
+	display: none;
+}
+
+.concealDivOrders table {
+	width: 100%;
+	margin: 10px auto;
+}
+
+.concealDivOrders td {
+	padding: 5px 10px;
+	box-sizing: border-box;
+}
+.concealDivOrders tr td:nth-of-type(even){
+	text-align: left;
+}
+.concealDivOrders tr td:nth-of-type(odd){
+	text-align: right;
+}
+
+/*vue鍔ㄧ敾*/
+.transition-enter-active, .transition-leave-active {
+	transition: opacity .5s;
+}
+
+.transition-enter, .transition-leave-active {
+	opacity: 0;
+}
+
+.fade-enter-active, .fade-leave-active {
+	transition: opacity .5s;
+}
+
+.fade-enter, .fade-leave-active {
+	opacity: 0;
+}
+
+/*璁㈠崟姣旇禌璇︽儏*/
+.actionData {
+	display: none;
+}
+
+.actionData table {
+	width: 100%;
+	margin: 10px auto;
+}
+
+.actionData td {
+	padding: 5px 10px;
+	box-sizing: border-box;
+}
+/*中奖明细*/
+.winDetails{
+	display: none;
+	margin: 10px;
+	padding: 10px;
+}
+.winDetails em{
+	font-style: normal;
+}
+.winDetails li{
+	height: 20px;
+	line-height: 20px;
+}
+
+.hide {
+    display: none;
+    z-index: -1;
+}
+.btns{
+	display: inline-block;
+}
+.btns a {
+  display: inline-block;
+  height: 36px;
+  line-height: 36px;
+  padding: 0 18px;
+  border-radius: 2px;
+  cursor: pointer;
+  border: 1px solid #cccccc;
+  text-decoration: none;
+}
+.b_red {
+  color: #fff !important;
+  background-color: #009688 !important;
+}
+.titleMsg{
+	color: red;
+	padding: 8px 0;
+}
+.titleMsg span{
+	margin-right: 20px;
+}
+
+#conTable td, 
+#conTable th{
+	white-space: initial;
+	word-wrap: break-word;
+	/* width: 100px; */
+}

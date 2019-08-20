@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="../plugins/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="../public/css/fenye.css"/>
+    <link href="css/basketLive.css" rel="stylesheet"/>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+
+        .date {
+            display: inline-block;
+            position: relative;
+        }
+
+        .date > input {
+            height: 36px;
+            border: 1px solid #ccc;
+            text-indent: 10px;
+            border-radius: 5px;
+        }
+
+        .date > i {
+            position: absolute;
+            right: 5px;
+            top: 10px;
+        }
+        .footTitle .row {
+            margin-bottom: 5px;
+        }
+        .footTitle .col {
+            margin-right: 5px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+<div class="main">
+    <fieldset class="layui-elem-field">
+        <legend>竞彩篮球管理列表</legend>
+        <header>
+            <div class="footTitle">
+                <!--<select id="dateSelect" ></select>-->
+                <div class="row">
+                    <div class="date">
+                        <input id="startDate" name="startTime" placeholder="开始时间" readonly/>
+                        <i class="layui-icon icon">&#xe637;</i>
+                    </div>
+                    <div class="date">
+                        <input id="endDate" name="endTime" placeholder="结束时间" readonly/>
+                        <i class="layui-icon icon">&#xe637;</i>
+                    </div>
+                </div>
+               
+                <div class="row">
+                    <div class="col">
+
+
+                        开奖状态：
+                        <select v-model=matchStatus style="padding: 5px;height: 36px;border-radius: 5px;">
+                            <option value="">全部</option>
+                            <option value="0">已结束</option>
+                            <option value="1">未开始</option>
+                            <option value="2">半场</option>
+                            <option value="3">取消</option>
+                            <option value="4">弃赛/中断</option>
+                            <option value="5">延期</option>
+                            <option value="6">进行中</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                    队名：
+                    <input type="text" style="width: 120px;height:36px; border: 1px solid #999;border-radius: 5px;" placeholder="主队名或者客队名" v-model="league"
+                        id="league" />
+                    </div>
+                    <div class="col">
+                        赛事编号：
+                        <input type="text" style="width: 120px;height:36px; border: 1px solid #999;border-radius: 5px;" placeholder="赛事编号"
+                            v-model="matchId" />
+                    </div>
+                    <button class="layui-btn" @click="search">查询</button>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        此功能只查询未结束的比赛：
+                        <select style="padding: 5px;height: 36px;border-radius: 5px;" v-model="no_end">
+                            <option value="">请选择</option>
+                            <option value="1">一小时</option>
+                            <option value="2">二小时</option>
+                            <option value="3">三小时</option>
+                            <option value="4">四小时</option>
+                            <option value="5">五小时</option>
+                            <option value="6">六小时</option>
+                            <option value="7">七小时</option>
+                            <option value="8">八小时</option>
+                            <option value="9">九小时</option>
+                            <option value="10">十小时</option>
+                        </select>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </header>
+
+        <table class="layui-table main" v-cloak>
+            <thead>
+            <tr>
+                <th>赛事编号</th>
+                <th>场次</th>
+                <th>赛事</th>
+                <th>比赛时间</th>
+                <th>轮次</th>
+                <th>状态</th>
+                <th>(排名)主队</th>
+                <th>比分</th>
+                <th>客队(排名)</th>
+                <th>让分</th>
+                <th>预设分</th>
+                <th>彩果</th>
+                <th>赔率详情</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-if="datas.length==0">
+                <td colspan="14">暂无数据</td>
+            </tr>
+            <tr v-else v-for="(item,index) in datas">
+                <td v-cloak :title="item.matchId">{{item.matchId}}</td>
+                <td v-cloak>{{item.sessions}}</td>
+                <td v-cloak :title="item.leagueName">{{item.leagueName}}</td>
+                <td v-cloak :title="item.matchDate">{{item.matchDate}}</td>
+                <td v-cloak :title="item.groupName">{{item.groupName}}</td>
+                <td class="borRight" v-cloak>{{item.matchStatus==1?'未开赛':'已结束'}}</td>
+                <td v-cloak :title="item.homeTeamName">{{item.homeTeamName}}</td>
+                <td>
+                    <input type="number" v-model="item.aa" placeholder="-" pattern="^\d+:+\d$" onKeypress="keyUp()"/>:
+                    <input type="number" v-model="item.bb" placeholder="-" pattern="^\d+:+\d$" onKeypress="keyUp()"/>
+                </td>
+                <td class="borRight" v-cloak :title="item.awayTeamName">{{item.awayTeamName}}</td>
+                
+                <td><input type="text" v-model="item.letScore" placeholder="-" pattern="^(-|\+)?\d+$"
+                           onKeypress="keyUp()"/></td>
+                <td><input type="text" v-model="item.expectTotalScore" placeholder="-" pattern="^(-|\+)?\d+$"
+                           onKeypress="keyUp()" style="width: 80%" /></td>
+                <td class="borRight" v-cloak>{{item.matchResult==1?'胜':item.matchResult==0?'负':''}}</td>
+                <td class="btnMes borRight">
+                    <button class="layui-btn layui-btn-mini" @click="clickSele(item.matchId)">点击查看</button>
+                </td>
+                <td>
+                    <!--<button class="layui-btn layui-btn-mini" @click="changeFoot(item.matchId,item.halfCourtScore,item.letballNumber,item.courtScore)">确认修改</button>-->
+                    <button v-if="item.isManualModify==1||item.isManualModify==0&&odd[index].aa==''||item.isManualModify==0&&odd[index].bb==''" class="layui-btn layui-btn-mini"
+                            @click="changeFoot(item.matchId,item.letScore,item.expectTotalScore,item.aa,item.bb,index)">确认修改
+                    </button>
+                    <button v-else class="layui-btn-disabled layui-btn-mini">确认修改</button>
+                </td>
+                  
+            </tr>
+            </tbody>
+        </table>
+        <div class="analyMoreTable">
+            <form action="">
+                <table class="layui-table">
+                    <tr>
+                        <th>胜负</th>
+                        <td>主胜
+                            <div><input type="text" v-model="win.homeWin" name="winWin" placeholder="-"/></div>
+                        </td>
+                        <td>主负
+                            <div><input type="text" v-model="win.homeLose" name="winWin" placeholder="-"/></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>让分胜负</th>
+                        <td>主胜
+                            <div><input type="text" v-model="win.letscoreWin" name="winWin" placeholder="-"/></div>
+                        </td>
+                        <td>主负
+                            <div><input type="text" v-model="win.letscoreLose" name="winWin" placeholder="-"/></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>大小分</th>
+                        <td>大分
+                            <div><input type="text" v-model="win.bigScore" name="winWin" placeholder="-"/></div>
+                        </td>
+                        <td>小分
+                            <div><input type="text" v-model="win.smallScore" name="winDraw" placeholder="-"/></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th rowspan="3">胜分差</th>
+                        <td>1-5
+                            <div><input type="text" v-model="win.win15" name="win10" placeholder="-"/></div>
+                        </td>
+                        <td>6-10
+                            <div><input type="text" v-model="win.win610" name="win20" placeholder="-"/></div>
+                        </td>
+                        <td>11-15
+                            <div><input type="text" v-model="win.win1115" name="win21" placeholder="-"/></div>
+                        </td>
+                        <td>16-20
+                            <div><input type="text" v-model="win.win1620" name="win30" placeholder="-"/></div>
+                        </td>
+                        <td>21-25
+                            <div><input type="text" v-model="win.win2125" name="win31" placeholder="-"/></div>
+                        </td>
+                        <td>26+
+                            <div><input type="text" v-model="win.win26" name="win32" placeholder="-"/></div>
+                        </td>
+                    </tr>
+                </table>
+                <button style="position: absolute;right: 5px;" class="layui-btn" lay-submit="" lay-filter="formDemo"
+                        @click="changeFootWin(win.id,win.homeWin,win.homeLose,win.letscoreWin,win.letscoreLose,win.bigScore,win.smallScore,win.win15,win.win610,win.win1115,win.win1620,win.win2125,win.win26)">
+                    确定
+                </button>
+            </form>
+
+        </div>
+
+        <!--页码设置-->
+        <div class="yema">
+            <!--页码左边-->
+            <div class="selectYema">
+                <p v-cloak>
+                    总共{{total}}条记录.每页显示
+                    <select v-model="pageNum">
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="200">200</option><option value="500">500</option>
+                    </select>
+                    条记录
+                </p>
+            </div>
+            <!--右边分页-->
+            <div id="fenye" style="text-align: right;"></div>
+        </div>
+    </fieldset>
+</div>
+
+<script type="text/javascript" src="../public/js/jquery.js"></script>
+<script type="text/javascript" src="../public/js/laydate/laydate.js"></script>
+<script type="text/javascript" src="../public/js/jqPaginator.js"></script>
+<script type="text/javascript" src="../plugins/layui/layui.js"></script>
+<script type="text/javascript" src="../public/js/vue.min.js"></script>
+<!-- 用作参数的加密 -->
+<script type="text/javascript" src="../public/js/security.js"></script>
+<script type="text/javascript" src="../public/js/send_request.js"></script>
+<script type="text/javascript" src="js/basketLive.js"></script>
+</body>
+</html>

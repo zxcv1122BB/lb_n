@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lb.sys.dao.SysRegisterConfigureMapper">
+	<resultMap id="BaseResultMap" type="com.lb.sys.model.SysRegisterConfigure">
+
+		<id column="ID" jdbcType="BIGINT" property="id" />
+		<result column="attr_name" jdbcType="TINYINT" property="attrName" />
+		<result column="is_show" jdbcType="VARCHAR" property="isShow" />
+		<result column="is_input" jdbcType="TINYINT" property="isInput" />
+		<result column="is_check" jdbcType="BIGINT" property="isCheck" />
+		<result column="is_only" jdbcType="VARCHAR" property="isOnly" />
+		<result column="STATUS" jdbcType="TINYINT" property="status" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID,ATTR_NAME,IS_SHOW,IS_INPUT,IS_CHECK,IS_ONLY,STATUS
+	</sql>
+	<!-- 系统开关配置 -->
+	<select id="queryRegisterConfigure" resultMap="BaseResultMap">
+		select
+			ID,ATTR_NAME,IS_SHOW,IS_INPUT,IS_CHECK,IS_ONLY,STATUS
+		from SYS_REGISTER_OPTION
+		where register_type=#{type}
+	</select>
+	<update id="updateRegisterConfigure" parameterType="com.lb.sys.model.SysRegisterConfigure">
+		update SYS_REGISTER_OPTION set
+			<if test="isShow != null">
+				IS_SHOW=#{isShow},
+			</if>
+			<if test="isInput != null">
+				IS_INPUT=#{isInput},
+			</if>
+			<if test="isCheck != null">
+				IS_CHECK=#{isCheck},
+			</if>
+			<if test="isOnly != null">
+				IS_ONLY=#{isOnly},
+			</if>
+			status=1
+		where id=#{id}
+	</update>
+	
+</mapper>

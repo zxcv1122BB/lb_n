@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lb.sys.dao.PlayInfoMapper">
+<!-- 查询所有的支付平台信息-->
+	<select id="queryPayList" resultType="Map">
+		SELECT
+			*
+		FROM
+			`pay_info`
+		WHERE
+			del_status = 1 	ORDER BY pay_order+0 ASC
+	</select>
+	<!--查询该支付方式下的支付类型  -->
+	<select id="queryPaytypeByMethodid" parameterType="int" resultType="Map">
+		SELECT
+			*
+		FROM
+			`paytype_detail`
+		WHERE
+			method_id = #{methodid}
+		AND state = 1
+	</select>
+	<!--  添加支付信息,添加信息后,主键回显-->
+	<insert id="addPayInfo" parameterType="map" useGeneratedKeys="true" keyProperty="id">
+		 insert into pay_info
+		    <trim prefix="(" suffix=")" suffixOverrides="," >
+		      <if test="id != null" >
+		        id,
+		      </if>
+		      <if test="methname != null" >
+		        methname,
+		      </if>
+		      <if test="compname != null" >
+		        compname,
+		      </if>
+		      <if test="maxMoney != null" >
+		        max_money,
+		      </if>
+		      <if test="minMoney != null" >
+		        min_money,
+		      </if>
+		      <if test="shopName != null" >
+		        shop_name,
+		      </if>
+		      <if test="shopNum != null" >
+		        shop_num,
+		      </if>
+		      <if test="payAccount != null" >
+		        pay_account,
+		      </if>
+		      <if test="paymentMode != null" >
+		        payment_mode,
+		      </if>
+		      <if test="showMode != null" >
+		        show_mode,
+		      </if>
+		      <if test="paymentGateway != null" >
+		        payment_gateway,
+		      </if>
+		      <if test="payState != null" >
+		        pay_state,
+		      </if>
+		      <if test="isDefault != null" >
+		        is_default,
+		      </if>
+		      <if test="order != null and order!='' " >
+		        pay_order,
+		      </if>
+		      <if test="version != null" >
+		        version,
+		      </if>
+		      <if test="isshow != null" >
+		        isshow,
+		      </if>
+		      <if test="callurl != null" >
+		        callurl,
+		      </if>
+		      <if test="callbackurl != null" >
+		        callbackurl,
+		      </if>
+		      <if test="delStatus != null" >
+		        del_status,
+		      </if>
+		      <if test="appid != null" >
+		        APPID,
+		      </if>
+		      <if test="payicoUrl != null" >
+		        payico_url,
+		      </if>
+		      <if test="shopToken != null" >
+		        shop_token,
+		      </if>
+		      <if test="quitLevel != null" >
+		        quit_level,
+		      </if>
+		    </trim>
+		    <trim prefix="values (" suffix=")" suffixOverrides="," >
+		      <if test="id != null" >
+		        #{id},
+		      </if>
+		      <if test="methname != null" >
+		        #{methname},
+		      </if>
+		      <if test="compname != null" >
+		        #{compname},
+		      </if>
+		      <if test="maxMoney != null" >
+		        #{maxMoney},
+		      </if>
+		      <if test="minMoney != null" >
+		        #{minMoney},
+		      </if>
+		      <if test="shopName != null" >
+		        #{shopName},
+		      </if>
+		      <if test="shopNum != null" >
+		        #{shopNum},
+		      </if>
+		      <if test="payAccount != null" >
+		        #{payAccount},
+		      </if>
+		      <if test="paymentMode != null" >
+		        #{paymentMode},
+		      </if>
+		      <if test="showMode != null" >
+		        #{showMode},
+		      </if>
+		      <if test="paymentGateway != null" >
+		        #{paymentGateway},
+		      </if>
+		      <if test="payState != null" >
+		        #{payState},
+		      </if>
+		      <if test="isDefault != null" >
+		        #{isDefault},
+		      </if>
+		      <if test="order != null and order!=''" >
+		        #{order},
+		      </if>
+		      <if test="version != null" >
+		        #{version},
+		      </if>
+		      <if test="isshow != null" >
+		        #{isshow},
+		      </if>
+		      <if test="callurl != null" >
+		        #{callurl},
+		      </if>
+		      <if test="callbackurl != null" >
+		        #{callbackurl},
+		      </if>
+		      <if test="delStatus != null" >
+		        #{delStatus},
+		      </if>
+		      <if test="appid != null" >
+		        #{appid},
+		      </if>
+		      <if test="payicoUrl != null" >
+		        #{payicoUrl},
+		      </if>
+		      <if test="shopToken != null" >
+		        #{shopToken},
+		      </if>
+		      <if test="quitLevel != null" >
+		        #{quitLevel},
+		      </if>
+		    </trim>
+	</insert>
+	<!-- 删除支付方式 -->
+	<update id="deletePayInfo" parameterType="int">
+		UPDATE pay_info
+		SET del_status = 0
+		WHERE
+			id = #{id}
+	</update>
+	<!-- 更新支付信息 -->
+	<update id="updatePayInfo" parameterType="map">
+		update pay_info
+		<set>
+			<if test="methname != null">
+				methname = #{methname},
+			</if>
+			<if test="compname != null">
+				compname = #{compname},
+			</if>
+			<if test="maxMoney != null">
+				max_money = #{maxMoney},
+			</if>
+			<if test="minMoney != null">
+				min_money = #{minMoney},
+			</if>
+			<if test="shopName != null">
+				shop_name = #{shopName},
+			</if>
+			<if test="shopNum != null">
+				shop_num = #{shopNum},
+			</if>
+			<if test="payAccount != null">
+				pay_account = #{payAccount},
+			</if>
+			<if test="paymentMode != null">
+				payment_mode = #{paymentMode},
+			</if>
+			<if test="showMode != null">
+				show_mode = #{showMode},
+			</if>
+			<if test="paymentGateway != null">
+				payment_gateway = #{paymentGateway},
+			</if>
+			<if test="payState != null">
+				pay_state = #{payState},
+			</if>
+			<if test="isDefault != null">
+				is_default = #{isDefault},
+			</if>
+			<if test="order != null and order!=''">
+				pay_order = #{order},
+			</if>
+			<if test="version != null">
+				version = #{version},
+			</if>
+			<if test="isshow != null">
+				isshow = #{isshow},
+			</if>
+			<if test="callurl != null">
+				callurl = #{callurl},
+			</if>
+			<if test="callbackurl != null">
+				callbackurl = #{callbackurl},
+			</if>
+			<if test="delStatus != null">
+				del_status = #{delStatus},
+			</if>
+			<if test="shopToken != null">
+				shop_token = #{shopToken},
+			</if>
+			 <if test="appid != null" >
+	       	 	APPID = #{appid},
+	      </if>
+	      <if test="payicoUrl != null" >
+	       		payico_url= #{payicoUrl},
+	      </if>
+	       <if test="quitLevel != null" >
+		        quit_level = #{quitLevel}
+		   </if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	<!-- 添加支付方式下面的支付类型 -->
+	<update id="addPaytype" parameterType="map">
+		INSERT INTO paytype_detail (
+		<if test="type != null">
+			type,
+		</if>
+		<if test="typeid != null">
+			type_id,
+		</if>
+		<if test="methodid != null">
+			method_id,
+		</if>
+		<if test="payeTypename != null">
+			payeType_name,
+		</if>
+		<if test="info != null">
+			info
+		</if>
+		)
+		VALUES
+		(
+		<if test="type != null">
+			#{type},
+		</if>
+		<if test="typeid != null">
+			#{typeid},
+		</if>
+		<if test="methodid != null">
+			#{methodid},
+		</if>
+		<if test="payeTypename != null">
+			#{payeTypename},
+		</if>
+		<if test="info != null">
+			#{info}
+		</if>
+		)
+	</update>
+	<!-- 删除某个支付类型 -->
+	<update id="delPayTypeById" parameterType="int">
+		UPDATE paytype_detail
+		SET state = 0
+		WHERE
+			id = #{id}
+	</update>
+	<!-- 删除支付方式后,删除下面的支付类型 -->
+	<delete id="deletePayTypeList" parameterType="int">
+		UPDATE paytype_detail SET state = 0 WHERE method_id = #{methodid}
+	</delete>
+	<!-- 查询第三方支付名 -->
+	<select id="queryPayOnlineNames" resultType="Map">
+		SELECT id,methname,compname  from pay_info WHERE del_status = 1
+	</select>
+	<!-- 查询在线支付方式列表 -->
+	<select id="queryPayTypeList" resultType="map">
+		SELECT id,type,payeType_name FROM `paytype_detail` WHERE type_id = 0 AND state = 1
+	</select>
+	<!-- 更新下面的支付信息 -->
+	<update id="updatePaytypeDetailInfo" parameterType="map">
+		UPDATE paytype_detail
+		SET info = #{info}
+		WHERE
+			type_id = #{typeid}
+		AND method_id =#{methodid}
+		<if test="id !=null and id != 0 ">
+		AND id = #{id}
+		</if>
+	</update>
+</mapper>

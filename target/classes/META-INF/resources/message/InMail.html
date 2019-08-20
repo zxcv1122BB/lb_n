@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>站内信</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="../plugins/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="../public/css/fenye.css"/>
+    <link rel="stylesheet" href="css/communal.css">
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+
+        .ztree li span.button.switch.level1 {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div class="admin-main" id="app">
+    <fieldset class="layui-elem-field">
+        <legend>站内信</legend>
+        <div class="add_btn">
+            <button class="layui-btn" @click="send">添加</button>
+            <input type="text" placeholder="请输入标题" @keyup.13="search" class="layui-input search_input" @keyup="search_content=search_content.replace(/\s+/g,'')" v-model="search_content"
+                   style="width: 300px;"/>
+            <i class="layui-icon" @click="search">&#xe615;</i>
+        </div>
+        <div class="layui-field-box">
+            <form action="" class="">
+                <table class="layui-table admin-table">
+                    <thead>
+                    <tr>
+                        <th width="4%">编号</th>
+                        <th width="13%">标题</th>
+                        <th width="50%">内容</th>
+                        <th width="15%">发送日期</th>
+                        <th width="8%">发送方式</th>
+                        <th width="10%">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr  v-if="datas.length==0">
+                        <td colspan="6">暂无数据</td>
+                    </tr>
+                    <tr v-else v-for="(item,index) in datas">
+                        <td v-cloak>{{item.id}}</td>
+                        <td v-cloak :title="item.title">{{item.title}}</td>
+                        <td v-cloak :title="item.contents">{{item.contents}}</td>
+                        <td v-cloak>{{item.createDate}}</td>
+                        <td v-cloak>
+                            {{item.sendType==1?"单发":(item.sendType==2?"组发":"群发")}}
+                        </td>
+                        <td v-cloak>
+                            <a href="javascript:;" class="layui-btn layui-btn-mini"
+                               @click="messageLookOver(item.id,item.title,item.contents,item.createUser)">
+                                查看
+                            </a>
+                            <a href="javascript:;" class="layui-btn layui-btn-mini layui-btn-danger"
+                               @click="deleteList(item.id,index)" v-cloak>
+                                {{item.delStatus==1?"删除":"无权限"}}
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </form>
+        </div>
+        <!--页码设置-->
+        <div class="yema">
+            <!--页码左边-->
+            <div class="selectYema">
+                <p v-cloak>
+                    总共{{total}}条记录.每页显示
+                    <select v-model="page_num">
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="200">200</option><option value="500">500</option>
+                    </select>
+                    条记录
+                </p>
+            </div>
+            <!--右边分页-->
+            <div id="fenye" style="text-align: right;"></div>
+        </div>
+    </fieldset>
+
+    <!--点击添加按钮的添加弹出框-->
+    <div class="popAdd">
+        <div class="layui-form-item">
+            <label class="layui-form-label">标题</label>
+            <div class="layui-input-block">
+                <input type="text" placeholder="请输入标题" class="layui-input" v-model="addText" style="width: 80%;">
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">内容</label>
+            <div class="layui-input-block">
+                <textarea placeholder="请输入内容" class="layui-textarea" v-model="addContents" style="width: 80%;"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">类型</label>
+            <div class="layui-input-block">
+               <select v-model="userType">
+                   <option value="2">会员</option>
+                   <option value="1">代理</option>
+               </select>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">发送方式</label>
+            <div class="layui-input-block" v-if="userType==2">
+                <!--<p style="margin-bottom: 10px;">-->
+                    <!--<input type="radio" name="send" v-model="sendType" value="1" @click="sendUser" />单发-->
+                    <!--&lt;!&ndash;<button class="layui-btn layui-btn-mini" @click="sendUser">选择...</button>&ndash;&gt;-->
+                <!--</p>-->
+                <p style="margin-bottom: 10px;">
+                    <input type="radio" name="send" v-model="sendType" value="2" @click="sendGroup" />组发送
+                    <!--<button class="layui-btn layui-btn-mini" @click="sendGroup">选择组...</button>-->
+                </p>
+                <p style="margin-bottom: 10px;"><input type="radio" name="send" v-model="sendType" value="3" />群发</p>
+            </div>
+            <div class="layui-input-block" v-if="userType==1">
+                <p style="margin-bottom: 10px;"><input type="radio" name="send" v-model="sendType" value="3" />群发</p>
+            </div>
+        </div>
+        <!--<div class="layui-form-item">-->
+            <!--<label class="layui-form-label">显示人员</label>-->
+            <!--<div class="layui-input-block">-->
+                <!--<span id="firstName" v-for="item in member_userName">{{item}},</span>-->
+            <!--</div>-->
+        <!--</div>-->
+    </div>
+
+    <!--用户弹出窗 用户选择-默认隐藏-->
+    <div class="popPermission">
+        <div class="zTreeDemoBackground  zTreeBox">
+            <div class="add_btn layui-inline">
+                <input type="text" placeholder="请输入名称" class="layui-input search_input" v-model="search_inputUser"/>
+                <i class="layui-icon" @click="searchUser">&#xe615;</i>
+            </div>
+            <div class="layui-field-box">
+                <table class="layui-table">
+                    <thead>
+                    <tr>
+                        <th width="10%"><input type="checkbox" v-model="flag" @click="seleceAll"></th>
+                        <th width="50%">帐号</th>
+                        <th width="40%">真实名称</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="(item,index)  in zNodes">
+                        <td>
+                            <input type="checkbox" v-model="member" :value="item.uid" :id="item.uid">
+                            <!--<input type="checkbox" v-model="member" :value="item.uid" @click="keep_name(item.userName)" />-->
+                        </td>
+                        <td>
+                            <!--<label :for="item.uid">-->
+                            <!--{{item.userName}}-->
+                            <!--</label>-->
+                            {{item.username}}
+                        </td>
+                        <td>{{item.fullName}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="yema">
+                <!--页码左边-->
+                <!--<div class="selectYema">
+                    <p>
+                        总共{{total}}条记录.每页显示
+                        <select v-model="page_num">
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                            <option value="200">200</option><option value="500">500</option>
+                        </select>
+                        条记录
+                    </p>
+                </div>-->
+                <!--右边分页-->
+                <div id="fenyeA"></div>
+            </div>
+            <!--<div class="layui-form-item selectorButtonBox ">-->
+            <!--<button class="layui-btn layui-btn-mini" @click="confirm">确定</button>-->
+            <!--<button class="layui-btn layui-btn-mini layui-btn-primary" @click="shutA">取消</button>-->
+            <!--</div>-->
+        </div>
+    </div>
+
+    <!--选择vip组弹出窗-->
+    <div class="popZu">
+        <div>
+            <table class="layui-table">
+                <thead>
+                <tr>
+                    <th width="10%"><input type="checkbox" v-model="flag_zu" @click="selectAll_zu" /></th>
+                    <th width="10%">组id</th>
+                    <th width="80%">组名称</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="item in zGroups">
+                    <td><input type="checkbox" v-model="zu" :value="item.vipId" :id="item.vipId" /></td>
+                    <td v-cloak>{{item.vipId}}</td>
+                    <td v-cloak>{{item.vipName}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!--点击查看按钮的内容弹出框-->
+    <div class="popLook">
+        <div class="layui-form-item">
+            <label class="layui-form-label">标题</label>
+            <div class="layui-input-block">
+                <input type="text" placeholder="请输入标题" class="layui-input" readonly v-model="changeTitle" style="width: 80%;">
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">内容</label>
+            <div class="layui-input-block">
+                <textarea placeholder="请输入内容" class="layui-textarea" readonly v-model="changeContent" style="width: 80%;resize: none;"></textarea>
+            </div>
+        </div>
+        <!--<div class="layui-form-item">-->
+            <!--<label class="layui-form-label">发件人</label>-->
+            <!--<div class="layui-input-block">-->
+                <!--<input type="text" class="layui-input" v-model="addresser" style="width: 80%;" readonly>-->
+            <!--</div>-->
+        <!--</div>-->
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">接收人</label>
+            <div class="layui-input-block">
+                <input type="text" class="layui-input" v-model="receive" style="width: 80%;" readonly>
+            </div>
+        </div>
+    </div>
+
+    <!--提示是否删除-->
+    <div class="popDel">
+        <div>
+            <i class="layui-layer-ico layui-layer-ico3"></i>确定删除此信息？
+        </div>
+    </div>
+
+</div>
+<script type="text/javascript" src="../public/js/jquery.js"></script><!--引入JQ-->
+<script type="text/javascript" src="../public/js/jqPaginator.js"></script><!--引入分页-->
+<script type="text/javascript" src="../plugins/layui/layui.js"></script><!--引入模板js-->
+<script type="text/javascript" src="../public/js/vue.min.js"></script><!--引入vue-->
+<script type="text/javascript" src="../public/js/security.js"></script><!--引入加密-->
+<script type="text/javascript" src="../public/js/send_request.js"></script><!--引入封装ajax-->
+<script src="js/InMail.js"></script><!--引入本页面js-->
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="../plugins/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="../public/css/fenye.css"/>
+    <link rel="stylesheet" href="css/globalCount.css"/>
+    <title>后台管理-全局报表</title>
+    <style>
+    	[v-cloak]{
+    		display: none;
+    	}
+    </style>
+</head>
+<body>
+<div id="app">
+    <fieldset class="layui-elem-field">
+        <legend>全局报表</legend>
+        <!--搜索条件-->
+        <div class="search">
+             <div class="col_1">
+                 <div>
+                    <div class="date">
+                        <input id="startDate" placeholder="开始时间"/>
+                        <i class="layui-icon icon">&#xe637;</i>
+                    </div>
+                </div>
+                <div>
+                    <div class="date">
+                        <input id="endDate" placeholder="结束时间"/>
+                        <i class="layui-icon icon">&#xe637;</i>
+                    </div>
+                </div>
+                 <div>
+                     <input placeholder="用户账号查询"  type="text" id="username" 
+                    	 v-model="username" @keyup="username=username.replace(/\s+/g,'')"/>
+                 </div>
+                 
+                 <div class="btns">
+                    <a id="now" @click="now">今日</a>
+                    <a id="yes" @click="yes">昨日</a>
+                    <a id="week" @click="week">本周</a>
+                    <a id="lastWeek" @click="lastWeek">上周</a>
+                    <a id="thisMonth" @click="month" class="active" >本月</a>
+                    <a id="lastMonth" @click="lastMonth">上月</a>
+                 </div>
+                 <div>
+                     <a class="layui-btn" @click="search">查询</a>
+                     <a class="layui-btn" @click="reset">重置</a>
+                 </div> 
+             </div>
+        </div>
+        <!--列表内容-->
+        <div class="layui-field-box">
+            <table class="layui-table admin-table">
+                <tbody id="content">
+	                <tr>
+	                    <th >充值总计</th>
+	                    <th >提款总计</th>
+	                    <th >返点总计</th>
+	                    <th >人工加款</th>
+	                    <th >人工扣款</th>
+	                    <th >总投注人数</th>
+	                    <th >手动确认充值金额</th>
+	                </tr>
+	                <tr  v-cloak>
+	                    <td >{{(datas.depositSumCoin)?datas.depositSumCoin.toFixed(2):0.00}}</td>
+	                    <td >{{(datas.withdrawSumCoin)?datas.withdrawSumCoin.toFixed(2):0.00}}</td>
+	                    <td >{{(datas.rebateSumCoin)?datas.rebateSumCoin.toFixed(2):0.00}}</td>
+	                    <td >{{(datas.addMoneySumCoin)?datas.addMoneySumCoin.toFixed(2):0.00}}</td>
+	                    <td >{{(datas.subtractMoneySumCoin)?datas.subtractMoneySumCoin.toFixed(2):0.00}}</td>
+	                    <td >{{(datas.betSum)?datas.betSum:0}}</td>
+	                    <td >{{(datas.depositRgSumCoin)?datas.depositRgSumCoin.toFixed(2):0.00}}</td>
+	                </tr>
+                </tbody>
+            </table>
+            <table class="layui-table admin-table">
+                <tbody id="content">
+	                <tr>
+	                	<th >代理加款总计</th>
+	                	<th >代理扣款总计</th>
+	                    <th >人工赠送总计</th>
+	                    <th >充值赠送总计</th>
+	                    <th >注册赠送总计</th>
+	                    <th >活动赠送总计</th>
+	                    <th >投注返利总计</th>
+	                </tr>
+	                <tr  v-cloak>
+	                	<td >{{(datas.proxyAddMoneySumCoin)?datas.proxyAddMoneySumCoin.toFixed(2):0.00}}</td>
+	                	<td >{{(datas.proxySubtractMoneySumCoin)?datas.proxySubtractMoneySumCoin.toFixed(2):0.00}}</td>
+	                	<td >{{(datas.rgGivingMoneySumCoin)?datas.rgGivingMoneySumCoin.toFixed(2):0.00}}</td>
+	                    <td >{{(datas.depositGivingSumCoin)?datas.depositGivingSumCoin.toFixed(2):0.00}}</td>
+	                    <td >{{(datas.regGivingSumCoin)?datas.regGivingSumCoin.toFixed(2):0.00}}</td>
+	                    <td >{{(datas.bonusSumCoin)?datas.bonusSumCoin.toFixed(2):0.00}}</td>
+	                    <td >{{(datas.betRebate)?datas.betRebate.toFixed(2):0.00}}</td>
+	                </tr>
+                </tbody>
+            </table>
+            <table class="layui-table admin-table">
+                <tbody id="content">
+	                <tr>
+	                    <th>数字彩下注总计</th>
+	                    <th>数字彩派奖总计</th>
+	                    <th>数字彩输赢</th>
+	                    <th>全部输赢总计</th>
+	                </tr>
+	                <tr  v-cloak>
+	                    <td :style="datas.numSumCoin_color">
+	                    	{{(datas.numSumCoin)?datas.numSumCoin.toFixed(2):0.00}}</td>
+	                    
+	                    <td :style="datas.numPJSumCoin_color">
+	                    	{{(datas.numPJSumCoin)?datas.numPJSumCoin.toFixed(2):0.00}}</td>
+	                    <td :style="datas.numPJWin_color" >
+	                    		{{(datas.numPJWin)?datas.numPJWin.toFixed(2):0.00}}
+	                    </td>
+	                    <td :style="datas.sumWin_color" >
+	                    		{{(datas.sumWin)?datas.sumWin.toFixed(2):0.00}}
+	                    </td>
+	                </tr>
+                </tbody>
+            </table>
+         <p>输赢公式：投注-派奖=输赢(赢为正-红色,输为负-蓝色)</p>
+         <p>全部输赢公式：各类游戏输赢总和-(代理返点+活动赠送总计)=全部输赢</p>
+         <p>派奖总计： 因为派奖是定时执行任务，会出现时间临界点情况，当存在24点前的投注，会造成些许误差</p>
+         <p>统计比较消耗系统性能，统计结果将缓存1分钟</p>
+        </div>
+    </fieldset>
+</div>
+<script type="text/javascript" src="../public/js/jquery.js"></script>
+<script type="text/javascript" src="../public/js/laydate/laydate.js"></script>
+<script type="text/javascript" src="../public/js/jqPaginator.js"></script>
+<script type="text/javascript" src="../public/js/vue.min.js"></script>
+<script type="text/javascript" src="../public/js/send_request.js"></script>
+<script type="text/javascript" src="../public/js/security.js"></script>
+<script type="text/javascript" src="../plugins/layui/layui.js"></script>
+<script type="text/javascript" src="../js/md5.js"></script>
+<script type="text/javascript" src="js/globalCount.js"></script>
+</body>
+</html>

@@ -1,0 +1,147 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>后台管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="../plugins/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="../plugins/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../public/css/fenye.css"/>
+    <link rel="stylesheet" href="css/statistical.css" media="all">
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <fieldset class="layui-elem-field">
+        <legend>统计概况</legend>
+        <div class="sta_box">
+            <h4>盈亏统计</h4>
+            <div class="layui-container">
+                <div class="layui-row pb5">
+                    <div class="layui-col-md8">
+                        <div class="layui-row">
+                            <div class="layui-col-md6">
+                                <div id="today_pie" class="pie_box"></div>
+                            </div>
+                            <div class="layui-col-md6">
+                                <div id="yesterday_pie" class="pie_box"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md4 tz_rinfo">
+                        <div class="layui-row">
+                            <div class="layui-col-md6">
+                                <p class="sta_txt">今日投注</p>
+                                <p class="sta_num green" v-cloak>{{todayAmount}}</p>
+                                <p class="sta_txt">今日盈亏</p>
+                                <p class="sta_num purple" v-cloak>{{todayLoss}}</p>
+                            </div>
+                            <div class="layui-col-md6">
+                                <p class="sta_txt">昨日投注</p>
+                                <p class="sta_num green" v-cloak>{{yesterAmount}}</p>
+                                <p class="sta_txt">昨日盈亏</p>
+                                <p class="sta_num blue" v-cloak>{{yesterLoss}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="sta_table">
+                <table class="layui-table">
+                    <thead>
+                    <tr>
+                        <th>月份</th>
+                        <th>总投注额</th>
+                        <th>足彩盈亏</th>
+                    </tr>
+                    </thead>
+                    <tbody id="content">
+                    <template v-if="datas.length>0">
+                        <tr v-for="item in datas">
+                            <td v-cloak>{{item.years}}</td>
+                            <td v-cloak>{{item.amount}}</td>
+                            <td v-cloak>{{item.lossAmount}}</td>
+                        </tr>
+                    </template>
+                    <template v-else>
+                        <tr>
+                            <td colspan="3">无记录</td>
+                        </tr>
+                    </template>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="sta_box">
+            <h4>统计概况</h4>
+            <div class="sta_table">
+                <table class="layui-table">
+                    <thead>
+                    <tr>
+                        <th>用户总数</th>
+                        <th>代理总数</th>
+                        <th>会员总数</th>
+                        <th>昨日注册</th>
+                        <th>今日注册</th>
+                        <th>今日投注</th>
+                        <th>今日中奖</th>
+                        <th>今日充值</th>
+                        <th>今日提款</th>
+                        <th>今日返点</th>
+                        <th>余额总额</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td v-cloak>{{ob.userAllSum}}</td>
+                        <td v-cloak>{{ob.agencySum}}</td>
+                        <td v-cloak>{{ob.userSum}}</td>
+                        <td v-cloak>{{ob.yesTodayRegSum}}</td>
+                        <td v-cloak>{{ob.todayRegSum}}</td>
+                        <td v-cloak style="color: blue;">{{ob.TodayBetSum.toFixed(2)}}</td>
+                        <td v-cloak style="color: blue;">{{ob.TodayBonusSum.toFixed(2)}}</td>
+                        <td v-cloak style="color: blue;">{{ob.TodayDepositSum.toFixed(2)}}</td>
+                        <td v-cloak style="color: blue;">{{ob.TodayWithdrawSum.toFixed(2)}}</td>
+                        <td v-cloak style="color: blue;">{{ob.TodayFandianSum.toFixed(2)}}</td>
+                        <td v-cloak style="color: red;">{{ob.userCoinSum.toFixed(2)}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!--页码设置-->
+        <!--<div class="yema">
+            <div class="selectYema">
+                <p v-cloak>
+                    总共{{total}}条记录.每页显示
+                    <select v-model="pageNum">
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="200">200</option><option value="500">500</option>
+                    </select>
+                    条记录
+                </p>
+            </div>
+            <div id="fenye" style="text-align: right;"></div>
+        </div>-->
+    </fieldset>
+</div>
+<script type="text/javascript" src="../public/js/jquery.js"></script>
+<script type="text/javascript" src="../public/js/jqPaginator.js"></script>
+<script type="text/javascript" src="../public/js/vue.min.js"></script>
+<script type="text/javascript" src="../public/js/send_request.js"></script>
+<script type="text/javascript" src="../public/js/security.js"></script>
+<script type="text/javascript" src="../plugins/layui/layui.js"></script>
+<script type="text/javascript" src="js/highcharts.js"></script>
+<script type="text/javascript" src="js/statistical.js"></script>
+</body>
+</html>

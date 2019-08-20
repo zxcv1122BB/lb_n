@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" href="../plugins/layui/css/layui.css" />
+		<link rel="stylesheet" href="css/hbManage.css" />
+	</head>
+
+	<body>
+		<section>
+			<nav id='nav'><span class="active" data-index="1">红包管理</span><span data-index="2">抢红包记录</span></nav>
+			<div id="manage">
+				<!--頭部-->
+				<div class="clearfix"><span id="addHb" class="btn layui-btn">发红包</span>
+					<div class="right"><span id="refrech"><img class="img-responsive" src="img/refrech.png" alt="" /></span><span class="date"><i class='hide' id="selectDate" ></i><img class="img-responsive" src="img/date.png" alt="" /></span></div>
+				</div>
+				<!--主要內容列表加載-->
+				<div class="content">
+					<table>
+						<colgroup>
+							<col width="7%">
+							<col width="7%">
+							<col width="7%">
+							<col width="7%">
+							<col width="12%">
+							<col width="12%">
+							<col width="17%">
+							<col width="17%">
+							<col width="10%">
+							<col width="">
+						</colgroup>
+						<thead>
+							<tr>
+								<th><strong>红包标题</strong></th>
+								<th><strong>红包金额</strong></th>
+								<th><strong>红包个数</strong></th>
+								<th><strong>最小金额</strong></th>
+								<th><strong>限制当天IP次数</strong></th>
+								<th><strong>等级分层限制</strong></th>
+								<th><strong>开始时间</strong></th>
+								<th><strong>结束时间</strong></th>
+								<th><strong>状态</strong></th>
+								<th><strong>操作</strong></th>
+							</tr>
+						</thead>
+						<tbody id="dataList">
+						</tbody>
+					</table>
+				</div>
+				<!--發紅包彈出框-->
+				<div id="sendHb" class="hide clearfix">
+					<table>
+						<colgroup>
+							<col width="20%" />
+							<col width="25%" />
+							<col width="25%" />
+							<col width="30%" />
+						</colgroup>
+						<tbody>
+							<tr>
+								<td class="tr">标题：</td>
+								<td>
+									<label>
+										<input class="title" type="text" required/>
+									</label>
+								</td>
+								<td class="tr">金额：</td>
+								<td>
+									<label>
+										<input class="money" type="number" />
+									</label>
+								</td>
+							</tr>
+							<tr>
+								<td class="tr">个数：</td>
+								<td>
+									<label>
+										<input class="num" type="number" />
+									</label>
+								</td>
+								<td class="tr">最小金额：</td>
+								<td>
+									<label>
+										<input class="minMoney" type="number" />
+									</label>
+								</td>
+							</tr>
+							<tr>
+								<td class="tr">打码量倍数：</td>
+								<td>
+									<label>
+										<input class="multiple" type="number" />
+									</label>
+								</td>
+								<td class="tr">限制当天IP次数：</td>
+								<td>
+									<label>
+										<input class="IPnum" type="number" />
+									</label>
+								</td>
+							</tr>
+							<tr>
+								<td class="tr">开始时间：</td>
+								<td>
+									<label>
+										<input id="startTime" type="text" placeholder="开始时间" readonly/>
+										<i class="layui-icon icon">&#xe637;</i>
+									</label>
+								</td>
+								<td class="tr">结束时间：</td>
+								<td class="tl">
+									<label>
+										<input id="endTime" type="text" placeholder="结束时间" readonly/>
+										<i class="layui-icon icon">&#xe637;</i>
+									</label>
+								</td>
+							</tr>
+							<tr>
+								<td class="tr">限制使用等级：</td>
+								<td colspan="3">
+									<div class="checkboxList memberGrade">
+										
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<div class="errorMsg hide">
+						<span>数值不能为空,请输入有效字段</span>
+					</div>
+				</div>
+				<div id="paging_record" class="clearfix">
+					<div class="left">
+						总共<span class="sumRecord"></span>数据 每页显示
+						<select name="" class="pageNum">
+							<option value="50">50</option>
+							<option value="100">100</option>
+							<option value="200">200</option><option value="500">500</option>
+						</select>条数据
+					</div>
+
+				</div>
+				<div id="page">
+
+				</div>
+			</div>
+			<div id="record" class="hide">
+				<div class="clearfix">
+					<div class="labelList fl">
+						<label><input type="text" placeholder="会员账号" id="userName"/></label>
+						<label><input type="text" placeholder="开始日期" class="startTime" readonly/><i class="layui-icon icon">&#xe637;</i></label>
+						<label><input type="text" placeholder="结束日期" class="endTime" readonly/><i class="layui-icon icon">&#xe637;</i></label>
+						<span id="btn_select" class="btn b_blue layui-btn">查询</span>
+					</div>
+					<div class="right"><span id="recordRefrech"><img class="img-responsive" src="img/refrech.png" alt="" /></span><span class="date"><i class="hide selectDate" ></i><img class="img-responsive" src="img/date.png" alt="" /></span></div>
+				</div>
+				<div class="recordList">
+					<table>
+						<colgroup>
+							<col width="20%" />
+							<col width="20%" />
+							<col width="10%" />
+							<col width="20%" />
+							<col width="20%" />
+							<col width="10%" />
+							<!--<col width="10%" />-->
+							<!--<col width="" />-->
+						</colgroup>
+						<thead>
+							<tr>
+								<th><strong>用户名</strong></th>
+								<th><strong>红包名称</strong></th>
+								<th><strong>红包金额</strong></th>
+								<th><strong>创建时间</strong></th>
+								<th><strong>IP</strong></th>
+								<th><strong>状态</strong></th>
+								<!--<th><strong>状态</strong></th>-->
+								<!--<th><strong>操作</strong></th>-->
+							</tr>
+						</thead>
+						<tbody id="recordList">
+
+						</tbody>
+					</table>
+				</div>
+				<div id="paging_hbrecord" class="clearfix">
+					<div class="left">
+						总共<span class="sumRecord"></span>数据 每页显示
+						<select name="" class="pageNum">
+							<option value="50">50</option>
+							<option value="100">100</option>
+							<option value="200">200</option><option value="500">500</option>
+						</select>条数据
+					</div>
+
+				</div>
+				<div id="pageHbrecord">
+
+				</div>
+			</div>
+
+		</section>
+		<script src="../public/js/security.js"></script>
+		<script src="../public/js/send_request.js"></script>
+		<script src="../public/js/jquery.js"></script>
+		<script type="text/javascript" src="../public/js/jqPaginator.js"></script>
+		<script src="../public/js/laydate/laydate.js"></script>
+		<script src="../plugins/layui/layui.js"></script>
+		<script src="js/hbManage.js"></script>
+	</body>
+
+</html>

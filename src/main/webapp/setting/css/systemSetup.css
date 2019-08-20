@@ -1,0 +1,253 @@
+[v-cloak]{
+    display: none;
+}
+/*通用*/
+.allType{
+	margin: 20px 10px;
+	border: 1px solid #E3E3E3;
+}
+.allType li{
+	display: inline-block;
+	width: 120px;
+}
+td {
+  text-align: center;
+}
+
+.layui-table th {
+  text-align: center;
+}
+
+.on-offStyle .layui-form-item {
+  margin-bottom: 0;
+}
+
+/*网站基本设置-系统开关列表*/
+
+.systemSwitch {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  border: 1px solid #e2e2e2;
+}
+
+.systemSwitch .ul-left {
+  flex: 2;
+  border: 1px solid #e2e2e2;
+}
+
+.systemSwitch .ul-left li {
+  padding: 10px 0 10px 0;
+  border-bottom: 1px solid #e2e2e2;
+  height: 40px;
+  line-height: 40px;
+  text-align: left;
+}
+
+.systemSwitch .ul-left li:last-child {
+  border-bottom: 0
+}
+
+.systemSwitch .ul-center {
+  flex: 1;
+  border: 1px solid #e2e2e2;
+}
+
+.systemSwitch .ul-center li {
+  padding: 10px 0 10px 0;
+  border-bottom: 1px solid #e2e2e2;
+  height: 40px;
+  line-height: 40px;
+}
+
+.systemSwitch .ul-center li:last-child {
+  border-bottom: 0
+}
+
+.systemSwitch .ul-right {
+  flex: 8;
+  border: 1px solid #e2e2e2;
+}
+
+.systemSwitch .ul-right li {
+  padding: 10px 0 10px 0;
+  border-bottom: 1px solid #e2e2e2;
+  height: 40px;
+  line-height: 40px;
+}
+
+.systemSwitch .ul-right li:last-child {
+  border-bottom: 0
+}
+
+/*网站基本设置提交按钮*/
+
+.basic-submit {
+  margin-top: 15px;
+}
+
+/*维护原因输入框*/
+
+.ul-right .layui-form-item .reset-layui-form-item {
+  margin-left: 0;
+}
+
+.ul-right .layui-form-item .reset-layui-form-item .layui-input {
+  display: inline;
+  width: 85%;
+}
+
+.ul-right .GadHyA {
+  margin: 9px 0;
+  _margin: 7px 0;
+  padding: 0 0 0 5px;
+  width: 200px;
+  height: 24px;
+  vertical-align: middle;
+  border: 1px solid #3b8cff;
+  border: 1px solid rgba(58, 140, 255, .3);
+  background: #fff;
+  border-radius: 2px;
+}
+
+.ul-right .cfgcMGYw {
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+  vertical-align: middle;
+  margin: 8px 2px 8px 5px;
+  cursor: pointer;
+  position: relative;
+}
+
+.ul-right .cfgcMGYw .clV4Xd,
+.ul-right .woucMbry .clV4Xd {
+  top: 0;
+  left: 0;
+  font-size: 24px;
+  filter: alpha(opacity=30);
+  -moz-opacity: .3;
+  opacity: .3;
+  position: absolute;
+  top: -8px;
+  left: 1px;
+}
+
+.ul-right .cfgcMGYw .aqtMdgv,
+.ul-right .woucMbry .atMoQl {
+  position: absolute;
+  top: -6px;
+  left: 5px;
+  font-size: 12px;
+}
+
+.ul-right .woucMbry {
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+  vertical-align: middle;
+  margin: 8px 0;
+  cursor: pointer;
+  position: relative;
+}
+
+.ul-right .cfgcMGYw .clV4Xd,
+.ul-right .woucMbry .clV4Xd {
+  top: 0;
+  left: 0;
+  font-size: 24px;
+  filter: alpha(opacity=30);
+  -moz-opacity: .3;
+  opacity: .3;
+  position: absolute;
+  top: -8px;
+  left: 1px;
+}
+
+.ul-right .woucMbry .atMoQl {
+  left: 6px;
+}
+
+.ul-right .cfgcMGYw .aqtMdgv,
+.ul-right .woucMbry .atMoQl {
+  position: absolute;
+  top: -6px;
+  left: 5px;
+  font-size: 12px;
+}
+
+.ul-right .hide {
+  display: none;
+}
+
+.ul-right .show {
+  display: inline-block;
+}
+
+.deleteHint-enter-active,
+.deleteHint-leave-active {
+  transition: opacity .5s;
+}
+
+.deleteHint-enter,
+.deleteHint-leave-active {
+  opacity: 0;
+}
+
+.admin-main .addSucceed {
+  margin-left: -50px;
+  margin-top: -25px;
+  top: 50%;
+  left: 50%;
+  z-index: 100;
+  width: 150px;
+  min-width: 100px;
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+  background-color: rgba(0, 0, 0, .5);
+  color: #fff
+}
+
+a {
+  color: blue;
+  text-decoration-line: underline;
+}
+
+a:hover {
+  color: red;
+  text-decoration-line: underline;
+}
+
+/*閬僵灞傝缃�*/
+
+.zhezhao {
+  width: 100%;
+  height: 100%;
+  background-color: #000000;
+  opacity: 0.3;
+  z-index: 12;
+  top: 0;
+  left: 0;
+  position: fixed;
+  display: none;
+}
+
+/*鍙樻洿瑙掕壊寮瑰嚭灞�*/
+
+.sysListData {
+  display: none;
+}
+
+.sysListData>div.inner {
+  padding: 17px 20px;
+  box-sizing: border-box;
+  height: 500px;
+  /*overflow: scroll;*/
+}
+
+.sysListData-btn {
+  margin-top: 20px;
+  text-align: center;
+}

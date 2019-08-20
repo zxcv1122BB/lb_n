@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lb.sys.dao.SysConfigureMapper">
+	
+	<select id="getFfcConfigure" resultType="map">
+		SELECT 
+			configure,sys_config1,on_off
+		FROM sys_configure 
+		WHERE configure IN ("userNum", "returnAwardLessUserNum", "returnAwardMoreUserNum")
+		AND SYS_CONFIGURE.`status`=1
+	</select>
+	
+	<!-- 系统开关配置 -->
+	<select id="querySysConfigure" resultType="com.lb.sys.model.SysConfigure" parameterType="map">
+		select
+			id,configure,
+			configure_name as configureName,
+			on_off as onOff,
+			is_input as isInput,
+			data_type as dataType,
+			sys_config1 as sysConfig1,
+			sys_config2 as sysConfig2,
+			configure_explain as configureExplain,
+			status
+		from SYS_CONFIGURE
+		where module=#{moduleId}
+		AND SYS_CONFIGURE.`status`=1
+	</select>
+	<update id="updateSysConfigure" parameterType="com.lb.sys.model.SysConfigure">
+		update SYS_CONFIGURE
+		set 
+		<trim suffixOverrides=",">
+			<if test="onOff != null">
+				on_off=#{onOff},
+			</if>
+			<if test="sysConfig1 != null and sysConfig1 != ''">
+				sys_config1=#{sysConfig1},
+			</if>
+			<if test="sysConfig2 != null and sysConfig2 != ''">
+				sys_config2=#{sysConfig2},
+			</if>
+		</trim>
+		
+		where id=#{id}
+	</update>
+	<!-- 提款配置 -->
+	<select id="querySysConfigureModule" resultType="com.lb.sys.model.SysConfigureModule">
+		SELECT 
+		id,name,status
+		FROM sys_confugure_module
+		WHERE sys_confugure_module.`status`=1
+	</select>
+		<!--  -->
+	<select id="websiteSwitchStatus" resultType="java.lang.Byte">
+		SELECT 
+			status
+		FROM SYS_CONFIGURE where id=1
+	</select>
+	<select id="getOnlyConfigure" resultType="map" parameterType="map">
+		SELECT
+			configure,
+			configure_name as configureName,
+			sys_config1 as sysConfig1,
+			sys_config2 as sysConfig2
+		FROM sys_configure
+		WHERE configure=#{configure}
+		AND SYS_CONFIGURE.`status`=1 AND on_off = 1
+	</select>
+	
+	<select id="getSysByConfigure" parameterType="java.lang.String" resultType="map" >
+     	SELECT id,configure,configure_name,on_off,sys_config1,sys_config2 FROM sys_configure WHERE configure=#{configure} AND status = 1
+    </select>
+    
+    <select id="qryByConfigure" parameterType="String" resultType="map">
+    	SELECT * FROM ls.sys_configure WHERE `status`=1 AND configure=#{configure}    	
+    </select>
+    <update id="resetPrivateKey" parameterType="map">
+    	UPDATE ls.`properties` SET properties.values=#{privateKey},properties.`update_time`=NOW() WHERE properties.`keys`='rsaConfig' AND properties.`child_node_keys`='private_key'
+    </update>
+</mapper>

@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="../plugins/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="../public/css/fenye.css"/>
+    <link rel="stylesheet" href="css/proxylist.css"/>
+    <title>后台管理</title>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+<div id="app">
+    <fieldset class="layui-elem-field">
+        <legend>代理列表</legend>
+        <div class="container crl clearfix">
+            <div class="row clearfix">
+                <div class="col labelList" id="label_list">
+                    <select v-model="keywordOption" style="height: 36px;border-radius: 5px;">
+                        <option value="1">代理账号</option>
+                        <option value="2">所属上级</option>
+                        <option value="3">代理姓名</option>
+                    </select>
+                    <input style="font-size: inherit;" type="text" @keyup="keywordValue=keywordValue.replace(/\s+/g,'')" placeholder="关键字" v-model="keywordValue"
+                           id="keywordValue"/>
+                </div>
+                <div class="col btn">
+                    <button class="layui-btn" @click="search">查询</button>
+                    <!--<button class="layui-btn" @click="addProxy">添加</button>-->
+                </div>
+            </div>
+            <div class="layui-field-box">
+                <table class="layui-table">
+                    <thead>
+                    <tr>
+                        <th style="width: 6%;">登录账号</th>
+                        <th style="width: 7%;">代理姓名</th>
+                        <th style="width: 7%;">代理父级账号</th>
+                        <th style="width: 9%;">账号余额</th>
+                        <!--<th style="width: 5%">返点余额</th>-->
+                        <th style="width: 10%;">返点数</th>
+                        <th style="width: 11%;">注册时间</th>
+                        <th style="width: 11%;">最后登录时间</th>
+                        <th style="width: 13%;">最后登录地址</th>
+                        <th style="width: 5%;">状态</th>
+                        <th style="width: 10%;">层级</th>
+                        <!--<th style="width: 15%;">操作</th>-->
+                    </tr>
+                    </thead>
+                    <tbody id="content">
+                    <tr v-if="datas.length==0">
+                        <td colspan="10">暂无数据</td>
+                    </tr>
+                    <tr v-else v-for="item in datas">
+                        <td v-cloak>{{item.username}}</td>
+                        <td v-cloak>{{item.fullName}}</td>
+                        <td v-cloak>{{item.proxyName}}</td>
+                        <td v-cloak>{{item.coin}}</td>
+                        <!--<td v-cloak>{{item.agentCoin}}</td>-->
+                        <td v-cloak><a href="javascript:;" @click="proxy_rebate(item.rebateData)">点击查看返点数</a></td>
+                        <td v-cloak><div title="item.regTime">{{item.regTime?item.regTime:''}}</div></td>
+                        <td v-cloak><div  title="item.loginTime">{{item.loginTime?item.loginTime:''}}</div></td>
+                        <td v-cloak>
+	                        <p> {{item.lastLoginIp}}</p>
+	                        <p>{{item.loginAddress}}</p>
+                        </td>
+                        <!--<td v-if="item.uid==1">-->
+                        <td v-cloak>
+                            <span v-if="item.status == 1"> 正常</span>
+                            <span v-if="item.status == 2"> 冻结</span>
+                            <span v-if="item.status == 3"> 删除</span>
+                            <span v-else></span>
+                        </td>
+                        <!--<td v-else>-->
+                        <!--    <div class="layui-form">
+                                <div class="layui-form-item">
+                                    <div class="layui-input-block" style="margin-left: 0;">
+                                        <div v-if="item.status==1"
+                                             class="layui-unselect layui-form-switch layui-form-onswitch"
+                                             @click='changeType(item.uid,1)'>
+                                            <em>启用</em>
+                                            <i></i>
+                                        </div>
+                                        <div v-else class="layui-unselect layui-form-switch"
+                                             @click='changeType(item.uid,2)'>
+                                            <em>停用</em>
+                                            <i></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>-->
+                        <!--</td>-->
+                        <td>
+                            <button class="layui-btn layui-btn-mini" @click="nextInfo(2,item)">上一级</button>
+                            <button class="layui-btn layui-btn-mini" @click="nextInfo(1,item)">下一级</button>
+                        </td>
+                        <!--<td>-->
+                            <!--<button class="layui-btn layui-btn-mini" @click="editProxy(item)">修改信息</button>-->
+                            <!--<button class="layui-btn layui-btn-mini" @click="editPassword(item)">修改密码</button>-->
+                            <!--<button class="layui-btn layui-btn-mini" style="background-color: #FF5722;"-->
+                                    <!--@click='del(item.id)'>删除-->
+                            <!--</button>-->
+                        <!--</td>-->
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!--页码设置-->
+            <div class="yema">
+                <!--页码左边-->
+                <div class="selectYema">
+                    <p v-cloak>
+                        总共{{total}}条记录.每页显示
+                        <select v-model="pageNum">
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                            <option value="200">200</option><option value="500">500</option>
+                        </select>
+                        条记录
+                    </p>
+                </div>
+                <!--右边分页-->
+                <div id="fenye" style="text-align: right;"></div>
+            </div>
+        </div>
+    </fieldset>
+    <!--添加代理-->
+    <div class="addProxy">
+        <div>
+            <table class="layui-table">
+                <tr>
+                    <td style="text-align: right;"><span class="bitian">*</span>登录账号:</td>
+                    <td><input class="layui-input" type="text" v-model="obj1.loginAccount" @change="check_username" placeholder="请输入帐号6-12位"/></td>
+                    <td style="text-align: right;"><span class="bitian">*</span>代理密码:</td>
+                    <td><input class="layui-input" type="password" v-model="obj1.password" placeholder="请输入密码6-12位"/></td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">代理姓名:</td>
+                    <td><input class="layui-input" type="text" v-model="obj1.proxyName" placeholder="请输入代理姓名不超过20位"/></td>
+                    <td style="text-align: right;">提款密码:</td>
+                    <td><input class="layui-input" type="password" v-model="obj1.coinPssword" placeholder="请输入密码6-12位"/></td>
+
+                </tr>
+<!--                 <tr> -->
+<!--                     <td style="text-align: right;">父级代理:</td> -->
+<!--                     <td> -->
+<!--                         <select class="layui-input" v-model="obj1.pid"> -->
+   <!--                         <option v-for="item in proxyInfo" :value="item.pid" v-cloak>{{item.parentName}}</option>-->
+<!--                         </select> -->
+<!--                     </td> -->
+<!--                     <td style="text-align: right;">返点数:</td> -->
+<!--                     <td><input class="layui-input" type="number" v-model="obj1.rebateRatio" placeholder="返点数最高为12,小数点后两位有效"/> -->
+<!--                     </td> -->
+<!--                 </tr> -->
+                <tr>
+                    <td style="text-align: right;"><span class="bitian">*</span>QQ:</td>
+                    <td><input class="layui-input" type="number" v-model="obj1.qq" placeholder="请输入QQ"/></td>
+                    <td style="text-align: right;"><span class="bitian">*</span>邮箱:</td>
+                    <td><input class="layui-input"  @change="check_email(obj1.email)" type="text" v-model="obj1.email" placeholder="请输入邮箱"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;"><span class="bitian">*</span>手机号:</td>
+                    <td><input class="layui-input" type="number" v-model="obj1.tell" @change="check_iphone(obj1.tell)" placeholder="请输入手机号"/>
+                    </td>
+                    <td style="text-align: right;">代理状态:</td>
+                    <td>
+                        <select class="layui-input" v-model="obj1.status">
+                            <option value="2">禁用</option>
+                            <option value="1">启用</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">转账银行:</td>
+                    <td><input class="layui-input" type="text" v-model="obj1.bankName" placeholder="请输入银行名称"/></td>
+                    <td style="text-align: right;"><span class="bitian">*</span>银行账号:</td>
+                    <td><input class="layui-input" type="number" v-model="obj1.bankAccount" placeholder="请输入银行帐号"/></td>
+
+                </tr>
+                <tr>
+                    <td style="text-align: right;">开户分行:</td>
+                    <td><input class="layui-input" type="text" v-model="obj1.bankAddress" placeholder="请输入开户分行"/></td>
+ 					<td style="text-align: right;"><span class="bitian">*</span>返点数:</td> 
+                    <td><input class="layui-input" type="number" v-model="obj1.rebateRatio" placeholder="返点数最高为12,小数点后两位有效"/></td> 
+                </tr>
+            </table>
+        </div>
+    </div>
+    <!--修改会员密码框-->
+    <div class="editPassword" style="display:none">
+        <div>
+            <table class="layui-table">
+                <tr>
+                    <td style="text-align: right;">登录帐号:</td>
+                    <td><input class="layui-input" type="text" v-model="zhanghao1" readonly/></td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">密码类型:</td>
+                    <td>
+                        <select v-model="passwordType">
+                            <option value="1">账号密码</option>
+                            <option value="2">提款密码</option>
+                        </select>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td style="text-align: right;">新密码:</td>
+                    <td><input class="layui-input" type="password" v-model="pssword"/></td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">确认密码:</td>
+                    <td><input class="layui-input" type="password" v-model="rePssword"/></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <!--修改代理信息-->
+    <div class="editProxy">
+        <div>
+            <table class="layui-table">
+                <tr>
+                    <td style="text-align: right;">登录账号:</td>
+                    <td><input class="layui-input" type="text" v-model="obj.loginAccount" readonly/></td>
+                    <td style="text-align: right;">代理姓名:</td>
+                    <td><input class="layui-input" type="text" v-model="obj.proxyName" placeholder="请输入代理姓名不超过20位"/></td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">父级代理:</td>
+                    <td>
+                        <select class="layui-input" v-model="obj.pid">
+                            <option v-for="item in proxyInfo" :value="item.pid" v-cloak>{{item.parentName}}</option>
+                        </select>
+                    </td>
+                    <td style="text-align: right;"><span class="bitian">*</span>返点数(%):</td>
+                    <td><input class="layui-input" type="text" v-model="obj.rebateRatio" placeholder="返点数最高为12,小数点后两位有效"/></td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">QQ:</td>
+                    <td><input class="layui-input" type="number" v-model="obj.qq" placeholder="请输入QQ"/></td>
+                    <td style="text-align: right;">邮箱:</td>
+                    <td><input class="layui-input" type="text" v-model="obj.email" placeholder="请输入邮箱"  @change="check_email(obj.email)"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">手机号:</td>
+                    <td><input class="layui-input" type="number" v-model="obj.tell" placeholder="请输入手机号"/>
+                    </td>
+                    <td style="text-align: right;">代理状态:</td>
+                    <td v-if="obj.id==1">
+                        <select class="layui-input" v-model="obj.status">
+                            <option value="1">启用</option>
+                        </select>
+                    </td>
+                    <td v-else>
+                        <select class="layui-input" v-model="obj.status">
+                            <option value="2">禁用</option>
+                            <option value="1">启用</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">加扣款权限:</td>
+                    <td>
+                    	<select class="layui-input" v-model="obj.delStatus">
+                            <option value="0">禁用</option>
+                            <option value="1">启用</option>
+                        </select>
+                    </td>
+                    <td style="text-align: right;">转账银行:</td>
+                    <td><input class="layui-input" type="text" v-model="obj.bankName" placeholder="请输入银行名称"/></td>
+                </tr>
+                <tr>
+                   <td style="text-align: right;">银行账号:</td>
+                    <td><input class="layui-input" type="number" v-model="obj.bankAccount" placeholder="请输入银行帐号"/></td>
+                </tr>
+                <tr>
+                	<td style="text-align: right;">开户分行:</td>
+                    <td><input class="layui-input" type="text" v-model="obj.bankAddress" placeholder="请输入开户分行"/></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <!--提示是否删除-->
+    <div class="popDel">
+        <div>
+            <i class="layui-layer-ico layui-layer-ico3"></i>确定删除此信息？
+        </div>
+    </div>
+
+    <!--查看返点数-->
+    <div class="rebackRebeta" style="display: none">
+        <table width="100%">
+            <tr><th width="50%"  style="font-weight: 400;">彩种名称</th><th width="50%" style="font-weight: 400;">返点数</th></tr>
+            <tr v-for="item in Rebackdata">
+                <td style="text-align: center">{{item.split("#")[0]}}</td>
+                <td style="text-align: center">{{item.split("#")[1]}}</td>
+            </tr>
+        </table>
+
+    </div>
+
+</div>
+<script type="text/javascript" src="../public/js/jquery.js"></script>
+<script type="text/javascript" src="../public/js/jqPaginator.js"></script>
+<script type="text/javascript" src="../public/js/vue.min.js"></script>
+<script type="text/javascript" src="../public/js/send_request.js"></script>
+<script type="text/javascript" src="../public/js/security.js"></script>
+<script type="text/javascript" src="../plugins/layui/layui.js"></script>
+<script type="text/javascript" src="../js/md5.js"></script>
+<script type="text/javascript" src="js/proxylist.js"></script>
+</body>
+
+</html>

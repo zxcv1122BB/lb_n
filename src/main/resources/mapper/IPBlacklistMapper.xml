@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lb.sys.dao.IPBlacklistMapper" >
+<!--  插入ip黑名单中-->
+ <insert id="insertIPBlacklist" parameterType="map" >
+ 	INSERT INTO ip_blacklist (
+ 	<if test="ip != null">
+		ip,
+	</if>
+	<if test="states != null">
+		states,
+	</if>
+	<if test="createTime != null">
+		createTime,
+	</if>
+	<if test="updateTime != null">
+		updateTime,
+	</if>
+	<if test="remark != null">
+		remark
+	</if>
+	)
+	VALUES	(
+	<if test="ip != null">
+		#{ip},
+	</if>
+	<if test="states != null">
+		 #{states},
+	</if>
+	<if test="createTime != null">
+		#{createTime},
+	</if>
+	<if test="updateTime != null">
+		#{updateTime},
+	</if>
+	<if test="remark != null">
+		#{remark}
+	</if>
+		)
+ </insert>
+ <!-- 更新ip黑名单状态 -->
+ <update id="updateIpBlackList" parameterType="map">
+ 	UPDATE 
+ 		ip_blacklist
+	<set>
+		<if test="states !=null ">
+			states = #{states},
+		</if>
+		<if test="ip !=null and ip!='' ">
+			ip = #{ip},
+		</if>
+		<if test="updateTime !=null">
+			updateTime=#{updateTime},
+		</if>
+		<if test="remark !=null ">
+			remark = #{remark}
+		</if>
+	</set>
+	<where>
+		id = #{id}
+	</where>
+ </update>
+ <!-- 根据ip来查询 -->
+ <select id="selectBlackIpByIp" resultType="map" parameterType="String">
+ 	select id,states from ip_blacklist WHERE ip=#{ip};
+ </select>
+ <!-- 根据statue来查询 -->
+ <select id="selectBlackIpBystatusAndIP" resultType="map" parameterType="map">
+ 	SELECT
+		id,
+		ip,
+		states,
+		createTime,
+		updateTime,
+		remark
+	FROM
+		ip_blacklist
+	<where>
+		<if test="states != null and states != 3 ">
+			states = #{states}
+		</if>
+		<if test="ip != null and ip!= '' ">
+			and ip like CONCAT(CONCAT('%',#{ip,jdbcType=VARCHAR}),'%')
+		</if>
+	</where>
+ </select>
+ <select id="isExistIp" resultType="int" parameterType="map">
+ 	SELECT
+		count(*)
+	FROM
+		ip_blacklist
+	where 1=1
+		<if test="ip != null and ip!= '' ">
+			and ip=#{ip}
+		</if>
+	
+ </select>
+ <delete id="deleteBlacklistByid" parameterType="integer">
+ 	DELETE
+	FROM
+		ip_blacklist
+	WHERE
+		id = #{id};
+ </delete>
+ 
+</mapper>

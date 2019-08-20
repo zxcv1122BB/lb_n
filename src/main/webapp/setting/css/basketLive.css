@@ -1,0 +1,112 @@
+body {
+    margin: 0 auto;
+    padding: inherit;
+    font-size: 12px;
+    background: #ffffff;
+    color: #333333;
+    height: 100%;
+}
+
+ul li {
+    list-style-type: none;
+}
+
+em {
+    font-style: normal;
+}
+
+i {
+    font-style: normal;
+}
+
+a {
+    color: #333333;
+    text-decoration: none;
+}
+
+.clear {
+    clear: both;
+    height: 10px;
+}
+
+.main {
+    /*border: 1px solid #e0e0e0;*/
+    height: 100%;
+    margin-bottom: 0;
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+input[type=text] {
+    width: 30px;
+    text-align: center;
+    border: 1px solid #E3E3E3;
+    outline: none;
+}
+
+input[type=number] {
+    width: 30px;
+    text-align: center;
+    border: 1px solid #E3E3E3;
+    outline: none;
+}
+
+input[type=text]:focus {
+    border: 1px solid gray;
+    padding: 0px;
+}
+
+input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
+    -webkit-appearance: textfield;
+}
+
+.main tr:hover input[type=text] {
+    background: #F4F4F4;
+    box-shadow: none;
+}
+
+.footTitle {
+    margin: 10px;
+}
+
+/*主体界面*/
+.mian tr .events {
+    border-bottom: 1px solid #fff;
+}
+
+#dateSelect {
+    /* padding: 5px; */
+    border-radius: 5px;
+    /* font-size: 15px; */
+    height: 35px;
+}
+
+.main td i {
+    margin: 0 3px;
+}
+
+.main .host {
+    color: #1e50a2;
+    cursor: pointer;
+}
+
+.main .host:hover {
+    color: #ba2636;
+}
+
+.main .guest {
+    color: #1e50a2;
+    cursor: pointer;
+}
+
+.main .guest:hover {
+    color: #ba2636;
+}
+
+/*弹出详情*/
+.analyMoreTable {
+    display: none;
+}

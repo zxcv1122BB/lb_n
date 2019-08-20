@@ -1,0 +1,127 @@
+/*搜索框和添加按钮样式*/
+.add_btn>input {
+    display: inline-block;
+    width: 30%;
+}
+
+.add_btn>i {
+    font-size: 25px;
+    color: #ccc;
+    position: relative;
+    left: -40px;
+    top: 5px;
+    cursor: pointer;
+}
+#prompt3{
+    display: none;
+    color: darkred;
+}
+/*遮罩层设置*/
+.zhezhao{
+    width: 100%;
+    height: 100%;
+    background-color: #000000;
+    opacity: 0.3;
+    z-index: 12;
+    top: 0;
+    left: 0;
+    position: fixed;
+    display: none;
+}
+/*设置添加目录/子菜单弹出层*/
+.popAdd{
+    display: none;
+    z-index: 13;
+    width: 400px;
+    margin: 0 auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -250px;
+    margin-left: -200px;
+    background-color: white;
+}
+.popAdd>.title{
+    font-size: 18px;
+    background-color: #eae7e7;
+    line-height: 40px;
+    border-bottom: 1px solid #ccc;
+    text-indent: 10px;
+}
+.popAdd>.inner{
+    padding: 20px 10px 20px 0;
+    box-sizing: border-box;
+}
+.selectInner{
+    text-align: center;
+    position: relative;
+}
+.selectInner-button>p{
+    margin-bottom: 10px;
+}
+.selectInner-button>p>input{
+    display: inline-block;
+    width: 46%;
+}
+.menuList{
+    display: none;
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    margin-left: -116px;
+    z-index: 21;
+}
+#prompt2{   /*验证标题是否有重复的提示*/
+    display: none;
+    color: darkred;
+    position: absolute;
+    top: 20px;
+    font-size: 10px;
+}
+#prompt1{   /*添加菜单提交时的提示*/
+    display: none;
+    color: darkred;
+}
+/*设置修改信息弹出层*/
+.popEdit{
+    display: none;
+    z-index: 13;
+    width: 400px;
+    margin: 0 auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -250px;
+    margin-left: -200px;
+    background-color: white;
+}
+.popEdit>.title{
+    font-size: 18px;
+    background-color: #eae7e7;
+    line-height: 40px;
+    border-bottom: 1px solid #ccc;
+    text-indent: 10px;
+}
+.popEdit>.popEdit-inner{
+    padding: 20px 10px 20px 0;
+    box-sizing: border-box;
+}
+.popEdit-inner>p{
+    text-align: center;
+    margin-bottom: 10px;
+}
+.popEdit-inner>p>input{
+    width: 46%;
+    display: inline-block;
+}
+/*页码设置*/
+.yema{
+    overflow: hidden;
+}
+.selectYema{
+    float: left;
+    line-height: 78px;
+}
+.selectYema>p{
+    text-indent:20px;
+}

@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lb.sys.dao.LoginDetailMapper" >
+  <resultMap id="BaseResultMap" type="com.lb.sys.model.LoginDetail" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="username" property="username" jdbcType="VARCHAR" />
+    <result column="login_time" property="loginTime" jdbcType="TIMESTAMP" />
+    <result column="logout_time" property="logoutTime" jdbcType="TIMESTAMP" />
+    <result column="ip" property="ip" jdbcType="VARCHAR" />
+    <result column="channel" property="channel" jdbcType="VARCHAR" />
+    <result column="device" property="device" jdbcType="VARCHAR" />
+  </resultMap>
+  
+ <insert id="insertSelective" parameterType="map" useGeneratedKeys="true" keyProperty="id">
+    insert into login_detail
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="username != null" >
+        username,
+      </if>
+      <if test="loginTime != null" >
+        login_time,
+      </if>
+      <if test="logoutTime != null" >
+        logout_time,
+      </if>
+      <if test="ip != null" >
+        ip,
+      </if>
+      <if test="channel != null" >
+        channel,
+      </if>
+      <if test="device != null" >
+        device,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id},
+      </if>
+      <if test="username != null" >
+        #{username},
+      </if>
+      <if test="loginTime != null" >
+        #{loginTime},
+      </if>
+      <if test="logoutTime != null" >
+        #{logoutTime},
+      </if>
+      <if test="ip != null" >
+        #{ip},
+      </if>
+      <if test="channel != null" >
+        #{channel},
+      </if>
+      <if test="device != null" >
+        #{device},
+      </if>
+    </trim>
+  </insert>
+  <!-- 更新用户的退出时间 -->
+   <update id="updateByUsernameSelective" parameterType="map" >
+      update login_detail
+		SET logout_time = #{logoutTime},ip = #{ip}
+		where username = #{username}
+		and login_time = #{loginTime}
+  </update>
+  <!-- 获取充值人数 -->
+  <select id="getDepositCount" parameterType="integer" resultType="integer">
+    SELECT
+		SUM(IF((state = 1), 1, 0)) withdrawCount
+	 FROM
+		member_deposit
+  <!-- 	SELECT
+		sum(1)
+		FROM
+			(
+				SELECT
+					count(*)
+				FROM
+					member_deposit
+				WHERE
+					state = #{state}
+				GROUP BY
+					user_name
+			) temp -->
+  </select>
+  <!-- 获取提款人数 -->
+   <select id="getWithdrawCount" parameterType="integer" resultType="integer">
+	 <!--  SELECT
+		SUM(IF((state = 1 or state=2) and user_type=2, 1, 0)) withdrawCount
+	 FROM
+		member_withdraw -->
+		 SELECT
+		SUM(IF((state = 1 or state=2), 1, 0)) withdrawCount
+	 FROM
+		member_withdraw
+  </select>
+  <!-- 更新最后在线时间,最后在线ip -->
+  <update id="updateLastTimeAndIp" parameterType="map" >
+  	UPDATE user_info
+		SET LAST_LOGIN_IP = #{ip},
+			LAST_LOGIN_TIME = #{logoutTime}
+		WHERE
+			USER_NAME = #{username};
+  </update>
+  <!-- 更新用户的退出时间 -->
+  <update id="updateAgencyByUsernameSelective" parameterType="map" >
+    update proxy_login_detail
+    <set >
+      <if test="logoutTime != null" >
+        logout_time = #{logoutTime}
+      </if>
+    </set>
+   	 where username = #{username}
+      and login_time = #{loginTime}
+  </update>
+  <!-- 更新最后在线时间,最后在线ip -->
+  <update id="updateAgencyLastTimeAndIp" parameterType="map" >
+  	UPDATE proxy_info
+		SET last_login_ip = #{ip},
+			last_login_time = #{logoutTime}
+		WHERE
+			login_account = #{username};
+  </update>
+  <insert id="insertAgencySelective" parameterType="map" useGeneratedKeys="true" keyProperty="id">
+    insert into proxy_login_detail
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="username != null" >
+        username,
+      </if>
+      <if test="loginTime != null" >
+        login_time,
+      </if>
+      <if test="logoutTime != null" >
+        logout_time,
+      </if>
+      <if test="ip != null" >
+        ip,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id},
+      </if>
+      <if test="username != null" >
+        #{username},
+      </if>
+      <if test="loginTime != null" >
+        #{loginTime},
+      </if>
+      <if test="logoutTime != null" >
+        #{logoutTime},
+      </if>
+      <if test="ip != null" >
+        #{ip},
+      </if>
+    </trim>
+  </insert>
+</mapper>

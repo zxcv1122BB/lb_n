@@ -1,0 +1,183 @@
+.tr{
+    display: flex;
+    flex-wrap:wrap;
+}
+.tr td{
+    flex: 20%;
+    padding:9px 15px;
+    border-bottom: transparent;
+}
+.select{
+    display: inline-block;
+    width: 75%;
+    padding-left: 10px;
+    height: 38px;
+    line-height: 38px;
+    border: 1px solid #e6e6e6;
+    border-radius: 2px;
+    color: #757575;
+}
+.select + div{
+    display: inline-block;
+    width: 75%;
+    right: 0;
+}
+.tr .td{
+    position: relative;
+    display: inline-block;
+    width: 75%;
+    right: 0;
+}
+.layui-layer-title+.table{
+    margin: 0;
+}
+.tr td span{
+    display: inline-block;
+    width: 20%;
+    height: 100%;
+    text-align: center;
+}
+.tr .kk{
+    flex: 1 1 45%;
+}
+
+.tbody a:link {
+    color:#000;text-decoration:underline;
+}
+.tbody a:visited {
+    color:#C10066;text-decoration:underline;
+}
+.buttonBox{
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.tbody tr td:last-child{
+    border-right: transparent;
+}
+
+/*************************************************************/
+/*方案页面*/
+.schemeBox{
+    display: flex;
+    justify-content:center;
+    align-items:center;
+    text-align: center;
+}
+.schemeBox .ul-left{
+    flex: 1 1 20%;
+    border: 1px solid #e2e2e2;
+}
+.schemeBox .ul-left li{
+    border-bottom: 1px solid #e2e2e2;
+    height: 30px;
+    line-height: 30px;
+}
+
+.schemeBox .ul-left li:last-child{
+    border-bottom: 0
+}
+.schemeBox .ul-right{
+    flex: 1 1 80%;
+    border: 1px solid #e2e2e2;
+}
+.schemeBox .ul-right li{
+    border-bottom: 1px solid #e2e2e2;
+    height: 30px;
+    line-height: 30px;
+    text-align: left;
+    padding-left: 10px;
+}
+.schemeBox .ul-right li:last-child{
+    border-bottom: 0
+}
+
+.numberP{
+    box-sizing: border-box;
+    line-height: 25px;
+}
+
+/*弹出层退出按钮*/
+.popupsQuit{
+    position: absolute;
+    left: 100px;
+    top: 10px;
+}
+/*用户详情面板*/
+.concealDiv{
+	display: none;
+}
+
+.concealDiv table{
+    width: 100%;
+    margin: 10px auto;
+}
+.odd_row{
+    background-color: #f9f9f9;
+}
+.concealDiv td{
+    padding: 5px 10px;
+    box-sizing: border-box;
+}
+.record-title{
+    height: 20px;
+    line-height: 20px;
+}
+/*订单详情面板*/
+.concealDivOrders{
+    display: none;
+}
+.concealDivOrders table{
+    width: 100%;
+    margin: 10px auto;
+}
+.concealDivOrders td{
+    padding: 5px 10px;
+    box-sizing: border-box;
+}
+
+/*vue动画*/
+.transition-enter-active, .transition-leave-active {
+    transition: opacity .5s;
+}
+.transition-enter, .transition-leave-active {
+    opacity: 0;
+}
+.fade-enter-active, .fade-leave-active {
+    transition: opacity .5s;
+}
+.fade-enter, .fade-leave-active {
+    opacity: 0;
+}
+
+
+/*订单比赛详情*/
+.actionData{
+	display: none;
+	height: 500px;
+}
+.actionData table{
+    width: 100%;
+    margin: 10px auto;
+}
+.actionData td{
+    padding: 5px 10px;
+    box-sizing: border-box;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

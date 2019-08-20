@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="../plugins/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="../public/css/fenye.css"/>
+    <link rel="stylesheet" href="css/online_msg.css"/>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+    <title>在线会员</title>
+</head>
+<body>
+<div id="app">
+    <fieldset class="layui-elem-field">
+        <legend></legend>
+        <div class="search">
+            <select v-model="type_">
+                <option value="name">会员帐号</option>
+                <option value="proxy">所属上级</option>
+            </select>
+            <input type="text" placeholder="关键字" @keyup="search_input=search_input.replace(/\s+/g,'')" v-model="search_input" />
+            <button class="layui-btn" @click="search">搜索</button>
+        </div>
+        <div class="inner">
+            <table class="layui-table">
+                <thead>
+                <tr>
+                    <th width="7%">会员帐号</th>
+                    <th width="11%">帐号余额</th>
+                    <!--<th width="5%">返点余额</th>-->
+                    <th width="11%">会员姓名</th>
+                    <th width="14%">注册时间</th>
+                    <th width="10%">状态</th>
+                    <th width="10%">最后登录ip</th>
+                    <th width="12%">最后登录地址</th>
+                    <th width="13%">最后登录时间</th>
+                    <th width="12%">操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-if="datas.length==0">
+                    <td colspan="9">暂无数据</td>
+                </tr>
+                <tr v-else v-for="item in datas">
+                    <td @click="detail(item.USER_NAME)" style="cursor: pointer;color: blue;text-decoration: underline;" v-cloak>{{item.USER_NAME}}</td>
+                    <td v-cloak>{{item.COIN}}</td>
+                    <!--<td v-cloak>{{item.AGENT_COIN}}</td>-->
+                    <td v-cloak>{{item.NAME}}</td>
+                    <td v-cloak>{{item.REG_TIME}}</td>
+                    <td v-cloak>{{item.STATUS==1?'正常':'冻结'}}</td>
+                    <td v-cloak>{{item.LAST_LOGIN_IP}}</td>
+                    <td v-cloak>{{item.loginAddress}}</td>
+                    <td v-cloak>{{item.loginTime}}</td>
+                    <td v-cloak>
+                        <!--<button class="layui-btn layui-btn-mini" @click="edit(item)">修改</button>-->
+                        <button class="layui-btn layui-btn-mini" @click="force(item.USER_NAME)">强制下线</button>
+                        <!--<button class="layui-btn layui-btn-mini" @click="layer.msg('开发中，敬请期待！')">概况</button>-->
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <!--页码设置-->
+        <div class="yema">
+            <!--页码左边-->
+            <div class="selectYema">
+                <p v-cloak>
+                    总共{{total}}条记录.每页显示
+                    <select v-model="pageNum">
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="200">200</option><option value="500">500</option>
+                    </select>
+                    条记录
+                </p>
+            </div>
+            <!--右边分页-->
+            <div id="fenye" style="text-align: right;"></div>
+        </div>
+    </fieldset>
+    <!--弹出会员信息详情框-->
+    <div id="personDetail" class="hide detail"></div>
+    <!--<div class="detail">
+        <div>
+            <table class="layui-table">
+                <tr class="odd_row">
+                    <td style="text-align: right;">登录帐号:</td>
+                    <td style="text-align: left;" v-cloak>{{obj.username}}</td>
+                    <td style="text-align: right;">所属上级:</td>
+                    <td style="text-align: left;" v-cloak>{{obj.proxyName}}</td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">会员姓名:</td>
+                    <td style="text-align: left;" v-cloak>{{obj.fullName}}</td>-->
+    <!--<td style="text-align: right;">类别:</td>-->
+    <!--<td style="text-align: left;" v-cloak>{{obj.VIP_ID}}</td>-->
+    <!--</tr>
+    <tr class="odd_row">
+        <td style="text-align: right;">会员余额:</td>
+        <td style="text-align: left;" v-cloak>{{obj.coin}}</td>
+        <td style="text-align: right;">积分:</td>
+        <td style="text-align: left;" v-cloak>{{obj.score}}</td>
+    </tr>
+    <tr>
+        <td style="text-align: right;">打码量:</td>
+        <td style="text-align: left;" v-cloak>{{obj.betsum}}</td>
+        <td style="text-align: right;">出款所需打码量:</td>
+        <td style="text-align: left;" v-cloak>{{obj.withdrawNeedsum}}</td>
+    </tr>
+    <tr class="odd_row">
+        <td style="text-align: right;">状态:</td>
+        <td style="text-align: left;" v-cloak>{{obj.status==1?'正常':'冻结'}}</td>
+        <td style="text-align: right;">会员等级:</td>
+        <td style="text-align: left;" v-cloak>{{obj.vipName}}</td>
+    </tr>
+    <tr>
+        <td style="text-align: right;">手机号:</td>
+        <td style="text-align: left;" v-cloak>{{obj.phoneNumber}}</td>
+        <td style="text-align: right;">微信号:</td>
+        <td style="text-align: left;" v-cloak>{{obj.weixin}}</td>
+    </tr>
+    <tr class="odd_row">
+        <td style="text-align: right;">LINE</td>
+        <td style="text-align: left;" v-cloak>{{obj.line}}</td>
+        <td style="text-align: right;">邮箱:</td>
+        <td style="text-align: left;" v-cloak>{{obj.email}}</td>
+    </tr>
+    <tr>
+        <td style="text-align: right;">银行帐号:</td>
+        <td style="text-align: left;" v-cloak>{{obj.bankAccount}}</td>
+        <td style="text-align: right;">银行卡黑名单:</td>
+        <td style="text-align: left;" v-cloak>{{obj.bankBlackListStatus==1?'启用':'停用'}}</td>
+    </tr>
+    <tr class="odd_row">
+        <td style="text-align: right;">银行名称:</td>
+        <td style="text-align: left;" v-cloak>{{obj.bankName}}</td>
+        <td style="text-align: right;">开户分行:</td>
+        <td style="text-align: left;" v-cloak>{{obj.bankAddress}}</td>
+    </tr>
+    <tr>
+        <td style="text-align: right;">注册IP:</td>
+        <td style="text-align: left;" v-cloak>{{obj.regIp}}</td>
+        <td style="text-align: right;">注册来源:</td>
+        <td style="text-align: left;" v-cloak>{{obj.channel==1?'PC':(obj.channel==2?'WAP':(obj.channel==3?'APP':(obj.channel==4?'管理员添加':'其他')))}}</td>
+    </tr>
+    <tr class="odd_row">
+        <td style="text-align: right;">注册系统:</td>
+        <td style="text-align: left;" v-cloak>{{obj.regSystem}}</td>
+        <td style="text-align: right;">最后登录时间:</td>
+        <td style="text-align: left;" v-cloak>{{obj.loginTime}}</td>
+    </tr>
+    <tr>
+        <td style="text-align: right;">备注:</td>
+        <td colspan="3" style="text-align: left;" v-cloak>{{obj.remark}}</td>
+    </tr>
+</table>
+</div>
+</div>-->
+    <!--修改会员信息框-->
+    <div class="associator_msg">
+        <div>
+            <table class="layui-table">
+                <tr class="odd_row">
+                    <td style="text-align: right;">登录帐号:</td>
+                    <td><input class="layui-input" type="text" v-model="zhanghao" readonly /></td>
+                    <td style="text-align: right;">指定代理:</td>
+                    <td><input class="layui-input" type="text" v-model="daili" readonly /></td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">会员姓名:</td>
+                    <td><input class="layui-input" type="text" v-model="name" /></td>
+                    <td style="text-align: right;">会员等级:</td>
+                    <td>
+                        <select v-model="vip">
+                            <option :value="item.id" v-for="item in grade" v-cloak>{{item.name}}</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr class="odd_row">
+                    <td style="text-align: right;">手机号:</td>
+                    <td><input class="layui-input" type="number" v-model="iphone" /></td>
+                    <td style="text-align: right;">微信号:</td>
+                    <td>
+                        <input class="layui-input" type="text" v-model="weixin" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">邮箱:</td>
+                    <td><input class="layui-input" type="text" v-model="email" /></td>
+                    <td style="text-align: right;">LINE</td>
+                    <td>
+                        <input class="layui-input" type="text" v-model="line" />
+                    </td>
+                </tr>
+                <tr class="odd_row">
+                    <td style="text-align: right;">银行名称:</td>
+                    <td><input class="layui-input" type="text" v-model="rank" /></td>
+                    <td style="text-align: right;">银行帐号:</td>
+                    <td>
+                        <input class="layui-input" type="number" v-model="rank_hao" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">开户分行:</td>
+                    <td><input class="layui-input" type="text" v-model="rank_address" /></td>
+                    <td style="text-align: right;">银行卡黑名单:</td>
+                    <td>
+                        <select v-model="rank_black">
+                            <option value="1">启用</option>
+                            <option value="0">停用</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr class="odd_row">
+                    <td style="text-align: right;">会员状态:</td>
+                    <td style="text-align: left;" v-cloak>{{state==1?'启用':'停用'}}</td>
+                    <td style="text-align: right;">注册IP:</td>
+                    <td style="text-align: left;" v-cloak>{{reg_ip}}</td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">注册来源:</td>
+                    <td style="text-align: left;" v-cloak>{{channel==1?'PC':(channel==2?'WAP':(channel==3?'APP':(channel==4?'管理员添加':'其他')))}}</td>
+                    <td style="text-align: right;">注册系统:</td>
+                    <td style="text-align: left;" v-cloak>{{system}}</td>
+                </tr>
+                <tr class="odd_row">
+                    <td style="text-align: right;">所属上级:</td>
+                    <td colspan="3" style="text-align: left;" v-cloak>{{parents}}</td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">备注内容:</td>
+                    <td colspan="3">
+                        <textarea class="layui-textarea" style="min-height: 40px;" v-model="remark"></textarea>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <!--强制下线信息框-->
+    <div class="force">
+        <div>
+            <p>确定要强制下线吗？</p>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="../public/js/jquery.js"></script>
+<script type="text/javascript" src="../public/js/jqPaginator.js"></script>
+<script type="text/javascript" src="../public/js/vue.min.js"></script>
+<script type="text/javascript" src="../public/js/send_request.js"></script>
+<script type="text/javascript" src="../public/js/security.js"></script>
+<script type="text/javascript" src="../plugins/layui/layui.js"></script>
+<script type="text/javascript" src="js/online_msg.js"></script>
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>后台管理</title>
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="format-detection" content="telephone=no">
+
+		<link rel="stylesheet" href="../plugins/layui/css/layui.css" media="all" />
+		<link rel="stylesheet" href="../public/css/fenye.css" />
+		<link rel="stylesheet" href="css/betRebate.csss" />
+		<style>
+			[v-cloak] {
+				display: none;
+			}
+			.allType{
+				margin: 5px;
+				border: 1px solid #E3E3E3;
+			}
+			.allType li{
+				display: inline-block;
+				width: 120px;
+			}
+			.color{
+				display: none;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="admin-main" id="app">
+			<div class="add_btn" style="padding: 15px;">
+			</div>
+
+			<div class="row clearfix">
+			</div>
+
+			<fieldset class="layui-elem-field">
+				<legend>投注返利</legend>
+				<div class="layui-field-box layui-form">
+					<table class="layui-table admin-table">
+						<thead>
+							<tr>
+								<th style="width: 8%;">批次号</th>
+								<th style="width: 4%;">返利类型</th>
+								<th style="width: 5%;">返利彩种</th>
+								<th style="width: 5%;">投注总金额</th>
+								<th style="width: 5%;">返利总金额</th>
+								<th style="width: 4%;">订单总数</th>
+								<th style="width: 5%;">开始时间</th>
+								<th style="width: 5%;">结束时间</th>
+								<th style="width: 5%;">成功订单数</th>
+								<th style="width: 5%;">忽略订单数</th>
+								<th style="width: 5%;">失败订单数</th>
+								<th style="width: 6.7%;">不支持的订单数</th>
+								<th style="width: 10%;">备注信息</th>
+								<th style="width: 5%;">操作</th>
+							</tr>
+						</thead>
+						<tbody id="content">
+							<tr v-if="datas.length==0">
+								<td colspan="14">暂无数据</td>
+							</tr>
+							<tr v-for="(item,index) in datas" v-else v-cloak>
+								<td>{{item.batch_no == null ? '--' : item.batch_no}}</td>
+								<td>{{item.rebate_type == 1 ? '投注返利' :'投注返利回滚'}}</td>
+								<td>
+									<a style="text-decoration: underline;color: blue;cursor: pointer;" @click="selectColor(index)">返利彩种</a>
+								</td>
+								<td>{{item.effect_bet == null ? '--':item.effect_bet }}</td>
+								<td>{{item.total_rebate}}</td>
+								<td>{{item.total_order}}</td>
+								<td>{{item.start_time == null ? '--':item.start_time.substring(5,16)}}</td>
+								<td>{{item.end_time == null ? '--':item.end_time.substring(5,16)}}</td>
+								<td>{{item.success_num==null ? '--':item.success_num}}</td>
+								<td>{{item.ignore_num}}</td>
+								<td>{{item.error_num}}</td>
+								<td>{{item.noSupport_num}}</td>
+								<td>{{item.info==null ? '--' : item.info}}</td>
+								<td>
+									<a class="layui-btn layui-btn-mini" @click="clickBack(item.batch_no,item.rebate_type)" v-if="item.rebate_type==1">回滚</a>
+									<a class="layui-btn layui-btn-mini" @click="clickBack(item.batch_no,item.rebate_type)" v-else>返利</a>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<!--分页页码设置-->
+
+				<!--页码设置-->
+				<div class="yema">
+					<!--页码左边-->
+					<div class="selectYema" v-cloak="">
+						<p>
+							总共{{total}}条记录.每页显示
+							<select v-model="pageNum">
+								<option value="50">50</option>
+								<option value="100">100</option>
+								<option value="200">200</option>
+								<option value="500">500</option>
+							</select>
+							条记录
+						</p>
+					</div>
+					<!--右边分页-->
+					<div id="fenye" style="text-align: right;"></div>
+				</div>
+				<div class="color">
+					<ul class="allType">
+						<li v-for="item in gameType">
+							<label for="item.gameID">
+							<input type="checkbox" :id="item.gameID" :value="item.gameID" disabled="disabled" v-model="color">
+							<label>{{item.gameName}}</label>
+							</label>
+						</li>
+					</ul>
+				</div>
+			</fieldset>
+		</div>
+
+		<script type="text/javascript" src="../public/js/jquery.js"></script>
+		<script type="text/javascript" src="../public/js/jqPaginator.js"></script>
+		<script type="text/javascript" src="../plugins/layui/layui.js"></script>
+		<script type="text/javascript" src="../public/js/vue.min.js"></script>
+		<!-- 用作参数的加密 -->
+		<script type="text/javascript" src="../public/js/security.js"></script>
+		<script type="text/javascript" src="../public/js/send_request.js"></script>
+		<script src="../finance/js/laydate/laydate.js"></script>
+		<script type="text/javascript" src="js/betRebate.js"></script>
+	</body>
+
+</html>

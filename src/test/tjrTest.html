@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>登录</title>
+<link rel="stylesheet" href="/css/layui.css" media="all" />
+<link rel="stylesheet" href="/css/login.css" />
+<script type="text/javascript" src="/js/jquery.js"></script>
+<script type="text/javascript" src="/js/security.js"></script>
+<script type="text/javascript" src="/js/layui.js"></script>
+</head>
+
+<body class="beg-login-bg">
+	<div class="beg-login-box">
+		<header>
+			<h1>贲贲堂后台登录</h1>
+		</header>
+		<div class="beg-login-main">
+			<div class="layui-form" id="login">
+				<input name="__RequestVerificationToken" type="hidden"
+					value="fkfh8D89BFqTdrE2iiSdG_L781RSRtdWOH411poVUWhxzA5MzI8es07g6KPYQh9Log-xf84pIR2RIAEkOokZL3Ee3UKmX0Jc8bW8jOdhqo81" />
+				<div class="layui-form-item">
+					<label class="beg-login-icon"> <i class="layui-icon">&#xe612;</i>
+					</label> <input type="text" name="userName" lay-verify="userName"
+						autocomplete="off" placeholder="这里输入登录名" class="layui-input">
+				</div>
+				<div class="layui-form-item">
+					<label class="beg-login-icon"> <i class="layui-icon">&#xe642;</i>
+					</label> <input type="password" name="userPassword" lay-verify="password"
+						autocomplete="off" placeholder="这里输入密码" class="layui-input">
+				</div>
+				<div class="layui-form-item">
+					<div class="beg-pull-left beg-login-remember">
+						<label>记住帐号？</label> <input type="checkbox" name="rememberMe"
+							value="true" lay-skin="switch" checked title="记住帐号">
+					</div>
+					<div>
+						<input type="text" name="verifycode" id="verifycode" size="10" />请输入验证码
+						<img src="/code/image" id="verifycodeImage" />
+					</div>
+					<div class="beg-pull-right">
+						<button class="layui-btn layui-btn-primary" id="btn">
+							<i class="layui-icon">&#xe650;</i> 登录
+						</button>
+					</div>
+					<div class="beg-clear"></div>
+				</div>
+			</div>
+		</div>
+		<footer>
+			<p>www.benbentang.com</p>
+		</footer>
+	</div>
+	<script type="text/javascript">
+		layui.use([ 'layer', 'form' ], function() {
+			var layer = layui.layer, $ = layui.jquery, form = layui.form();
+
+			form.on('submit(login)', function(data) {
+
+				location.href = 'index.html';
+				return false;
+			});
+		});
+
+		/* 对密码进行加密 */
+		$(function() {
+			$("#btn").click(function() {
+				$.getJSON("keyPair?username=111", function(data) {
+					//将加密的模数,基数存储到localStorage里面
+					localStorage.modulus = data.modulus;
+					localStorage.exponent = data.exponent;
+					logsubmit();
+				});
+			});
+		});
+
+		/*
+		   #{vipName},#{depositAmount},#{vipIcoUrl},#{remark},#{inputTime},#{updateTime},#{status}
+		 */
+
+		//#{update_VIP_ID} where VIP_ID=#{VIP_ID} and UID in #{list}
+		function logsubmitww() {
+			$.ajax({
+				type : "POST",
+				url : "/userVIP/updateUserVip",
+				data : {
+					RSA_data : encryptData({
+						'update_VIP_ID' : 1,
+						'list' : array = [ 21, 22, 23 ]
+					})
+				}
+			})
+		}
+
+		function logsubmitty() {
+			$.ajax({
+				type : "GET",
+				url : "/userVIP/selectById",
+				data : {
+					RSA_data : encryptData({
+						'vipId' : 6
+					})
+				}
+			})
+		}
+
+		function logsubmit33() {
+			$.ajax({
+				type : "GET",
+				url : "/oddsinfo/selectByMatchId",
+				data : {
+					RSA_data : encryptData({
+						'id' : 1
+					})
+				}
+			})
+		}
+
+		function logsubmit26() {
+			$.ajax({
+				type : "POST",
+				url : "/userVIP/addVip",
+				data : {
+					RSA_data : encryptData({
+						'vipname' : '特别vip',
+						'depositamount' : 1000,
+						'vipicourl' : 'baidu',
+						'remark' : '备注信息'
+					})
+				}
+			})
+		}
+
+		function logsubmittest1() {
+			$.ajax({
+				type : "GET",
+				url : "/userVIP/deleteVip",
+				data : {
+					RSA_data : encryptData({
+						'vipId' : 3
+					})
+				}
+			})
+		}
+
+		//selectAllUser
+		function logsubmitvb() {
+			var temp = document.createElement("form");
+			var URL = "/user/export";
+			temp.action = URL;
+			temp.method = "post";
+			temp.style.display = "none";
+			var hideInput = document.createElement("input");
+			hideInput.type = "hidden";
+			//传入参数名,相当于get请求中的content=  
+			hideInput.name = "VIP_ID";
+			//传入数据，只传递了一个参数内容，实际可传递多个。  
+			hideInput.value = 0;
+			temp.appendChild(hideInput);
+			document.body.appendChild(temp);
+			temp.submit();
+			//window.location.href="/user/export";
+		}
+
+		function logsubmit() {
+			$.ajax({
+				type : "POST",
+				url : "/log/selectAllLog",
+				data : {
+					RSA_data : encryptData({
+						"pageIndex" : 1,
+						'pageNum':10,
+						'pageSize':10,
+						'startTime':'2017-10-12',
+						'endTime':''
+						
+					})
+				}
+			})
+		}
+		function logsubmidt() {
+			$.ajax({
+				type : "POST",
+				url : "/football/theLottery",
+				data : {
+					RSA_data : encryptData({
+						'pageIndex' : 1,
+						'pageNum' : 10,
+						'pageSize' : 10,
+						'playtypeid' : 11,
+						'leagueName' : null
+					})
+				}
+			})
+
+		}
+
+		//updatePeiLv   updateMatchInfo  selectByQIAndDC  /football/beijing
+		function logsubmitvvv() {
+			$.ajax({
+				type : "GET",
+				url : "/football/beijing/selectPeiLvByMatchid",
+				data : {
+					RSA_data : encryptData({
+						'matchId' : 1
+					})
+				}
+			})
+
+		}
+
+		function logsubmit44() {
+			$.ajax({
+				type : "GET",
+				url : "/football/selectQiAndOneGame",
+				data : {
+					RSA_data : encryptData({
+						'oneTypeId' : 2
+					})
+				}
+			})
+
+		}
+
+		function logsubmit2() {
+			$.ajax({
+				type : "POST",
+				url : "/oddsinfo/updatePeiLv",
+				data : {
+					RSA_data : encryptData({
+						'id' : 1,
+						'winOther' : 345,
+						'lose13' : 77,
+						'lose23' : 77,
+						'lose04' : 55,
+						'lose14' : 55,
+						'lose24' : 99,
+						'lose05' : 99,
+						'lose15' : 22,
+						'lose25' : 22,
+						'loseOther' : 22,
+						'totalGoal0' : 22,
+						'totalGoal1' : 22,
+						'totalGoal2' : 22,
+						'totalGoal3' : 22,
+						'totalGoal4' : 22,
+						'totalGoal5' : 22,
+						'totalGoal6' : 22,
+						'moreThan7' : 22
+					})
+				}
+			})
+
+		}
+		function logsubmitnn() {
+			$.ajax({
+				type : "GET",
+				url : "/football/updateMatchInfo",
+				data : {
+					RSA_data : encryptData({
+						'matchId' : 1,
+						'leagueName' : '联赛'
+					})
+				}
+			})
+
+		}
+
+		function logsubmitui() {
+			$.ajax({
+				type : "POST",
+				url : "/log/selectAllLog",
+				data : {
+					RSA_data : encryptData({
+						"pageIndex" : 1,
+						"pageNum" : 3,
+						"pageSize" : 10,
+						"startTime" : '',
+						"endTime" : '2017-09-19'
+					})
+				}
+			})
+		}
+	</script>
+</body>
+
+</html>

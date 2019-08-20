@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>投注记录</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="../plugins/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="css/raceColorBetting.css">
+    <link rel="stylesheet" href="../public/css/fenye.css"/>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+        em{
+        	font-style: normal;
+        }
+        .betRecordNav tr td>span{
+            padding-right: 10px;
+        }
+        .betRecordNav .btns a{
+            line-height: 30px;
+            height: 30px;
+            vertical-align: middle;
+            margin: 3px 0;
+        }
+    </style>
+</head>
+<body>
+<div class="admin-main" id="app">
+    <fieldset class="layui-elem-field">
+        <legend>投注记录</legend>
+        <div class="layui-field-box">
+            <!--layui-form-->
+            <!--方案搜索-->
+            <div style="border: 1px solid #E9E9E9;" id="conSel">
+                <div class="layui-layer-title" style="cursor: move;">方案搜索</div>
+                <table class="layui-table table betRecordNav">
+                    <tbody>
+                    <tr class="tr">
+                    	<td>
+                            <span>用户名:</span>
+                            <input type="text" name="title" placeholder="请输入用户名" class="layui-input td"
+                                   v-model="username" @keyup="username=username.replace(/\s+/g,'')">
+                        </td>
+                        <td>
+                        	<span>用户类型:</span>
+                        	<select id="search_userType" class="select">
+								<option value="1" selected="selected">会员</option>
+								<option value="2">测试</option>
+							</select>
+                        </td>
+                        <td>
+                            <span>订单号:</span>
+                            <input type="text" name="title" placeholder="请输入订单号" class="layui-input td onlyNum"
+                                   v-model="order" @keyup="order=order.replace(/\s+/g,'')">
+                        </td>
+                        <td>
+                            <span>彩票种类:</span>
+                            <select name="city" class="select" v-model="gameType">
+                                <option value="">全部</option>
+                                <option :value="item.gameId" v-for="item in LotteryTypes">{{item.gameName}}</option>
+                            </select>
+                        </td>
+                        
+                    </tr>
+                    <tr class="tr">
+                        <td>
+                            <span style="color:#ff7700">最低金额:</span>
+                            <input type="text" name="title" placeholder="请输入最低金额" class="layui-input td onlyNum"
+                                   v-model="lowerAmount" @keyup="lowerAmount=lowerAmount.replace(/\s+/g,'')">
+                        </td>
+                        <td>
+                            <span style="color: #ff7700">最高金额:</span>
+                            <input type="text" name="title" placeholder="请输入最高金额" class="layui-input td onlyNum"
+                                   v-model="higherAmount" @keyup="higherAmount=higherAmount.replace(/\s+/g,'')">
+                        </td>
+                        <td>
+                            <span style="color:#ff6666">最低奖金:</span>
+                            <input type="text" name="title" placeholder="请输入最低奖金" class="layui-input td onlyNum"
+                                   v-model="lowerBonus"  @keyup="lowerBonus=lowerBonus.replace(/\s+/g,'')">
+                        </td>
+                        <td>
+                            <span style="color: #ff6666">最高奖金:</span>
+                            <input type="text" name="title" placeholder="请输入最高奖金" class="layui-input td onlyNum"
+                                   v-model="higherBonus"  @keyup="higherBonus=higherBonus.replace(/\s+/g,'')">
+                        </td>
+                    </tr>
+                    <tr class="tr">
+                        <td>
+                            <span style="color: #00B83F">时间始:</span>
+                            <input type="text" class="layui-input td" id="test1" v-model="startTime"
+                                   placeholder="请选择开始时间" />
+                        </td>
+                        <td>
+                            <span style="color: #00B83F">时间止:</span>
+                            <input type="text" class="layui-input td" id="test2" v-model="endTime" 
+                            	  placeholder="请选择结束时间"/>
+                        </td>
+                        <td colspan="2" style="width:50%;">
+                            <div class="btns">
+                                <a id="now" @click="now">今日</a>
+                                <a id="yes" @click="yes">昨日</a>
+                                <a id="week" @click="week">本周</a>
+                                <a id="lastWeek" @click="lastWeek">上周</a>
+                                <a id="month" @click="month">本月</a>
+                                <a id="lastMonth" @click="lastMonth">上月</a>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="tr">
+                            <td style="width:50%;">
+                                    <span>状态:</span>
+                                    <select name="status" class="select" v-model="status">
+                                        <option value="">全部</option>
+                                        <option value="0">未中奖</option>
+                                        <option value="1">中奖</option>
+                                        <option value="2">撤单</option>
+                                        <option value="3">成功</option>
+                                    </select>
+                                </td>
+                        <td class="kk" style="width:50%;">
+                            <div class="buttonBox">
+                                <button class="layui-btn" @click="searchScheme"><a href="javascript:;"></a>查询</button>
+                                <button class="layui-btn" @click="clear();">清空</button>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="titleMsg" v-cloak v-if="selectDatas.length!==0" v-cloak>
+		    	<span>今日投注：{{selectDatas.todaysBetSum}}</span>
+		    	<span>今日派奖：{{selectDatas.todaysOpenSum}}</span>
+		    	<span>昨日投注：{{selectDatas.yesterdayBetSum}}</span>
+		    	<span>昨日派奖：{{selectDatas.yesterdayOpenSum}}</span>
+		    	<span>7天投注：{{selectDatas.sevenBetSum}}</span>
+		    	<span>7天派奖：{{selectDatas.sevenOpenSum}}</span>
+		    </p>
+            <!--方案列表-->
+            <div style="border: 1px solid #E9E9E9">
+                <div class="layui-layer-title" style="cursor: move;">方案</div>
+                <table class="layui-table table" id="conTable">
+                    <thead class="thead">
+                    <tr>
+                            <th>订单号</th>
+                            <th>投注账号</th>
+                            <th>所属代理</th>
+                            <th>彩种种类</th>
+                            <th>玩法类型</th>
+                            <th>投注期号</th>
+                            <th>投注号码</th>
+                            <!-- <th>开奖号码</th> -->
+                            <th>投注赔率</th>
+                            <th>投注金额</th>
+                            <th>中奖金额</th>
+                            
+                            <th>状态</th>
+                            
+                            
+                            <!-- <th>倍数</th> -->
+                            
+                            <!-- <th>开奖时间</th> -->
+                            <th>投注时间</th>
+                            <th>开奖状态</th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                        <!-- <th width="10%">订单号</th>
+                        <th width="7%">用户名</th>
+                        <th width="7%">彩种种类</th>
+                        <th width="6%">玩法类型</th>
+                        <th width="4%">状态</th>
+                        <th width="3%">倍数</th>
+                        <th width="6%">投注赔率</th>
+                        <th width="6%">中奖金额</th>
+                        <th width="6%">投注金额</th>
+                        <th width="6%">投注期号</th>
+                        <th width="6%">投注号码</th>
+                        <th width="6%">开奖号码</th>
+                        <th width="7%">开奖状态</th>
+                        <th width="7%">开奖时间</th>
+                        <th width="7%">投注时间</th>
+                        <th width="5%"></th>
+                        <th width="7%"></th>
+                        <th width="7%"></th> -->
+                        
+                    </tr>
+                    </thead>
+                    <tbody class="tbody">
+                    <tr v-for="(item,index) in datas" v-cloak>
+                        <td v-cloak><!--订单id-->
+                            <a href="javascript:;" @click="chooseWhich(item)" :title="item.orderId">{{item.orderId}}</a>
+                        </td>
+                        <td v-cloak><!--用户名-->
+                            <a href="javascript:;" @click="detail(item.userName)" :title="item.userName">{{item.userName}}</a>
+                        </td>
+                        <td>{{item.agentName}}</td>
+                        <td v-cloak>{{item.typeName}}</td> <!--投注彩种类型-->
+                        <td v-cloak>{{item.playedGroupName}}</td> <!--玩法类型-->
+                        <td :title="item.openIssue"><!--投注期号-->
+                            <span>{{item.openIssue?item.openIssue:""}}</span>
+                        </td>
+                        <td :title="item.actionData"><!--投注号码-->
+                                <span v-if="item.type<5">-</span>
+                                <span v-else>{{item.actionData}}</span>
+                        </td>
+                       <!-- <td :title="item.name3+'-'+item.openNo?item.openNo:''">{{item.name3+'-'+item.openNo?item.openNo:''}}</td>开奖号码-->
+                        <td :title="item.betOdds">{{item.betOdds}}</td><!--投注赔率-->
+                        <td v-cloak>{{item.amount}}</td> <!--投注金额-->
+                        <td v-cloak>
+                            <span v-if="item.status!=1">-</span>
+                            <font color="red" v-else>{{item.bonus}}</font>
+                        </td> <!--中奖金额-->
+                        
+                        
+                        <td v-cloak><span :style="item.status==0?'color: red;':item.status==1?'color: green;':''">{{item.status==0?"未中奖":(item.status==1?"已中奖":(item.status==2?"撤单":"成功"))}}</span></td> <!--状态-->
+                        
+                        
+                        
+                       <!-- <td v-cloak>{{item.times?item.times:1}}</td> 倍数-->
+
+                        
+                        
+                        <!--<td v-cloak :title="item.calTime">{{item.calTime}}</td>开奖时间-->
+                        <td v-cloak :title="item.actionTime">{{item.actionTime}}</td><!--投注时间-->
+                        <td v-cloak>{{item.isCal==0?"未开奖":(item.isCal==1?"已开奖":"开奖失败")}}</td><!--是否开奖-->
+                        <td v-cloak style="">
+                            <button class="layui-btn layui-btn-mini" @click="cheDanBtn(item.id,item.isCal,item.status);" :class="{'layui-btn-disabled':item.isCal==1||item.status==2}">撤单</button>
+                        </td>
+                        <td v-cloak style="">
+                            <button class="layui-btn layui-btn-mini" @click="manualWork(item.orderId,true,item);" :class="{'layui-btn-disabled':item.isCal==1||item.status==2}">手动开奖</button>
+                        </td>
+                        <td v-cloak style="">
+                            <button class="layui-btn layui-btn-mini" @click="rollBackBtn(item.id,item.isCal,item.type);" :class="{'layui-btn-disabled':item.isCal==0||item.isCal==2||item.type==2}">开奖回滚</button>
+                        </td>
+                    </tr>
+                    <tr class="none" style="display: none;">
+                        <td colspan="12">暂无数据</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!--分页页码设置-->
+        <!--分页页码设置-->
+		<div class="yema">
+			<!--页码左边-->
+			<div class="selectYema" v-cloak>
+				显示第1到第{{page_num}}条记录，总共{{total}}条记录.每页显示
+				<select v-model="page_num">
+					<option value="50">50</option>
+					<option value="100">100</option>
+					<option value="200">200</option><option value="500">500</option>
+				</select>
+				条记录
+			</div>
+			<!--右边分页-->
+			<div id="fenye" align="center"></div>
+		</div>
+    </fieldset>
+    <!--用户详情列表-->
+    <div id="personDetail" class="hide detail"></div>
+    <!--<transition name="transition">
+        <div class="concealDiv">
+            <table class="layui-table">
+                <tr class="odd_row">
+                    <td style="text-align: right;">用户ID:</td>
+                    <td style="text-align: left;" v-cloak>{{userParticulars.uid}}</td>
+                    <td style="text-align: right;">用户名称:</td>
+                    <td style="text-align: left;" v-cloak>{{userParticulars.userName}}</td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">账户状态:</td>
+                    <td style="text-align: left;" v-cloak>{{userParticulars.status==1?"正常":"异常"}}</td>
+                    <td style="text-align: right;">最后登录时间:</td>
+                    <td style="text-align: left;" v-cloak> {{userLast.loginTime}}</td>
+                </tr>
+                <tr class="odd_row">
+                    <td style="text-align: right;">最后登录ip:</td>
+                    <td style="text-align: left;" v-cloak>{{userLast.loginIp}}</td>
+                    <td style="text-align: right;">注册时间:</td>
+                    <td style="text-align: left;" v-cloak>{{userParticulars.registerTime}}</td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">注册ip:</td>
+                    <td style="text-align: left;" v-cloak>{{userParticulars.registerIp}}</td>
+                    <td style="text-align: right;">用户等级:</td>
+                    <td style="text-align: left;" v-cloak>{{userParticulars.grade}}</td>
+                </tr>
+                <tr class="odd_row">
+                    <td style="text-align: right;">积分:</td>
+                    <td style="text-align: left;" v-cloak>{{userParticulars.score}}</td>
+                    <td style="text-align: right;">账户余额:</td>
+                    <td style="text-align: left;" v-cloak>{{userParticulars.coin}}</td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">可提现金额:</td>
+                    <td style="text-align: left;" v-cloak>{{userParticulars.canGetCoin}}</td>
+                    <td style="text-align: right;">不可提现金额:</td>
+                    <td style="text-align: left;" v-cloak>{{userParticulars.notGetCoin}}</td>
+                </tr>
+                <tr class="odd_row">
+                    <td style="text-align: right;">手机号码:</td>
+                    <td style="text-align: left;" v-cloak>{{userParticulars.phoneNumber}}</td>
+                    <td style="text-align: right;">联系QQ:</td>
+                    <td style="text-align: left;" v-cloak>{{userParticulars.qq}}</td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">微信:</td>
+                    <td colspan="3" style="text-align: left;" v-cloak>{{userParticulars.weChat}}</td>
+                </tr>
+            </table>
+        </div>
+    </transition>-->
+
+    <!--订单详情列表-->
+    <transition name="transition">
+        <div class="concealDivOrders ordersOne txt-nor">
+            <table class="layui-table">
+                <tr class="odd_row">
+                    <td style="text-align: right;">订单ID:</td>
+                    <td style="text-align: left;" v-cloak>{{ordersParticulars.orderId}}</td>
+                    <td style="text-align: right;">用户名称:</td>
+                    <td style="text-align: left;" v-cloak>{{ordersParticulars.userName}}</td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">订单状态:</td>
+                    <td style="text-align: left;" v-cloak>
+                    	{{ordersParticulars.isCal==0?"未开奖":(ordersParticulars.isCal==1?"已开奖":"开奖失败")}}
+                    </td>
+                    <td style="text-align: right;">比赛记录:</td>
+                    <td style="text-align: left;" v-cloak>
+                        <a href="javascript:;" @click="actionData(ordersParticulars.orderId)">
+                            查看详情
+                        </a></td>
+                </tr>
+                <tr class="odd_row">
+                    <td style="text-align: right;">投注金额:</td>
+                    <td style="text-align: left;" v-cloak>{{ordersParticulars.amount}}元</td>
+                    <td style="text-align: right;">中奖奖金:</td>
+                    <td style="text-align: left;" v-cloak>
+                        <span v-if="ordersParticulars.status!=1">--</span>
+                        <span v-else>
+                        	{{ordersParticulars.bonus}}<span v-if="ordersParticulars.type!=2">元</span>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">中奖明细:</td>
+                    <td style="text-align: left;" v-cloak>
+                    	<span v-if="ordersParticulars.isCal==1">
+                    		<span v-if="ordersParticulars.status==1"><a @click="statusYes()">查看详情</a></span>
+                    		<span v-else>{{ordersParticulars.status==0?"未中奖":(ordersParticulars.status==2?"撤单":"成功")}}</span>
+                    	</span>
+                        <span v-else>未开奖</span>
+                    </td>
+                    <td style="text-align: right;">投注时间:</td>
+                    <td style="text-align: left;" v-cloak>{{ordersParticulars.actionTime}}</td>
+                </tr>
+            </table>
+        </div>
+    </transition>
+    <transition name="transition">
+            <div class="concealDivOrders ordersTwo txt-nor" style="display: none;">
+                <table class="layui-table" lay-skin="nob">
+                    <tr>
+                        <td colspan="4"
+                            style="background-color: white;text-align: left;padding-left: 18px;font-weight: bold;">订单详情
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>订单号:</td>
+                        <td v-cloak>{{ordersTwo.orderId}}</td>
+                        <td>彩种:</td>
+                        <td v-cloak>{{ordersTwo.gameName}}</td>
+                        
+                    </tr>
+                    <tr style="border-bottom: 1px #E0E0E0 solid;">
+                        <td>投注时间:</td>
+                        <td v-cloak>{{ordersTwo.actionTime}}</td>
+                        <td>期号:</td>
+                        <td>{{ordersTwo.actionIssue}}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="4"
+                            style="background-color: white;text-align: left;padding-left: 18px;font-weight: bold;">投注详情
+                        </td>
+                    </tr>
+                    <tbody  style="border-bottom: 1px #E0E0E0 solid;">
+                    <tr>
+                        <td>投注号码:</td>
+                        <td colspan="3" v-cloak>
+                           {{ordersTwo.actionData}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>开奖号码:</td>
+                        <td  colspan="3">
+	                    	{{ordersTwo.openNo}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td v-if='ordersTwo.isCal==0&&ordersTwo.expect_open'>预计开奖时间</td>
+                        <td colspan="3" v-if='ordersTwo.isCal==0&&ordersTwo.expect_open'>{{ordersTwo.expect_open}}</td>
+                    </tr>
+                    <tr>
+                        <td>投注金额:</td>
+                        <td>{{ordersTwo.amount}}</td>
+                        <td>中奖金额:</td>
+                        <td>
+                        	<span v-if="ordersTwo.isCal==0">未开奖</span>
+                        	<span v-else-if="ordersTwo.isCal==1&&ordersTwo.status==0" style="color: green;">未中奖</span>
+                        	<span v-else-if="ordersTwo.isCal==1&&ordersTwo.status==1" style="color: red;">{{ordersTwo.bonus}}</span>
+                        	
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>投注赔率:</td>
+                        <td colspan="3">{{ordersTwo.betOdds}}倍</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </transition>
+    <!--中奖明细-->
+    <transition name="transition">
+        <div class="winDetails">
+            <ul>
+                <li><strong>奖金总计:<font color="red"> {{ordersParticulars.bonus}}</font>元</strong></li>
+                <li v-for="(item,index) in winDetails">
+                    {{item.seriesName}}:
+                    <em v-for="items in winDetails[index].list">([{{items.matchDate}}{{items.matchSessions}}]{{items.odds}})x</em>
+                    2元x{{item.times}}倍<span v-if="type==3">x{{northReturnAwardRate}}%</span>={{item.totals}}元
+                </li>
+            </ul>
+        </div>
+    </transition>
+    <!--投注比赛详情-->
+    <transition name="transition">
+        <div class="actionData">
+            <table class="layui-table">
+                <tr>
+                    <th>比赛场次</th>
+                    <th>主队名称</th>
+                    <th>客队名称</th>
+                    <th>时间</th>
+                    <th style="width: 20%;">竞猜项</th>
+                    <th>赛果</th>
+                    <th>比分</th>
+                </tr>
+                <tbody v-for="(item,index) in actionMes">
+                	<tr>
+	                    <td v-cloak><span class="isDan" v-if="item.guts==1">胆</span>{{item.matchSessions}}</td>
+	                    <td v-cloak>{{item.homeTeamName}}</td>
+	                    <td v-cloak>{{item.awayTeamName}}</td>
+	                    <td v-cloak>{{item.matchDate}}</td>
+	                    <td v-cloak>
+	                    	<span v-if="item.guessList&&item.guessList.length>0">
+	                    		<span v-for="gus in item.guessList" style="margin-right: 5px;display: inline-block;">
+	                    			<span v-if="gus.quizResults==1" style="color: red;">{{gus.quizName}}{{gus.letScore}}<em v-if="gus.odds">({{gus.odds}})</em></span>
+	                    			<span v-else>{{gus.quizName}}{{gus.letScore}}<em v-if="gus.odds">({{gus.odds}})</em></span>
+	                    		</span>
+	                    	</span>
+	                    	<span v-else>--</span>
+	                    </td>
+	                    <td v-cloak>
+	                        <span v-if="item.resultList&&item.resultList.length>0">
+	                        	<span  v-for="res in item.resultList" style="margin-right: 5px;display: inline-block;">
+	                        		<span v-if="res.quizResults==1" style="color: red;">{{res.quizName}}{{res.letScore}}</span>
+	                    			<span v-else>{{res.quizName}}{{res.letScore}}</span>
+	                        	</span>
+	                    	</span>
+	                        <span v-else>--</span>
+	                    </td>
+	                    <td v-cloak>
+	                		<span v-if="item.courtScore">
+	                			{{item.courtScore}}
+	                		</span>
+	                        <span v-else>--</span>
+	                    </td>
+	                </tr>
+                </tbody>
+                
+            </table>
+        </div>
+    </transition>
+
+
+</div>
+<script type="text/javascript" src="../public/js/jquery.js"></script>
+<script type="text/javascript" src="../public/js/jqPaginator.js"></script>
+<script src="js/laydate/laydate.js"></script>
+<script type="text/javascript" src="../plugins/layui/layui.js"></script>
+<script type="text/javascript" src="../public/js/vue.min.js"></script>
+<script type="text/javascript" src="../public/js/security.js"></script>
+<script type="text/javascript" src="../public/js/send_request.js"></script>
+<script src="js/raceColorBetting.js"></script>
+</body>
+</html>

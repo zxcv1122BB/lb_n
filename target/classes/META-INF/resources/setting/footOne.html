@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="../plugins/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="../public/css/fenye.css"/>
+    <link href="css/footLive.css" rel="stylesheet"/>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div class="main">
+    <fieldset class="layui-elem-field">
+        <legend>单场管理列表</legend>
+        <header>
+            <div class="footTitle">
+                期号：
+                <select v-cloak id="dateSelect" @click="getGames()">
+                    <option v-for="(item,index) in games">{{item}}</option>
+                </select>
+                开奖状态：
+                <select v-model=matchStatus style="border-radius: 5px;height: 35px;">
+                    <option value="">全部</option>
+                    <option value="0">已结束</option>
+                    <option value="1">未开始</option>
+                    <option value="2">半场</option>
+                    <option value="3">取消</option>
+                    <option value="4">弃赛/中断</option>
+                    <option value="5">延期</option>
+                    <option value="6">进行中</option>
+                </select>
+                队名：
+                <input type="text" style="width: 120px;height: 35px;border-radius: 5px; border: 1px solid #ccc;"
+                       placeholder="主队名或者客队名" v-model="store_league" id="league" @keyup="store_league=store_league.replace(/\s+/g,'')"/>
+         赛事编号：<input type="text" style="width: 120px;height:36px; border: 1px solid #999;border-radius: 5px;"
+                       placeholder="赛事编号" v-model="store_matchId" @keyup="store_matchId=store_matchId.replace(/\s+/g,'')"/> 
+                <button class="layui-btn" @click="search">查询</button>
+            </div>
+        </header>
+        <table class="layui-table main" v-cloak>
+            <thead>
+            <tr>
+                <th>赛事编号</th>
+                <th>场次</th>
+                <th>赛事</th>
+                <th>比赛时间</th>
+                <th>轮次</th>
+                <th>状态</th>
+                <th>(排名)主队</th>
+                <th>比分</th>
+                <th>客队(排名)</th>
+                <th>半场</th>
+                <th>让球</th>
+                <th>彩果</th>
+                <th>赔率详情</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-if="datas.length==0">
+                <td colspan="13">暂无数据</td>
+            </tr>
+            <tr v-else v-for="(item,index) in datas">
+                <td v-cloak :title="item.matchId">{{item.matchId}}</td>
+                <td v-cloak>{{item.sessions}}</td>
+                <td v-cloak :title="item.leagueName">{{item.leagueName}}</td>
+                <td v-cloak :title="item.matchDate">{{item.matchDate}}</td>
+                <td v-cloak :title="item.groupName">{{item.groupName}}</td>
+                <td class="borRight" v-cloak>{{item.matchStatus==1?'未开赛':'已结束'}}</td>
+                <td v-cloak :title="item.homeTeam.teamName">{{item.homeTeam.teamName}}</td>
+                <td>
+                    <input type="number" v-model="item.aa" placeholder="-" pattern="^\d+:+\d$" onKeypress="keyUp()"/>:
+                    <input type="number" v-model="item.bb" placeholder="-" pattern="^\d+:+\d$" onKeypress="keyUp()"/>
+                </td>
+                <td class="borRight" v-cloak :title="item.awayTeam.teamName">{{item.awayTeam.teamName}}</td>
+                <td>
+                    <input type="number" v-model="item.cc" placeholder="-" pattern="^\d+:+\d$" onKeypress="keyUp()"/>:
+                    <input type="number" v-model="item.dd" placeholder="-" pattern="^\d+:+\d$" onKeypress="keyUp()"/>
+                </td>
+                <td>
+                    <input type="text" v-model="item.letballNumber" placeholder="-" pattern="^(-|\+)?\d+$"
+                           onKeypress="keyUp()"/></td>
+                <td class="borRight" v-cloak>{{caiGuo[index]}}</td>
+                <td class="btnMes borRight">
+                    <button class="layui-btn layui-btn-mini" @click="clickSele(item.matchId)">点击查看</button>
+                </td>
+                <td>
+                    <button v-if="item.isManualModify==1||item.isManualModify==0&&odd[index].aa==''||item.isManualModify==0&&odd[index].bb==''||item.isManualModify==0&&odd[index].cc==''||item.isManualModify==0&&odd[index].dd==''" class="layui-btn layui-btn-mini"
+                            @click="changeFoot(item.matchId,item.letballNumber,item.aa,item.bb,item.cc,item.dd,index)">确认修改
+                    </button>
+                    <button v-else class="layui-btn-disabled layui-btn-mini">确认修改</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="analyMoreTable">
+            <form action="">
+                <table class="layui-table" v-cloak>
+                    <tr>
+                        <th>半全场</th>
+                        <td>胜胜
+                            <div><input type="text" v-model="win.winWin" name="winWin" placeholder="-"/></div>
+                        </td>
+                        <td>胜平
+                            <div><input type="text" v-model="win.winDraw" name="winDraw" placeholder="-"/></div>
+                        </td>
+                        <td>胜负
+                            <div><input type="text" v-model="win.winLose" name="winLose" placeholder="-"/></div>
+                        </td>
+                        <td>平胜
+                            <div><input type="text" v-model="win.drawWin" name="drawWin" placeholder="-"/></div>
+                        </td>
+                        <td>平平
+                            <div><input type="text" v-model="win.drawDraw" name="drawDraw" placeholder="-"/></div>
+                        </td>
+                        <td>平负
+                            <div><input type="text" v-model="win.drawLose" name="drawLose" placeholder="-"/></div>
+                        </td>
+                        <td>负胜
+                            <div><input type="text" v-model="win.loseWin" name="loseWin" placeholder="-"/></div>
+                        </td>
+                        <td>负平
+                            <div><input type="text" v-model="win.drawLose" name="drawLose" placeholder="-"/></div>
+                        </td>
+                        <td>负负
+                            <div><input type="text" v-model="win.loseLose" name="loseLose" placeholder="-"/></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th rowspan="3">比分</th>
+                        <td>1:0
+                            <div><input type="text" v-model="win.win10" name="win10" placeholder="-"/></div>
+                        </td>
+                        <td>2:0
+                            <div><input type="text" v-model="win.win20" name="win20" placeholder="-"/></div>
+                        </td>
+                        <td>2:1
+                            <div><input type="text" v-model="win.win21" name="win21" placeholder="-"/></div>
+                        </td>
+                        <td>3:0
+                            <div><input type="text" v-model="win.win30" name="win30" placeholder="-"/></div>
+                        </td>
+                        <td>3:1
+                            <div><input type="text" v-model="win.win31" name="win31" placeholder="-"/></div>
+                        </td>
+                        <td>3:2
+                            <div><input type="text" v-model="win.win32" name="win32" placeholder="-"/></div>
+                        </td>
+                        <td>4:0
+                            <div><input type="text" v-model="win.win40" name="win40" placeholder="-"/></div>
+                        </td>
+                        <td>4:1
+                            <div><input type="text" v-model="win.win41" name="win41" placeholder="-"/></div>
+                        </td>
+                        <td>4:2
+                            <div><input type="text" v-model="win.win42" name="win42" placeholder="-"/></div>
+                        </td>
+                        <td>胜其他
+                            <div><input type="text" v-model="win.winOther" name="winOther" placeholder="-"/></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>0:0
+                            <div><input type="text" v-model="win.draw00" name="draw00" placeholder="-"/></div>
+                        </td>
+                        <td>1:1
+                            <div><input type="text" v-model="win.draw11" name="draw11" placeholder="-"/></div>
+                        </td>
+                        <td>2:2
+                            <div><input type="text" v-model="win.draw22" name="draw22" placeholder="-"/></div>
+                        </td>
+                        <td>3:3
+                            <div><input type="text" v-model="win.draw33" name="draw33" placeholder="-"/></div>
+                        </td>
+                        <td>平其他
+                            <div><input type="text" v-model="win.drawOther" name="drawOther" placeholder="-"/></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>0:1
+                            <div><input type="text" v-model="win.lose01" name="lose01" placeholder="-"/></div>
+                        </td>
+                        <td>0:2
+                            <div><input type="text" v-model="win.lose02" name="lose02" placeholder="-"/></div>
+                        </td>
+                        <td>1:2
+                            <div><input type="text" v-model="win.lose12" name="lose12" placeholder="-"/></div>
+                        </td>
+                        <td>0:3
+                            <div><input type="text" v-model="win.lose03" name="lose03" placeholder="-"/></div>
+                        </td>
+                        <td>1:3
+                            <div><input type="text" v-model="win.lose13" name="lose13" placeholder="-"/></div>
+                        </td>
+                        <td>2:3
+                            <div><input type="text" v-model="win.lose23" name="lose23" placeholder="-"/></div>
+                        </td>
+                        <td>0:4
+                            <div><input type="text" v-model="win.lose04" name="lose04" placeholder="-"/></div>
+                        </td>
+                        <td>1:4
+                            <div><input type="text" v-model="win.lose14" name="lose14" placeholder="-"/></div>
+                        </td>
+                        <td>2:4
+                            <div><input type="text" v-model="win.lose24" name="lose24" placeholder="-"/></div>
+                        </td>
+                        <td>负其他
+                            <div><input type="text" v-model="win.loseOther" name="loseOther" placeholder="-"/></div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>单双</th>
+                        <td>上单
+                            <div><input type="text" v-model="win.upOdd" name="upOdd" placeholder="-"/></div>
+                        </td>
+                        <td>上双
+                            <div><input type="text" v-model="win.upEven" name="upEven" placeholder="-"/></div>
+                        </td>
+                        <td>下单
+                            <div><input type="text" v-model="win.downOdd" name="downOdd" placeholder="-"/></div>
+                        </td>
+                        <td>下双
+                            <div><input type="text" v-model="win.downEven" name="downEven" placeholder="-"/></div>
+                        </td>
+                    </tr>
+                </table>
+                <button class="layui-btn" lay-submit="" lay-filter="formDemo" style="position: absolute;right: 5px;"
+                        @click="changeFootWin(win.traditionOddsId,win.winWin,win.winDraw,win.winLose,win.drawWin,win.drawDraw,win.drawLose,win.loseWin,win.drawLose,win.loseLose,win.win10,win.win20,win.win21,win.win30,win.win31,win.win32,win.win40,win.win41,win.win42,win.winOther,win.draw00,win.draw11,win.draw22,win.draw33,win.drawOther,win.lose01,win.lose02,win.lose12,win.lose03,win.lose13,win.lose23,win.lose04,win.lose14,win.lose24,win.loseOther,win.upOdd,win.upEven,win.downOdd,win.downEven)">
+                    确定
+                </button>
+            </form>
+        </div>
+        <!--页码设置-->
+        <div class="yema">
+            <!--页码左边-->
+            <div class="selectYema">
+                <p v-cloak>
+                    总共{{total}}条记录.每页显示
+                    <select v-model="pageNum">
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="200">200</option><option value="500">500</option>
+                    </select>
+                    条记录
+                </p>
+            </div>
+            <!--右边分页-->
+            <div id="fenye" style="text-align: right;"></div>
+        </div>
+    </fieldset>
+</div>
+
+<script type="text/javascript" src="../public/js/jquery.js"></script>
+<script type="text/javascript" src="../public/js/jqPaginator.js"></script>
+<script type="text/javascript" src="../plugins/layui/layui.js"></script>
+<script type="text/javascript" src="../public/js/vue.min.js"></script>
+<!-- 用作参数的加密 -->
+<script type="text/javascript" src="../public/js/security.js"></script>
+<script type="text/javascript" src="../public/js/send_request.js"></script>
+<script type="text/javascript" src="js/footOne.js"></script>
+</body>
+</html>

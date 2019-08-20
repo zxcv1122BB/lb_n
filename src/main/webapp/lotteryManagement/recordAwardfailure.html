@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="UTF-8">
+    <title>开奖失败记录</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="../plugins/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="css/recordAwardfailure.css">
+    <link rel="stylesheet" href="../public/css/fenye.css"/>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+<div class="admin-main" id="app">
+    <fieldset class="layui-elem-field">
+        <legend>开奖失败记录</legend>
+        <div class="layui-field-box">
+            <!--方案搜索-->
+            <div style="border: 1px solid #E9E9E9">
+                <div class="layui-layer-title" style="cursor: move;">方案搜索</div>
+                <table class="layui-table table">
+                    <tbody>
+                    <tr class="tr">
+                        <td>
+                            <span>用户名</span>
+                            <input type="text" name="title" placeholder="请输入用户名" class="layui-input td"
+                                   v-model="username">
+                        </td>
+                        <td>
+                            <span style="color: #00B83F">时间始</span>
+                            <input id="startDate" name="startDate" placeholder="请选择开始时间" class="layui-input td" />
+                        </td>
+                        <td>
+                            <span style="color: #00B83F">时间止</span>
+                            <input id="endDate" name="endDate" placeholder="请选择结束时间" class="layui-input td" />
+                        </td>
+                        <td>
+                            <div class="buttonBox">
+                                <button class="layui-btn" @click="searchScheme">
+                                    <a href="javascript:;"></a> 搜索
+                                </button>
+                                <button class="layui-btn" @click="clear();">清空</button>
+                            </div>
+                        </td>
+
+                    </tr>
+                    <tr class="tr">
+                        <td colspan="5">
+                            <div>
+                                <button class="layui-btn" @click="manualwork('',false);" style="float:left">
+                                    <a href="javascript:;"></a> 手工调用开奖任务
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!--方案列表-->
+            <div class="layui-field-box">
+                <table class="layui-table">
+                    <thead>
+                    <tr>
+                        <th>订单号</th>
+                        <th>用户名</th>
+                        <th>彩种种类</th>
+                        <th>玩法类型</th>
+                        <th>状态</th>
+                        <th>倍数</th>
+                        <th>投注金额</th>
+                        <th>中奖金额</th>
+                        <th>开奖状态</th>
+                        <th>时间</th>
+                        <th>查看</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-if="datas.length==0">
+                        <td colspan="12">暂无数据</td>
+                    </tr>
+                    <tr v-else v-for="(item,index) in datas">
+                        <td @click="orders(item.orderId)" style="cursor: pointer;color: blue;" v-cloak>{{item.orderId}}</td>
+                        <td @click="biddingUser(item.userName)" style="cursor: pointer;color: blue;text-decoration: underline;" v-cloak>{{item.userName}}</td>
+                        <td v-cloak>{{item.typeName}}</td>
+                        <td v-cloak>{{item.playedGroupName}}</td>
+                        <td v-cloak>{{item.status==0?"未中奖":(item.status==1?"中奖":(item.status==2?"撤单":"成功"))}}</td>
+                        <td v-cloak>{{item.times}}</td>
+                        <td v-cloak>{{item.amount}}</td>
+                        <td v-cloak>{{item.bonus}}</td>
+                        <td v-cloak>{{item.isCal==1?"开奖":"未开奖"}}</td>
+                        <td v-cloak>{{item.inputtime}}</td>
+                        <td><button class="layui-btn layui-btn-mini" @click="errorMsg(item.errormgs);">错误信息</button></td>
+                        <td><button class="layui-btn layui-btn-mini" @click="manualwork(item.id,true);">手工开奖</button></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!--页码设置-->
+        <div class="yema">
+            <!--页码左边-->
+            <div class="selectYema">
+                <p v-cloak>
+                    总共{{total}}条记录.每页显示
+                    <select v-model="page_num">
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="200">200</option><option value="500">500</option>
+                    </select>
+                    条记录
+                </p>
+            </div>
+            <!--右边分页-->
+            <div id="fenye" style="text-align: right;"></div>
+        </div>
+    </fieldset>
+
+    <!--用户详情列表-->
+    <transition name="transition">
+        <div class="concealDiv">
+            <table class="layui-table">
+                <tr class="odd_row">
+                    <td style="text-align: right;">用户ID:</td>
+                    <td style="text-align: left;">{{userParticulars.uid}}</td>
+                    <td style="text-align: right;">用户名称:</td>
+                    <td style="text-align: left;">{{userParticulars.userName}}</td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">账户状态:</td>
+                    <td style="text-align: left;">{{userParticulars.status==1?"正常":"异常"}}</td>
+                    <td style="text-align: right;">最后登录时间:</td>
+                    <td style="text-align: left;"> {{userLast.loginTime}}</td>
+                </tr>
+                <tr class="odd_row">
+                    <td style="text-align: right;">最后登录ip:</td>
+                    <td style="text-align: left;">{{userLast.loginIp}}</td>
+                    <td style="text-align: right;">注册时间:</td>
+                    <td style="text-align: left;">{{userParticulars.registerTime}}</td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">注册ip:</td>
+                    <td style="text-align: left;">{{userParticulars.registerIp}}</td>
+                    <td style="text-align: right;">用户等级:</td>
+                    <td style="text-align: left;">{{userParticulars.grade}}</td>
+                </tr>
+                <tr class="odd_row">
+                    <td style="text-align: right;">积分:</td>
+                    <td style="text-align: left;">{{userParticulars.score}}</td>
+                    <td style="text-align: right;">账户余额:</td>
+                    <td style="text-align: left;">{{userParticulars.coin}}</td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">可提现金额:</td>
+                    <td style="text-align: left;">{{userParticulars.canGetCoin}}</td>
+                    <td style="text-align: right;">不可提现金额:</td>
+                    <td style="text-align: left;">{{userParticulars.notGetCoin}}</td>
+                </tr>
+                <tr class="odd_row">
+                    <td style="text-align: right;">手机号码:</td>
+                    <td style="text-align: left;">{{userParticulars.phoneNumber}}</td>
+                    <td style="text-align: right;">联系QQ:</td>
+                    <td style="text-align: left;">{{userParticulars.qq}}</td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">微信:</td>
+                    <td colspan="3" style="text-align: left;">{{userParticulars.weChat}}</td>
+                </tr>
+            </table>
+        </div>
+    </transition>
+
+    <!--订单详情列表-->
+    <transition name="transition">
+        <div class="concealDivOrders">
+            <table class="layui-table">
+                <tr class="odd_row">
+                    <td style="text-align: right;">订单ID:</td>
+                    <td style="text-align: left;">{{ordersParticulars.orderId}}</td>
+                    <td style="text-align: right;">用户名称:</td>
+                    <td style="text-align: left;">{{ordersParticulars.userName}}</td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">状态:</td>
+                    <td style="text-align: left;">{{ordersParticulars.status==0?"未开奖":"开奖"}}</td>
+                    <td style="text-align: right;">比赛记录:</td>
+                    <td style="text-align: left;">
+                        <a href="javascript:;" @click="actionData(ordersParticulars.orderId)">
+                            查看详情
+                        </a>
+                    </td>
+                </tr>
+                <tr class="odd_row">
+                    <td style="text-align: right;">投注金额:</td>
+                    <td style="text-align: left;">{{ordersParticulars.amount}}</td>
+                    <td style="text-align: right;">中奖奖金:</td>
+                    <td style="text-align: left;">{{ordersParticulars.bonus}}</td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">中奖明细:</td>
+                    <td style="text-align: left;">{{ordersParticulars.bonus}}</td>
+                    <td style="text-align: right;">投注时间:</td>
+                    <td style="text-align: left;">{{ordersParticulars.actionTime}}</td>
+                </tr>
+            </table>
+        </div>
+    </transition>
+
+    <!--投注比赛详情-->
+    <transition name="transition">
+        <div class="actionData">
+            <table class="layui-table">
+                <tr>
+                    <th>比赛场次:</th>
+                    <th>主队名称:</th>
+                    <th>客队名称:</th>
+                    <th>赛果:</th>
+                    <th>时间:</th>
+                    <th>比分:</th>
+                    <th>竞彩项:</th>
+                    <th>赔率:</th>
+                </tr>
+                <tr v-for="item in actionMes">
+                    <td>{{item.matchSessions}}</td>
+                    <td>{{item.homeTeamName}}</td>
+                    <td>{{item.awayTeamName}}</td>
+                    <td>{{item.matchResult}}</td>
+                    <td>{{item.matchDate}}</td>
+                    <td>{{item.courtScore}}</td>
+                    <td>{{item.quizOptions}}</td>
+                    <td>{{item.odds}}</td>
+                </tr>
+            </table>
+        </div>
+    </transition>
+
+
+</div>
+<script type="text/javascript" src="../public/js/jquery.js"></script>
+<script type="text/javascript" src="../public/js/laydate/laydate.js"></script>
+<script type="text/javascript" src="../public/js/jqPaginator.js"></script>
+<script type="text/javascript" src="../plugins/layui/layui.js"></script>
+<script type="text/javascript" src="../public/js/vue.min.js"></script>
+<script type="text/javascript" src="../public/js/security.js"></script>
+<script type="text/javascript" src="../public/js/send_request.js"></script>
+<script src="js/recordAwardfailure.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,37 @@
+.head{
+    padding: 10px 30px;
+    box-sizing: border-box;
+}
+.title{
+    font-size: 30px;
+    color: cornflowerblue;
+    line-height: 70px;
+}
+.date{
+    font-size: 20px;
+    color: darkorchid;
+}
+#userChName{
+    color: red;
+    display: block;
+}
+.content{
+    line-height: 50px;
+    color: deeppink;
+    position: relative;
+    left: -276px;
+    transition: 1.5s;
+}
+
+/*.fade-enter-active, .fade-leave-active {*/
+    /*transition: opacity 1s*/
+/*}*/
+/*.fade-enter, .fade-leave-to !* .fade-leave-active in below version 2.1.8 *! {*/
+    /*opacity: 0*/
+/*}*/
+.bounce-enter-active {
+    animation: bounceInLeft 1s;
+}
+.bounce-leave-active /* .fade-leave-active in below version 2.1.8 */ {
+    animation: bounceOutRight 1s;
+}

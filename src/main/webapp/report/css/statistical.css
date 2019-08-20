@@ -1,0 +1,29 @@
+/*统计概况管理*/
+.loc_box{ background: #f5f5f5; padding: 10px;}
+.loc_box span a{ font-size: 12px;}
+
+/*盈亏统计*/
+.sta_box{ margin-top: 10px;  border: 1px solid #dedede;}
+.sta_box  h4{ padding: 10px; font-size: 14px; background: #f5f5f5; border-bottom: 1px solid #dedede;}
+.pt20{ padding-top: 20px;}
+.pb5{ padding-bottom: 5px;}
+.sta_txt ,.sta_num{ padding: 12px 0; text-align: center;}
+.sta_txt{ color: #6a6a6a;}
+.sta_num{ font-size: 18px;}
+.green{ color: #486046;}
+.purple{ color: #825457;}
+.blue{ color: #3e69a0;}
+.sta_table{ padding: 0 15px 30px;}
+.sta_table tr th{ font-size: 12px;}
+.pie_box{ width: 260px; height: 260px; border-radius: 50%;}
+.tz_rinfo{ padding-top: 50px;}
+
+
+
+
+
+
+
+
+
+

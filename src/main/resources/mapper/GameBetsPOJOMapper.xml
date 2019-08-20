@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lb.sys.dao.GameBetsPOJOMapper">
+
+	<!-- 查询投注某一期的用户以及其投注信息 -->
+	<select id="getUserLotteryInfo" resultType="map">
+		SELECT orderId,playedid,action_num,before_orderId,
+		action_data_str,
+		amount,bet_odds,
+		bet_rebate
+		FROM game_bets
+		WHERE `type` = #{oneTypeId}
+		AND action_issue = #{issue}
+		<!-- AND user_type = 'NORMAL' -->
+		AND is_cal = 0 AND `status` = 3
+	</select>
+
+	<!-- 查询投注某一期的用户数量 -->
+	<select id="getLotteryUserNum" resultType="int">
+		SELECT COUNT(DISTINCT uid) FROM game_bets
+		WHERE `type` = #{oneTypeId}
+		AND action_issue = #{issue}
+		<!-- AND user_type = 'NORMAL' -->
+		AND is_cal = 0 AND `status` = 3
+	</select>
+
+	<!-- creatyTime:2017-10-19 Desc:查询今日、昨日中奖金额、投注金额以及盈亏(投注金额-中奖金额) -->
+	<select id="queryTodayAndYesterDayMoney" resultType="com.lb.report.model.GameBetsPOJO">
+  	<![CDATA[	
+  		SELECT 
+  		    IFNULL(gb.today_amount,0.00) AS toDayAmount,
+  		    IFNULL(gb.today_bonus,0.00) AS toDayBouns,
+  		    IFNULL((gb.today_amount-gb.today_bonus),0.00) as toDayLoss,
+		    IFNULL(gb.yesterday_amount,0.00) AS yesterDayAmount,
+		    IFNULL(gb.yesterday_bonus,0.00) AS yesterDayBouns,
+		    IFNULL((gb.yesterday_amount-gb.yesterday_bonus),0.00) AS yesterDayLoss  
+		FROM (
+		    SELECT 
+			  	SUM(IF(DATE_FORMAT(gb.`action_time`,'%Y-%m-%d')=CURDATE(),gb.amount,0.00)) AS today_amount,
+				SUM(IF(DATE_FORMAT(gb.`cal_time`,'%Y-%m-%d')=CURDATE() AND gb.status='1',gb.bonus,0.00)) AS today_bonus,
+				SUM(IF(DATE_SUB(CURDATE(),INTERVAL 1 DAY)=DATE_FORMAT(gb.`action_time`,'%Y-%m-%d'),gb.amount,0.00)) AS yesterday_amount,
+				SUM(IF(DATE_SUB(CURDATE(),INTERVAL 1 DAY)=DATE_FORMAT(gb.`cal_time`,'%Y-%m-%d') AND gb.status='1',gb.bonus,0.00)) AS  yesterday_bonus 
+		   FROM ls.game_bets gb WHERE gb.status !='2' LIMIT 0,1
+		) AS gb
+	]]>
+	</select>
+
+	<!-- desc:根据时间区间查询用户投注信息 需要防止重复添加反水信息 createTime:2017-10-23 -->
+	<select id="queryGameBetsInfo" resultType="map">
+    <![CDATA[
+    	select 
+    		gb.id as betid,
+    		gb.orderId as orderId,
+    		gb.uid,
+    		gb.user_name as username,
+    		gb.type,
+    		gb.played_group_id as playedGroupid,
+    		gb.amount,
+    		gb.bonus,
+    		gb.action_time as inputTime
+    	from ls.game_bets gb
+    	where gb.status='1'
+    	    and gb.DATE_FORMAT(gb.`action_time`,'%Y-%m-%d') >=#{startDate}
+    		and gb.DATE_FORMAT(gb.`action_time`,'%Y-%m-%d') <=#{endDate}
+    		and gb.id not in (select cl.betid from coin_log cl where cl.coin_operate_type='8')
+    ]]>
+	</select>
+	<select id="getLotteryList" resultType="map" parameterType="map">
+		select
+		a.user_name,
+		IFNULL(SUM(a.totalHandleAccount),0) as
+		totalHandleAccount,
+		IFNULL(SUM(a.lotteryAccount),0) as lotteryAccount,
+		IFNULL(SUM(a.totalHandleCount),0) as totalHandleCount,
+		IFNULL(SUM(a.lotteryCount),0) as lotteryCount
+		from
+		(
+		select
+		gb.uid,
+		gb.user_name,
+		<!-- 彩票投注总额 -->
+		sum(IF (gb.status in (0,1)
+		<if test="startDate != null and startDate != ''">
+			and gb.action_time <![CDATA[>=]]>
+			#{startDate}
+		</if>
+		<if test="endDate !=null and endDate != '' ">
+			and gb.action_time <![CDATA[<=]]>
+			#{endDate}
+		</if>
+		, gb.amount, 0)) AS totalHandleAccount,
+		<!-- 彩票中奖额 -->
+		sum(IF (gb.status = 1
+		<if test="startDate != null and startDate != ''">
+			and gb.cal_time <![CDATA[>=]]>
+			#{startDate}
+		</if>
+		<if test="endDate !=null and endDate != '' ">
+			and gb.cal_time <![CDATA[<=]]>
+			#{endDate}
+		</if>
+		, gb.bonus, 0)) AS lotteryAccount,
+		<!-- 彩票投注次数 -->
+		sum(IF (gb.status in (0,1)
+		<if test="startDate != null and startDate != ''">
+			and gb.action_time <![CDATA[>=]]>
+			#{startDate}
+		</if>
+		<if test="endDate !=null and endDate != '' ">
+			and gb.action_time <![CDATA[<=]]>
+			#{endDate}
+		</if>
+		, 1, 0)) AS totalHandleCount,
+		<!-- 彩票中奖次数 -->
+		sum(IF (gb.status = 1
+		<if test="startDate != null and startDate != ''">
+			and gb.cal_time <![CDATA[>=]]>
+			#{startDate}
+		</if>
+		<if test="endDate !=null and endDate != '' ">
+			and gb.cal_time <![CDATA[<=]]>
+			#{endDate}
+		</if>
+		, 1, 0)) AS lotteryCount
+		FROM ls.game_bets gb,user_info ui,game_type gt
+		where gb.uid = ui.uid and gb.type=gt.gameid
+		<if test="userName !=null and userName != '' ">
+			and ui.user_name LIKE CONCAT(CONCAT('%',#{userName}),'%')
+		</if>
+		<if test='gameType !=null and gameType != "" and gameType!="1"  '>
+			<if test='gameType=="2" '>
+				and gt.game_type in (1,2)
+			</if>
+			<if test='gameType=="3" '>
+				and gt.game_type in (3)
+			</if>
+		</if>
+		<if test="gameID !=null and gameID != '' ">
+			and gt.gameID = #{gameID}
+		</if>
+		<if test="agentCount != null and agentCount != '' ">
+			and ui.AGENT_COUNT=#{agentCount}
+		</if>
+		GROUP BY ui.UID
+		union all
+		select
+		gb.uid,
+		gb.user_name,
+		<!-- 彩票投注总额 -->
+		sum(IF (gb.status in (0,1)
+		<if test="startDate != null and startDate != ''">
+			and gb.action_time <![CDATA[>=]]>
+			#{startDate}
+		</if>
+		<if test="endDate !=null and endDate != '' ">
+			and gb.action_time <![CDATA[<=]]>
+			#{endDate}
+		</if>
+		, gb.amount, 0)) AS totalHandleAccount,
+		<!-- 彩票中奖额 -->
+		sum(IF (gb.status = 1
+		<if test="startDate != null and startDate != ''">
+			and gb.cal_time <![CDATA[>=]]>
+			#{startDate}
+		</if>
+		<if test="endDate !=null and endDate != '' ">
+			and gb.cal_time <![CDATA[<=]]>
+			#{endDate}
+		</if>
+		, gb.bonus, 0)) AS lotteryAccount,
+		<!-- 彩票投注次数 -->
+		sum(IF (gb.status in (0,1)
+		<if test="startDate != null and startDate != ''">
+			and gb.action_time <![CDATA[>=]]>
+			#{startDate}
+		</if>
+		<if test="endDate !=null and endDate != '' ">
+			and gb.action_time <![CDATA[<=]]>
+			#{endDate}
+		</if>
+		, 1, 0)) AS totalHandleCount,
+		<!-- 彩票中奖次数 -->
+		sum(IF (gb.status = 1
+		<if test="startDate != null and startDate != ''">
+			and gb.cal_time <![CDATA[>=]]>
+			#{startDate}
+		</if>
+		<if test="endDate !=null and endDate != '' ">
+			and gb.cal_time <![CDATA[<=]]>
+			#{endDate}
+		</if>
+		, 1, 0)) AS lotteryCount
+		FROM
+		lshistory.game_bets_his gb,user_info
+		ui,game_type gt
+		where gb.uid = ui.uid and gb.type=gt.gameid
+		<if test="userName !=null and userName != '' ">
+			and ui.user_name LIKE CONCAT(CONCAT('%',#{userName}),'%')
+		</if>
+		<if test='gameType !=null and gameType != "" and gameType!="1"  '>
+			<if test='gameType=="2" '>
+				and gt.game_type in (1,2)
+			</if>
+			<if test='gameType=="3" '>
+				and gt.game_type in (3)
+			</if>
+		</if>
+		<if test="gameID !=null and gameID != '' ">
+			and gt.gameID=#{gameID}
+		</if>
+		<if test="agentCount != null and agentCount != '' ">
+			and ui.AGENT_COUNT=#{agentCount}
+		</if>
+		GROUP BY ui.UID
+		) a
+		WHERE 1=1
+		group by a.uid
+	</select>
+	<select id="getLotteryListTotal" resultType="map" parameterType="map">
+		select
+		IFNULL(SUM(a.totalHandleAccount),0) totalHandleAccount,
+		IFNULL(SUM(a.lotteryAccount),0) lotteryAccount,
+		IFNULL(SUM(a.totalHandleCount),0) totalHandleCount,
+		IFNULL(SUM(a.lotteryCount),0) lotteryCount
+		from
+		(select
+		<!-- 彩票投注总额 -->
+		sum(IF (gb.status in (0,1)
+		<if test="startDate != null and startDate != ''">
+			and gb.action_time <![CDATA[>=]]>
+			#{startDate}
+		</if>
+		<if test="endDate !=null and endDate != '' ">
+			and gb.action_time <![CDATA[<=]]>
+			#{endDate}
+		</if>
+		, gb.amount, 0)) AS totalHandleAccount,
+		<!-- 彩票中奖额 -->
+		sum(IF (gb.status = 1
+		<if test="startDate != null and startDate != ''">
+			and gb.cal_time <![CDATA[>=]]>
+			#{startDate}
+		</if>
+		<if test="endDate !=null and endDate != '' ">
+			and gb.cal_time <![CDATA[<=]]>
+			#{endDate}
+		</if>
+		, gb.bonus, 0)) AS lotteryAccount,
+		<!-- 彩票投注次数 -->
+		sum(IF (gb.status in (0,1)
+		<if test="startDate != null and startDate != ''">
+			and gb.action_time <![CDATA[>=]]>
+			#{startDate}
+		</if>
+		<if test="endDate !=null and endDate != '' ">
+			and gb.action_time <![CDATA[<=]]>
+			#{endDate}
+		</if>
+		, 1, 0)) AS totalHandleCount,
+		<!-- 彩票中奖次数 -->
+		sum(IF (gb.status = 1
+		<if test="startDate != null and startDate != ''">
+			and gb.cal_time <![CDATA[>=]]>
+			#{startDate}
+		</if>
+		<if test="endDate !=null and endDate != '' ">
+			and gb.cal_time <![CDATA[<=]]>
+			#{endDate}
+		</if>
+		, 1, 0)) AS lotteryCount
+		FROM game_bets gb,user_info ui,game_type gt
+		where 1=1 and gb.uid=ui.uid and gb.type=gt.gameid
+		<if test="agentCount != null and agentCount != '' ">
+			and ui.agentCount = #{agentCount}
+		</if>
+		<if test="userName !=null and userName != '' ">
+			and ui.user_name LIKE CONCAT(CONCAT('%',#{userName}),'%')
+		</if>
+		<if test="gameType !=null and gameType != '' and  gameType!='1'">
+			<if test="gameType=='2' ">
+				and gt.game_type in (1,2)
+			</if>
+			<if test="gameType=='3' ">
+				and gt.game_type in (3)
+			</if>
+		</if>
+		<if test="gameID !=null and gameID != '' ">
+			and gt.gameID=#{gameID}
+		</if>
+		union all
+		select
+		<!-- 彩票投注总额 -->
+		sum(IF (gb.status in (0,1)
+		<if test="startDate != null and startDate != ''">
+			and gb.action_time <![CDATA[>=]]>
+			#{startDate}
+		</if>
+		<if test="endDate !=null and endDate != '' ">
+			and gb.action_time <![CDATA[<=]]>
+			#{endDate}
+		</if>
+		, gb.amount, 0)) AS totalHandleAccount,
+		<!-- 彩票中奖额 -->
+		sum(IF (gb.status = 1
+		<if test="startDate != null and startDate != ''">
+			and gb.cal_time <![CDATA[>=]]>
+			#{startDate}
+		</if>
+		<if test="endDate !=null and endDate != '' ">
+			and gb.cal_time <![CDATA[<=]]>
+			#{endDate}
+		</if>
+		, gb.bonus, 0)) AS lotteryAccount,
+		<!-- 彩票投注次数 -->
+		sum(IF (gb.status in (0,1)
+		<if test="startDate != null and startDate != ''">
+			and gb.action_time <![CDATA[>=]]>
+			#{startDate}
+		</if>
+		<if test="endDate !=null and endDate != '' ">
+			and gb.action_time <![CDATA[<=]]>
+			#{endDate}
+		</if>
+		, 1, 0)) AS totalHandleCount,
+		<!-- 彩票中奖次数 -->
+		sum(IF (gb.status = 1
+		<if test="startDate != null and startDate != ''">
+			and gb.cal_time <![CDATA[>=]]>
+			#{startDate}
+		</if>
+		<if test="endDate !=null and endDate != '' ">
+			and gb.cal_time <![CDATA[<=]]>
+			#{endDate}
+		</if>
+		, 1, 0)) AS lotteryCount
+		FROM lshistory.game_bets_his gb,user_info
+		ui,game_type gt
+		where 1=1 and gb.uid=ui.uid and gb.type=gt.gameid
+		<if test="userName !=null and userName != '' ">
+			and ui.user_name LIKE CONCAT(CONCAT('%',#{userName}),'%')
+		</if>
+		<if test="agentCount != null and agentCount != '' ">
+			and ui.AGENT_COUNT=#{agentCount}
+		</if>
+		<if test="gameType !=null and gameType != '' and  gameType!='1'">
+			<if test="gameType=='2' ">
+				and gt.game_type in (1,2)
+			</if>
+			<if test="gameType=='3' ">
+				and gt.game_type in (3)
+			</if>
+		</if>
+		<if test="gameID !=null and gameID != '' ">
+			and gt.gameID=#{gameID}
+		</if>
+		)a
+	</select>
+
+	<!-- 【批量投注返利】修改状态为未返利 -->
+	<update id="updateOrderRebateStatus" parameterType="String">
+		UPDATE
+		game_bets SET is_user_rebate=9 WHERE user_rebate_id = #{batch_no}
+	</update>
+
+
+
+	<!-- [批量投注返利回滚] —— 按批次号查询订单 -->
+	<select id="qryBetSumByBatchNo" parameterType="String"
+		resultType="map">
+		SELECT
+		g.uid,g.user_name,CAST(COUNT(g.amount) AS CHAR) AS
+		'num',CAST(SUM(g.amount) AS CHAR) AS 'sum',
+		v.vipName,v.`percent`,v.`group`,
+		u.VIP_ID,u.USER_NAME,u.COIN,u.FCION,u.USERTYPE
+		FROM
+		game_bets g,
+		user_vip_info v,
+		user_info u
+		WHERE
+		g.is_cal = 1 AND g.is_user_rebate = 9
+		AND g.user_rebate_id = #{batch_no}
+		AND
+		v.vipId = u.VIP_ID AND
+		g.uid=u.UID AND u.`STATUS`=1
+		GROUP BY g.uid ORDER BY g.user_name ASC
+	</select>
+
+</mapper>

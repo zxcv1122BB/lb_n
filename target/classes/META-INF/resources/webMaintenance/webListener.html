@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>项目监测设置</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="../plugins/layui/css/layui.css" media="all"/>
+    <style>
+        .layui-tab-title .layui-this {
+            background-color: antiquewhite;
+        }
+    </style>
+</head>
+<body>
+
+<div class="admin-main" id="app">
+    <fieldset class="layui-elem-field">
+        <legend>项目监测</legend>
+        <div class="layui-tab">
+            <ul class="layui-tab-title">
+
+                <li v-for="(item,index) in titles_" :id=item.web_name @click="getdatas(item.web_name)" :class="{'layui-this':index==0}">
+                    {{item.web_CHname}}
+                </li>
+
+            </ul>
+            <div class="layui-tab-content">
+                <div class="layui-tab-item layui-show">
+                    <div>
+                        <table class="layui-table">
+                            <thead>
+                            <tr>
+                                <th colspan="2" id="webCHName">同步缓存项目</th>
+                            </tr>
+                            </thead>
+                            <tbody id="content">
+                            <tr>
+                                <th>项目名称</th>
+                                <td id="webName">{{webName}}</td>
+                            </tr>
+                            <tr>
+								<th>项目描述</th>
+								<td id="webDescribe"></td>
+							</tr>
+                            <tr>
+                                <th>运行状态</th>
+                                <td id="states"></td>
+                            </tr>
+                            <tr>
+                                <th>操作</th>
+                                <td>
+                                    <button class="layui-btn layui-btn-mini" @click="getdatas(1)">刷新状态</button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+</div>
+<script type="text/javascript" src="../public/js/jquery.js"></script>
+<script type="text/javascript" src="../plugins/laydate/laydate.js"></script>
+<script type="text/javascript" src="../public/js/jqPaginator.js"></script>
+<script type="text/javascript" src="../plugins/layui/layui.js"></script>
+<script type="text/javascript" src="../public/js/vue.min.js"></script>
+<script type="text/javascript" src="../public/js/security.js"></script>
+<script type="text/javascript" src="../public/js/send_request.js"></script>
+<script type="text/javascript" src="js/webListener.js"></script>
+<script>
+    layui.use(["layer", 'element'], function () {
+        var layer = layui.layer,
+            element = layui.element;
+    });
+</script>
+</body>
+
+</html>
