@@ -283,11 +283,11 @@ var client=new Vue({
 					 (obj.userName ? obj.userName : "-") + '</span><br>' 
 					 + (obj.orderId ? obj.orderId : "-") + '</td>'+
 					 '<td>'+(obj.payType==1?'在线支付':obj.payType==2?'银行转账':obj.payType==3?'快捷支付':'-')+'</td>'
-					 +'<td>' + (obj.payName ? obj.payName : "-") + '</td>'+
+					 +'<td>' + (obj.BANK_NAME ? obj.BANK_NAME : "-") + '</td>'+
 					 '<td><span class="c_failure">' + (obj.amount ? obj.amount : "-") + '</span></td>'+
-					 '<td>' + (obj.accountName ? obj.accountName : "-") + '</td>'+
-					 '<td style="overflow:inherit;word-wrap:break-word;white-space:initial;">'+(obj.accountId?obj.accountId:'-')+'</td>'+
-					 '<td>' + (obj.account ? obj.account : "-") + '</td>'+
+					 '<td>' + (obj.name ? obj.name : "-") + '</td>'+
+					 '<td style="overflow:inherit;word-wrap:break-word;white-space:initial;">'+(obj.BANK_ACCOUNT?obj.BANK_ACCOUNT:'-')+'</td>'+
+					 // '<td>' + (obj.account ? obj.account : "-") + '</td>'+
 					 '<td style="overflow:inherit;word-wrap:break-word;white-space:initial;">' + (obj.applyTime ? obj.applyTime : "-") + '</td>'+
 					 '<td style="overflow:inherit;word-wrap:break-word;white-space:initial;">' + (obj.operateTime ? obj.operateTime : "-") + '</td>'+
 					 '<td><span class="' + (obj.depositOperateType == 2 ? 'c_failure' : 'c_success dealway') +

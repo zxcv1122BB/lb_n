@@ -286,8 +286,8 @@ var client=new Vue({
 					 +'<td>' + (obj.BANK_NAME ? obj.BANK_NAME : "-") + '</td>'+
 					 '<td><span class="c_failure">' + (obj.amount ? obj.amount : "-") + '</span></td>'+
 					 '<td>' + (obj.name ? obj.name : "-") + '</td>'+
-					 '<td style="overflow:inherit;word-wrap:break-word;white-space:initial;">'+(obj.accountId?obj.accountId:'-')+'</td>'+
-					 '<td>' + (obj.account ? obj.account : "-") + '</td>'+
+					 '<td style="overflow:inherit;word-wrap:break-word;white-space:initial;">'+(obj.BANK_ACCOUNT?obj.BANK_ACCOUNT:'-')+'</td>'+
+					 // '<td>' + (obj.account ? obj.account : "-") + '</td>'+
 					 '<td style="overflow:inherit;word-wrap:break-word;white-space:initial;">' + (obj.applyTime ? obj.applyTime : "-") + '</td>'+
 					 '<td style="overflow:inherit;word-wrap:break-word;white-space:initial;">' + (obj.operateTime ? obj.operateTime : "-") + '</td>'+
 					 '<td><span class="' + (obj.depositOperateType == 2 ? 'c_failure' : 'c_success dealway') +

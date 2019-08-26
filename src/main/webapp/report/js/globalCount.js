@@ -16,7 +16,7 @@ let app = new Vue({
 
     },
     created: function () {
-        this.username = sessionStorage.baobiao;
+        this.username = sessionStorage.baobiao || '';
         this.getdatas();
         this.$nextTick(function () {
             this.getlayer();

@@ -16,6 +16,8 @@ let app = new Vue({
 
     },
     created: function () {
+        this.username = sessionStorage.baobiao;
+        this.getdatas();
         this.$nextTick(function () {
             this.getlayer();
             this.get_time();       //加载开始/结束日期控件
@@ -33,7 +35,7 @@ let app = new Vue({
         //加载选择开始/结束日期控件
         get_time: function () {
             //	日期设置
-            laydate.render({
+            laydate && laydate.render({
                 elem: '#startDate', //指定元素
                 format: 'yyyy-MM-dd HH:mm:ss',
                 type: 'datetime',
@@ -43,7 +45,7 @@ let app = new Vue({
                     $('.search .b_red').removeClass('b_red');
                 }
             });
-            laydate.render({
+            laydate && laydate.render({
                 elem: '#endDate', //指定元素
                 format: 'yyyy-MM-dd HH:mm:ss',
                 type: 'datetime',
